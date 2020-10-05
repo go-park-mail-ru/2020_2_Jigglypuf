@@ -1,9 +1,12 @@
 package main
 
 import (
-	"authentication/delivery"
-	"authentication/repository"
-	"authentication/usecase"
+	authDelivery "authentication/delivery"
+	authRepository "authentication/repository"
+	authUseCase"authentication/usecase"
+	cinemaDelivery "cinemaService/delivery"
+	cinemaRepository "cinemaService/repository"
+	cinemaUsecase "cinemaService/usecase"
 	"cookie"
 	"log"
 	"net/http"
@@ -15,19 +18,23 @@ const StaticPath = "../static/"
 const salt = "oisndoiqwe123"
 
 type ServerStruct struct{
-	authHandler *delivery.UserHandler
+	authHandler *authDelivery.UserHandler
+	cinemaHandler *cinemaDelivery.CinemaHandler
 	httpServer *http.Server
 }
 
 func configureAPI() *ServerStruct{
 	mutex := sync.RWMutex{}
-	userRepository := repository.NewUserRepository(&mutex)
-
-	userUseCase := usecase.NewUserUseCase(userRepository, salt)
-	userHandler := delivery.NewUserHandler(userUseCase)
+	userRepository := authRepository.NewUserRepository(&mutex)
+	cinRepository := cinemaRepository.NewCinemaRepository(&mutex)
+	cinUseCase := cinemaUsecase.NewCinemaUseCase(cinRepository)
+	userUseCase := authUseCase.NewUserUseCase(userRepository, salt)
+	cinHandler := cinemaDelivery.NewCinemaHandler(cinUseCase)
+	userHandler := authDelivery.NewUserHandler(userUseCase)
 
 	return &ServerStruct{
 		authHandler: userHandler,
+		cinemaHandler: cinHandler,
 	}
 }
 
@@ -42,6 +49,8 @@ func configureRouter(application *ServerStruct) *http.ServeMux{
 	})
 
 	handler.HandleFunc("/signUp/", application.authHandler.RegisterHandler)
+	handler.HandleFunc("/getCinemaList/", application.cinemaHandler.GetCinemaList)
+	handler.HandleFunc("/getCinema/", application.cinemaHandler.GetCinema)
 
 	return handler
 }

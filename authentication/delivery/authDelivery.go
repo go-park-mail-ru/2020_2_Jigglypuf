@@ -1,7 +1,7 @@
 package delivery
 
 import(
-	"authentication/usecase"
+	"authentication"
 	"models"
 	"net/http"
 	"encoding/json"
@@ -9,25 +9,14 @@ import(
 
 
 type UserHandler struct {
-	useCase usecase.UserUseCase
+	useCase authentication.UserUseCase
 }
 
 
-func NewUserHandler(useCase *usecase.UserUseCase) *UserHandler{
+func NewUserHandler(useCase authentication.UserUseCase) *UserHandler{
 	return &UserHandler{
-		useCase: *useCase,
+		useCase: useCase,
 	}
-}
-
-
-func BadBodyHTTPResponse(w *http.ResponseWriter, err error){
-	response, err := json.Marshal(models.ServerResponse{
-		StatusCode: 401,
-		Response:  []byte(err.Error()),
-	})
-
-	(*w).WriteHeader(http.StatusBadRequest)
-	(*w).Write(response)
 }
 
 
@@ -42,17 +31,17 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request){
 	translationError := decoder.Decode(authInput)
 
 	if translationError != nil{
-		BadBodyHTTPResponse(&w, translationError)
+		models.BadBodyHTTPResponse(&w, translationError)
 		return
 	}
 
-	cookie, err := t.useCase.SignIn(authInput)
+	cookie,err := t.useCase.SignIn(authInput)
 
 	if err != nil{
-		BadBodyHTTPResponse(&w, err)
+		models.BadBodyHTTPResponse(&w, err)
 		return
 	}
-	http.SetCookie(w, &cookie)
+	http.SetCookie(w, cookie)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -67,17 +56,17 @@ func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request){
 	translationError := decoder.Decode(authInput)
 
 	if translationError != nil{
-		BadBodyHTTPResponse(&w, translationError)
+		models.BadBodyHTTPResponse(&w, translationError)
 		return
 	}
 
 	cookie, err := t.useCase.SignUp(authInput)
 
 	if err != nil{
-		BadBodyHTTPResponse(&w, err)
+		models.BadBodyHTTPResponse(&w, err)
 		return
 	}
 
-	http.SetCookie(w, &cookie)
+	http.SetCookie(w, cookie)
 	w.WriteHeader(http.StatusOK)
 }

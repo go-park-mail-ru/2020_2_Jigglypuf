@@ -44,7 +44,7 @@ func createUserCookie() http.Cookie{
 	}
 }
 
-func (t *UserUseCase) SignUp(input *models.RegistrationInput)(http.Cookie,error){
+func (t *UserUseCase) SignUp(input *models.RegistrationInput)(*http.Cookie,error){
 	username := input.Login
 	password := input.Password
 
@@ -58,10 +58,10 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput)(http.Cookie,error)
 
 	err := t.memConn.CreateUser(&user)
 
-	return cookieValue,err
+	return &cookieValue,err
 }
 
-func (t *UserUseCase) SignIn (input *models.AuthInput)(http.Cookie,error){
+func (t *UserUseCase) SignIn (input *models.AuthInput)(*http.Cookie,error){
 	username := input.Login
 	password := input.Password
 
@@ -69,7 +69,7 @@ func (t *UserUseCase) SignIn (input *models.AuthInput)(http.Cookie,error){
 
 	user, err := t.memConn.GetUser(username,hashPassword)
 	if err != nil{
-		return http.Cookie{}, err
+		return &http.Cookie{}, err
 	}
 
 	if time.Now().After(user.Cookie.Expires){
@@ -77,5 +77,9 @@ func (t *UserUseCase) SignIn (input *models.AuthInput)(http.Cookie,error){
 	}
 
 
-	return user.Cookie, err
+	return &user.Cookie, err
+}
+
+func (t *UserUseCase) SignOut() error{
+	return nil
 }
