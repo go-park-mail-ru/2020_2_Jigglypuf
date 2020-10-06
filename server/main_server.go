@@ -25,10 +25,10 @@ const salt = "oisndoiqwe123"
 
 
 func setupCORS(w *http.ResponseWriter, req *http.Request) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Origin", req.Header.Get("Origin"))
 	log.Println(req.Header.Get("Origin"))
 	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET")
-	//(*w).Header().Set("Access-Control-Allow-Credentials", "true")
+	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
 	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 }
 

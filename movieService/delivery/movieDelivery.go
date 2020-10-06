@@ -5,6 +5,7 @@ import (
 	"models"
 	"movieService"
 	"net/http"
+	"strconv"
 )
 
 type MovieHandler struct{
@@ -24,17 +25,21 @@ func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request){
 		models.BadMethodHttpResponse(&w)
 		return
 	}
+	Limit := r.URL.Query()["limit"]
+	Page := r.URL.Query()["page"]
+	if len(Limit) == 0 || len(Page) == 0{
+		models.BadBodyHTTPResponse(&w, nil)
+		return
+	}
+	limit,limitErr := strconv.Atoi(Limit[0])
+	page, pageErr := strconv.Atoi(Page[0])
 
-	decoder := json.NewDecoder(r.Body)
-	movie := new( models.GetMovieList )
-	translationError := decoder.Decode(movie)
-
-	if translationError != nil{
-		models.BadBodyHTTPResponse(&w, translationError)
+	if limitErr != nil || pageErr != nil{
+		models.BadBodyHTTPResponse(&w, limitErr)
 		return
 	}
 
-	resultArray, err := t.movieUseCase.GetMovieList(movie)
+	resultArray, err := t.movieUseCase.GetMovieList(limit,page)
 
 	if err != nil{
 		models.BadBodyHTTPResponse(&w, err)
@@ -58,16 +63,14 @@ func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	decoder := json.NewDecoder(r.Body)
-	movie := new( models.SearchMovie )
-	translationError := decoder.Decode(movie)
+	name := r.URL.Query()["name"]
 
-	if translationError != nil{
-		models.BadBodyHTTPResponse(&w, translationError)
+	if len(name) == 0{
+		models.BadBodyHTTPResponse(&w, nil)
 		return
 	}
 
-	result, err := t.movieUseCase.GetMovie(movie.Name)
+	result, err := t.movieUseCase.GetMovie(name[0])
 
 	if err != nil{
 		models.BadBodyHTTPResponse(&w, err)

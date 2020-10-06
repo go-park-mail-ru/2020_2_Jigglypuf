@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"models"
 	"net/http"
+	"strconv"
 )
 
 type CinemaHandler struct{
@@ -58,16 +59,14 @@ func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r* http.Request){
 		return
 	}
 
-	decoder := json.NewDecoder(r.Body)
-	cinema := new(models.SearchCinema)
-	translationError := decoder.Decode(cinema)
+	name := r.URL.Query()["name"]
 
-	if translationError != nil{
-		models.BadBodyHTTPResponse(&w, translationError)
+	if len(name) == 0{
+		models.BadBodyHTTPResponse(&w, nil)
 		return
 	}
 
-	result, GetCinemaError := t.cinemaUseCase.GetCinema(&cinema.Name)
+	result, GetCinemaError := t.cinemaUseCase.GetCinema(&name[0])
 
 	if GetCinemaError != nil{
 		models.BadBodyHTTPResponse(&w, GetCinemaError)
@@ -95,16 +94,20 @@ func (t *CinemaHandler) GetCinemaList(w http.ResponseWriter, r* http.Request){
 		models.BadMethodHttpResponse(&w)
 		return
 	}
-
-	decoder := json.NewDecoder(r.Body)
-	cinema := new(models.GetCinemaList)
-
-	translationError := decoder.Decode(cinema)
-	if translationError != nil{
-		models.BadBodyHTTPResponse(&w, translationError)
+	Limit := r.URL.Query()["limit"]
+	Page := r.URL.Query()["page"]
+	if len(Limit) == 0 || len(Page) == 0{
+		models.BadBodyHTTPResponse(&w, nil)
 		return
 	}
-	result, GetCinemaError := t.cinemaUseCase.GetCinemaList(cinema.Limit, cinema.Page)
+	limit,limitErr := strconv.Atoi(Limit[0])
+	page, pageErr := strconv.Atoi(Page[0])
+
+	if limitErr != nil || pageErr != nil{
+		models.BadBodyHTTPResponse(&w, limitErr)
+		return
+	}
+	result, GetCinemaError := t.cinemaUseCase.GetCinemaList(limit,page)
 
 	if GetCinemaError != nil{
 		models.BadBodyHTTPResponse(&w, GetCinemaError)

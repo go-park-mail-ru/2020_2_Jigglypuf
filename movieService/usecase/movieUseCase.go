@@ -20,8 +20,8 @@ func (t *MovieUseCase) GetMovie(name string)(*models.Movie, error){
 }
 
 
-func (t *MovieUseCase) GetMovieList(params *models.GetMovieList)(*[]models.Movie, error){
-	return t.DBConn.GetMovieList(params.Limit, params.Page)
+func (t *MovieUseCase) GetMovieList(limit, page int)(*[]models.Movie, error){
+	return t.DBConn.GetMovieList(limit, page)
 }
 
 
