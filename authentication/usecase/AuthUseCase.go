@@ -49,6 +49,7 @@ func createUserCookie() http.Cookie{
 		Expires: time.Now().Add(24*time.Hour),
 		Path: "/",
 		SameSite: http.SameSiteNoneMode,
+		Secure: true,
 	}
 }
 
