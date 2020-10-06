@@ -9,4 +9,6 @@ type MovieRepository interface{
 	UpdateMovie(*models.Movie) error
 	GetMovie(name string)(*models.Movie, error)
 	GetMovieList(limit, page int)(*[]models.Movie, error)
+	RateMovie(user *models.User,name string, rating int64)error
+	GetRating(user *models.User, name string)(int64, error)
 }

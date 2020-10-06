@@ -97,3 +97,24 @@ func (t *AuthRepository) GetUserViaCookie(cookie *http.Cookie)(*models.User, err
 
 	return user, nil
 }
+
+func (t *AuthRepository) SetCookie(user *models.User,cookieValue *http.Cookie) bool{
+	userIndex := 0
+	t.Mu.RLock()
+	{
+		for index, val := range t.Users{
+			if val.Username == user.Username{
+				userIndex = index
+			}
+		}
+	}
+	t.Mu.RUnlock()
+
+	t.Mu.RLock()
+	{
+		t.Users[userIndex].Cookie = *cookieValue
+	}
+	t.Mu.RUnlock()
+
+	return true
+}

@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"authentication"
-	"fmt"
 	"math/rand"
 	"models"
 	"net/http"
@@ -85,9 +84,10 @@ func (t *UserUseCase) SignIn (input *models.AuthInput)(*http.Cookie,error){
 	}
 
 	if time.Now().After(user.Cookie.Expires){
-		user.Cookie = createUserCookie()
+		cookieValue := createUserCookie()
+		user.Cookie = cookieValue
+		t.memConn.SetCookie(user,&cookieValue)
 	}
-	fmt.Println("kek")
 
 	return &user.Cookie, err
 }

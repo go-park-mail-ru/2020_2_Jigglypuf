@@ -7,12 +7,14 @@ import (
 
 type MovieRepository struct{
 	Movies []models.Movie
+	Ratings map[string][]models.RatingSet
 	mutex *sync.RWMutex
 }
 
 type MovieAlreadyExists struct{}
 type MovieNotFound struct{}
 type PageNotFound struct{}
+type MovieAlreadyRated struct{}
 
 func (t PageNotFound) Error() string{
 	return "PageNotFound!"
@@ -23,7 +25,11 @@ func (t MovieAlreadyExists) Error() string{
 }
 
 func (t MovieNotFound) Error() string{
-	return "Movie Already Exists!"
+	return "Movie Not Found!"
+}
+
+func (t MovieAlreadyRated) Error() string{
+	return "Movie Already rated!"
 }
 
 func NewMovieRepository(mutex *sync.RWMutex) *MovieRepository{
@@ -85,6 +91,7 @@ func NewMovieRepository(mutex *sync.RWMutex) *MovieRepository{
 			},
 		},
 		mutex: mutex,
+		Ratings: make(map[string][]models.RatingSet),
 	}
 }
 
@@ -166,4 +173,59 @@ func (t *MovieRepository) GetMovieList(limit, page int)(*[]models.Movie, error){
 		return &resultArray,PageNotFound{}
 	}
 	return &resultArray, nil
+}
+
+func (t *MovieRepository) RateMovie(user *models.User, name string, rating int64)error{
+	movie, err := t.GetMovie(name)
+	if err != nil{
+		return err
+	}
+	success := true
+	t.mutex.RLock()
+	{
+		for _, val := range t.Ratings[user.Username]{
+			if val.MovieRating.Name == movie.Name{
+				success = false
+			}
+		}
+	}
+	t.mutex.RUnlock()
+
+	if !success{
+		return MovieAlreadyRated{}
+	}
+
+	t.mutex.Lock()
+	{
+		t.Ratings[user.Username] = append(t.Ratings[user.Username], models.RatingSet{
+			MovieRating: movie,
+			Rating: rating,
+		})
+	}
+	t.mutex.Unlock()
+
+	return nil
+}
+
+func (t *MovieRepository) GetRating(user *models.User, name string)(int64, error) {
+	movie, err := t.GetMovie(name)
+	if err != nil{
+		return 0, err
+	}
+	success := false
+	var result int64
+	t.mutex.RLock()
+	{
+		for _, val := range t.Ratings[user.Username] {
+			if val.MovieRating.Name == movie.Name {
+				success = true
+				result = val.Rating
+			}
+		}
+	}
+	t.mutex.RUnlock()
+	if !success{
+		return result,MovieNotFound{}
+	}
+	return result,nil
 }

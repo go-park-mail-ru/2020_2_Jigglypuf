@@ -38,7 +38,7 @@ func BadMethodHttpResponse(w *http.ResponseWriter){
 
 func UnauthorizedHttpResponse(w *http.ResponseWriter){
 	response, _ := json.Marshal(ServerResponse{
-		StatusCode: http.StatusMethodNotAllowed,
+		StatusCode: http.StatusUnauthorized,
 		Response:  []byte("MethodNotAllowed"),
 	})
 	(*w).WriteHeader(http.StatusUnauthorized)

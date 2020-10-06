@@ -63,7 +63,7 @@ func configureAPI() *ServerStruct{
 
 	cinHandler := cinemaDelivery.NewCinemaHandler(cinUseCase)
 	userHandler := authDelivery.NewUserHandler(userUseCase)
-	movHandler := movieDelivery.NewMovieHandler(movUseCase)
+	movHandler := movieDelivery.NewMovieHandler(movUseCase, userRepository)
 	profHandler := profileDelivery.NewProfileHandler(profUseCase)
 
 	return &ServerStruct{
@@ -120,6 +120,12 @@ func configureRouter(application *ServerStruct) *http.ServeMux{
 	})
 	handler.HandleFunc("/getmovielist/", func(w http.ResponseWriter, r *http.Request){
 		CORSDecorator(w,r, application.movieHandler.GetMovieList)
+	})
+	handler.HandleFunc("/ratemovie/", func(w http.ResponseWriter, r *http.Request){
+		CORSDecorator(w,r, application.movieHandler.RateMovie)
+	})
+	handler.HandleFunc("/getmovierating/", func(w http.ResponseWriter, r *http.Request){
+		CORSDecorator(w,r, application.movieHandler.GetMovieRating)
 	})
 
 
