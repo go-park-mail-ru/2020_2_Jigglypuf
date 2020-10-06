@@ -3,6 +3,7 @@ package repository
 import (
 	"authentication"
 	"models"
+	"net/http"
 	"sync"
 )
 
@@ -60,7 +61,6 @@ func (t *ProfileRepository) CreateProfile(profile *models.Profile) error {
 	t.Mu.Lock()
 	{
 		t.Profiles = append(t.Profiles, *profile)
-		//t.Cookies[*profiles] = *cookieValue
 	}
 	t.Mu.Unlock()
 
@@ -87,13 +87,46 @@ func (t *ProfileRepository) GetProfile( login *string ) ( *models.Profile, error
 			}
 		}
 	}
-	t.Mu.Unlock()
+	t.Mu.RUnlock()
 
 	if !success {
 		return profile, ProfileNotFound{}
 	}
 
 	return profile, nil
+}
+
+func (t *ProfileRepository) GetProfileViaCookie(cookie *http.Cookie) ( *models.Profile, error){
+	user, err := t.UserRepository.GetUserViaCookie(cookie)
+	profile := new(models.Profile)
+	if err != nil{
+		return profile, err
+	}
+
+	success := false
+	t.Mu.RLock()
+	{
+		for _, value := range t.Profiles {
+			if value.Login.Username == user.Username {
+				*profile = value
+				success = true
+				break
+			}
+		}
+	}
+	t.Mu.RUnlock()
+
+	if !success {
+		profile.Login = user
+		t.Mu.Lock()
+		{
+			t.Profiles = append(t.Profiles, *profile)
+		}
+		t.Mu.Unlock()
+	}
+
+	return profile, nil
+
 }
 
 
@@ -123,6 +156,23 @@ func (t *ProfileRepository) UpdateProfile( profile *models.Profile, name, surnam
 	if avatarPath != "" {
 		profile.AvatarPath = avatarPath
 	}
+
+	profileIndex := 0
+	t.Mu.RLock()
+	{
+		for index,val := range t.Profiles{
+			if val.Login.Username == profile.Login.Username{
+				profileIndex = index
+			}
+		}
+	}
+	t.Mu.RUnlock()
+
+	t.Mu.Lock()
+	{
+		t.Profiles[profileIndex] = *profile
+	}
+	t.Mu.Unlock()
 
 	return nil
 }

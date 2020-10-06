@@ -2,7 +2,9 @@ package repository
 
 import (
 	"models"
+	"net/http"
 	"sync"
+	"time"
 )
 
 type AuthRepository struct{
@@ -61,6 +63,7 @@ func (t *AuthRepository) GetUser(username, password string) (*models.User, error
 	user := new(models.User)
 	success := false
 
+	t.Mu.RLock()
 	for _,val := range t.Users{
 		if val.Username == username && val.Password == password{
 			*user = val
@@ -68,7 +71,26 @@ func (t *AuthRepository) GetUser(username, password string) (*models.User, error
 			break
 		}
 	}
+	t.Mu.RUnlock()
+	if !success{
+		return user, UserNotFound{}
+	}
 
+	return user, nil
+}
+
+func (t *AuthRepository) GetUserViaCookie(cookie *http.Cookie)(*models.User, error){
+	user := new(models.User)
+	success := false
+
+	t.Mu.RLock()
+	for _,val := range t.Users{
+		if cookie != nil && cookie.Value == val.Cookie.Value && time.Now().Before(val.Cookie.Expires){
+			*user = val
+			success = true
+		}
+	}
+	t.Mu.RUnlock()
 	if !success{
 		return user, UserNotFound{}
 	}

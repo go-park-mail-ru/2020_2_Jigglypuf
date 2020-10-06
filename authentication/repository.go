@@ -1,10 +1,12 @@
 package authentication
 
-import(
+import (
 	"models"
+	"net/http"
 )
 
 type AuthRepository interface{
 	CreateUser(user *models.User) error
 	GetUser(username string, password string) (*models.User,error)
+	GetUserViaCookie(cookie *http.Cookie)(*models.User, error)
 }

@@ -2,8 +2,11 @@ package delivery
 
 import (
 	"encoding/json"
+	"io"
+	"mime/multipart"
 	"models"
 	"net/http"
+	"os"
 	"profile"
 )
 
@@ -12,6 +15,11 @@ type ProfileHandler struct {
 	useCase profile.ProfileUseCase
 }
 
+type SavingError struct{}
+
+func (t SavingError) Error()string{
+	return "Cannot save the file!"
+}
 
 func NewProfileHandler (useCase profile.ProfileUseCase) *ProfileHandler {
 	return &ProfileHandler{
@@ -19,57 +27,60 @@ func NewProfileHandler (useCase profile.ProfileUseCase) *ProfileHandler {
 	}
 }
 
-
-func (t *ProfileHandler) CreateProfile( w http.ResponseWriter, r *http.Request ) {
-	defer r.Body.Close()
-
-	w.Header().Set("Content-Type","application/json")
-
-	decoder := json.NewDecoder(r.Body)
-	profileToCreate := new(models.Profile)
-	translationError := decoder.Decode(profileToCreate)
-
-	if translationError != nil{
-		models.BadBodyHTTPResponse(&w, translationError)
-		return
+func SaveAvatarImage( file multipart.File, handler *multipart.FileHeader, fileErr error )( string, error ){
+	returnPath := "/media/"
+	if fileErr != nil{
+		return "", SavingError{}
 	}
 
-	//cookie, err := t.useCase.CreateProfile(profileToCreate)
-	err := t.useCase.CreateProfile(profileToCreate)
-
-	if err != nil{
-		models.BadBodyHTTPResponse(&w, err)
-		return
+	defer file.Close()
+	f, saveErr := os.OpenFile("../../media/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+	if saveErr != nil {
+		return "", SavingError{}
 	}
 
-	//http.SetCookie(w, cookie)
-	w.WriteHeader(http.StatusOK)
+	defer f.Close()
+	_, copyingError := io.Copy(f, file)
+
+	if copyingError != nil{
+		return "", SavingError{}
+	}
+	returnPath += handler.Filename
+	return returnPath, nil
 }
 
 func (t *ProfileHandler) GetProfile( w http.ResponseWriter, r *http.Request ) {
 	defer r.Body.Close()
 
+	if r.Method != http.MethodGet{
+		models.BadMethodHttpResponse(&w)
+		return
+	}
+
 	w.Header().Set("Content-Type","application/json")
 
-	decoder := json.NewDecoder(r.Body)
-	profileGet := new(models.Profile)
-	translationError := decoder.Decode(profileGet)
+	cookieValue, cookieErr := r.Cookie("session_id")
 
-	if translationError != nil{
-		models.BadBodyHTTPResponse(&w, translationError)
+	if cookieErr != nil{
+		models.UnauthorizedHttpResponse(&w)
+	}
+
+	requiredProfile, profileError := t.useCase.GetProfileViaCookie(cookieValue)
+
+	if profileError != nil{
+		models.BadBodyHTTPResponse(&w, profileError)
 		return
 	}
 
-	//cookie, err := t.useCase.GetProfile(&profileGet.Login.Username)
-	_, err := t.useCase.GetProfile(&profileGet.Login.Username)
 
-	if err != nil{
-		models.BadBodyHTTPResponse(&w, err)
-		return
-	}
-
-	//http.SetCookie(w, cookie)
 	w.WriteHeader(http.StatusOK)
+	responseProfile,responseErr := json.Marshal(requiredProfile)
+	if responseErr != nil{
+		models.BadBodyHTTPResponse(&w, responseErr)
+		return
+	}
+
+	_, _ = w.Write([]byte(responseProfile))
 }
 
 func (t *ProfileHandler) UpdateProfile( w http.ResponseWriter, r *http.Request ) {
@@ -77,17 +88,39 @@ func (t *ProfileHandler) UpdateProfile( w http.ResponseWriter, r *http.Request )
 
 	w.Header().Set("Content-Type","application/json")
 
-	decoder := json.NewDecoder(r.Body)
-	profileUpdate := new(models.Profile)
-	translationError := decoder.Decode(profileUpdate)
+	if r.Method != http.MethodPost{
+		models.BadMethodHttpResponse(&w)
+		return
+	}
+
+	translationError := r.ParseMultipartForm(32 << 20)
 
 	if translationError != nil{
 		models.BadBodyHTTPResponse(&w, translationError)
 		return
 	}
 
-	//cookie, err := t.useCase.UpdateProfile(profileUpdate)
-	err := t.useCase.UpdateProfile(profileUpdate)
+	cookieValue, cookieErr := r.Cookie("session_id")
+
+	if cookieErr != nil{
+		models.UnauthorizedHttpResponse(&w)
+		return
+	}
+
+	profileUpdate, profileError := t.useCase.GetProfileViaCookie(cookieValue)
+
+	if profileError != nil{
+		models.BadBodyHTTPResponse(&w, profileError)
+		return
+	}
+
+	avatarPath, savingErr := SaveAvatarImage(r.FormFile("avatar"))
+	if savingErr != nil{
+		models.BadBodyHTTPResponse(&w, savingErr)
+		return
+	}
+
+	err := t.useCase.UpdateProfile(profileUpdate,r.FormValue("name"),r.FormValue("surname"), avatarPath)
 
 	if err != nil{
 		models.BadBodyHTTPResponse(&w, err)

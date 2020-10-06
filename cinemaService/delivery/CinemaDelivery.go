@@ -3,7 +3,6 @@ package delivery
 import (
 	"cinemaService"
 	"encoding/json"
-	"log"
 	"models"
 	"net/http"
 )
@@ -97,7 +96,6 @@ func (t *CinemaHandler) GetCinemaList(w http.ResponseWriter, r* http.Request){
 		return
 	}
 
-	log.Println("im befroe decode")
 	decoder := json.NewDecoder(r.Body)
 	cinema := new(models.GetCinemaList)
 

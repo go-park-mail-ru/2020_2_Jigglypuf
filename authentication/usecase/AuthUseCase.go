@@ -1,9 +1,9 @@
 package usecase
 
 import (
+	"authentication"
 	"math/rand"
 	"models"
-	"authentication"
 	"net/http"
 	"time"
 )
@@ -11,6 +11,12 @@ import (
 type UserUseCase struct{
 	memConn authentication.AuthRepository
 	salt string
+}
+
+type IncorrectInputError struct{}
+
+func (t IncorrectInputError) Error() string{
+	return "Incorrect Login or Password!"
 }
 
 func NewUserUseCase(dbConn authentication.AuthRepository, Salt string) *UserUseCase{
@@ -41,13 +47,16 @@ func createUserCookie() http.Cookie{
 		Name: "session_id",
 		Value: RandStringRunes(32),
 		Expires: time.Now().Add(24*time.Hour),
+		Path: "/",
 	}
 }
 
 func (t *UserUseCase) SignUp(input *models.RegistrationInput)(*http.Cookie,error){
 	username := input.Login
 	password := input.Password
-
+	if username == "" || password == ""{
+		return new(http.Cookie),IncorrectInputError{}
+	}
 	hashPassword := createHashPassword(password, t.salt)
 	cookieValue := createUserCookie()
 	user := models.User{
@@ -55,7 +64,6 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput)(*http.Cookie,error
 		Password: hashPassword,
 		Cookie: cookieValue,
 	}
-
 	err := t.memConn.CreateUser(&user)
 
 	return &cookieValue,err
@@ -64,6 +72,10 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput)(*http.Cookie,error
 func (t *UserUseCase) SignIn (input *models.AuthInput)(*http.Cookie,error){
 	username := input.Login
 	password := input.Password
+
+	if username == "" || password == ""{
+		return new(http.Cookie),IncorrectInputError{}
+	}
 
 	hashPassword := createHashPassword(password, t.salt)
 

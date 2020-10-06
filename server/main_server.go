@@ -3,28 +3,31 @@ package main
 import (
 	authDelivery "authentication/delivery"
 	authRepository "authentication/repository"
-	authUseCase"authentication/usecase"
+	authUseCase "authentication/usecase"
 	cinemaDelivery "cinemaService/delivery"
 	cinemaRepository "cinemaService/repository"
 	cinemaUsecase "cinemaService/usecase"
+	"log"
 	movieDelivery "movieService/delivery"
 	movieRepository "movieService/repository"
 	movieUsecase "movieService/usecase"
-	"cookie"
-	"log"
 	"net/http"
+	profileDelivery "profile/delivery"
+	profileRepository "profile/repository"
+	profileUseCase "profile/usecase"
 	"sync"
 	"time"
 )
 
 const StaticPath = "../static/"
+const MediaPath = "../../media/"
 const salt = "oisndoiqwe123"
 
 type ServerStruct struct{
 	authHandler *authDelivery.UserHandler
 	cinemaHandler *cinemaDelivery.CinemaHandler
 	movieHandler *movieDelivery.MovieHandler
-
+	profileHandler *profileDelivery.ProfileHandler
 	httpServer *http.Server
 }
 
@@ -33,41 +36,54 @@ func configureAPI() *ServerStruct{
 	userRepository := authRepository.NewUserRepository(&mutex)
 	cinRepository := cinemaRepository.NewCinemaRepository(&mutex)
 	movRepository := movieRepository.NewMovieRepository(&mutex)
+	profRepository := profileRepository.NewProfileRepository(&mutex,userRepository)
 
 	cinUseCase := cinemaUsecase.NewCinemaUseCase(cinRepository)
 	userUseCase := authUseCase.NewUserUseCase(userRepository, salt)
 	movUseCase := movieUsecase.NewMovieUseCase(movRepository)
+	profUseCase := profileUseCase.NewProfileUseCase(profRepository)
 
 	cinHandler := cinemaDelivery.NewCinemaHandler(cinUseCase)
 	userHandler := authDelivery.NewUserHandler(userUseCase)
 	movHandler := movieDelivery.NewMovieHandler(movUseCase)
+	profHandler := profileDelivery.NewProfileHandler(profUseCase)
 
 	return &ServerStruct{
 		authHandler: userHandler,
 		cinemaHandler: cinHandler,
 		movieHandler: movHandler,
+		profileHandler: profHandler,
 	}
 }
 
 func configureRouter(application *ServerStruct) *http.ServeMux{
 	handler := http.NewServeMux()
 	handler.HandleFunc("/signIn/", func(w http.ResponseWriter, r *http.Request){
-		if cookie.CheckCookie(r){
+		if /*cookie.CheckCookie(r) ||*/ r.Method != http.MethodPost{
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		application.authHandler.AuthHandler(w,r)
 	})
 
-	handler.HandleFunc("/signUp/", application.authHandler.RegisterHandler)
+	handler.HandleFunc("/signUp/", func(w http.ResponseWriter, r *http.Request){
+		if /*cookie.CheckCookie(r) ||*/ r.Method != http.MethodPost {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		application.authHandler.RegisterHandler(w, r)
+	})
+
 	handler.HandleFunc("/getCinemaList/", application.cinemaHandler.GetCinemaList)
 	handler.HandleFunc("/getCinema/", application.cinemaHandler.GetCinema)
 	handler.HandleFunc("/getMovie/", application.movieHandler.GetMovie)
 	handler.HandleFunc("/getMovieList/", application.movieHandler.GetMovieList)
+	handler.HandleFunc("/GetProfile/", application.profileHandler.GetProfile)
+	handler.HandleFunc("/UpdateProfile/", application.profileHandler.UpdateProfile)
 
 	staticHandler := http.StripPrefix(
 		"/media/",
-		http.FileServer(http.Dir("../../media")),
+		http.FileServer(http.Dir(MediaPath)),
 	)
 	handler.Handle("/media/", staticHandler)
 

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"models"
+	"net/http"
 	"profile"
 )
 
@@ -32,12 +33,16 @@ func (t *ProfileUseCase) GetProfile( login *string )( *models.Profile, error ) {
 	return t.DBConn.GetProfile(login)
 }
 
+func (t *ProfileUseCase) GetProfileViaCookie(cookie *http.Cookie)( *models.Profile, error){
+	return t.DBConn.GetProfileViaCookie(cookie)
+}
+
 
 func (t *ProfileUseCase) UpdateCredentials( profile *models.Profile ) error {
 	return t.DBConn.UpdateCredentials(profile)
 }
 
 
-func (t *ProfileUseCase) UpdatedProfile( profile *models.Profile ) error {
-	return t.DBConn.UpdateProfile(profile)
+func (t *ProfileUseCase) UpdateProfile( profile *models.Profile, name, surname, avatarPath string  ) error {
+	return t.DBConn.UpdateProfile(profile, name,surname, avatarPath)
 }
