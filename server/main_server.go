@@ -7,6 +7,9 @@ import (
 	cinemaDelivery "cinemaService/delivery"
 	cinemaRepository "cinemaService/repository"
 	cinemaUsecase "cinemaService/usecase"
+	movieDelivery "movieService/delivery"
+	movieRepository "movieService/repository"
+	movieUsecase "movieService/usecase"
 	"cookie"
 	"log"
 	"net/http"
@@ -20,6 +23,8 @@ const salt = "oisndoiqwe123"
 type ServerStruct struct{
 	authHandler *authDelivery.UserHandler
 	cinemaHandler *cinemaDelivery.CinemaHandler
+	movieHandler *movieDelivery.MovieHandler
+
 	httpServer *http.Server
 }
 
@@ -27,14 +32,20 @@ func configureAPI() *ServerStruct{
 	mutex := sync.RWMutex{}
 	userRepository := authRepository.NewUserRepository(&mutex)
 	cinRepository := cinemaRepository.NewCinemaRepository(&mutex)
+	movRepository := movieRepository.NewMovieRepository(&mutex)
+
 	cinUseCase := cinemaUsecase.NewCinemaUseCase(cinRepository)
 	userUseCase := authUseCase.NewUserUseCase(userRepository, salt)
+	movUseCase := movieUsecase.NewMovieUseCase(movRepository)
+
 	cinHandler := cinemaDelivery.NewCinemaHandler(cinUseCase)
 	userHandler := authDelivery.NewUserHandler(userUseCase)
+	movHandler := movieDelivery.NewMovieHandler(movUseCase)
 
 	return &ServerStruct{
 		authHandler: userHandler,
 		cinemaHandler: cinHandler,
+		movieHandler: movHandler,
 	}
 }
 
@@ -51,6 +62,14 @@ func configureRouter(application *ServerStruct) *http.ServeMux{
 	handler.HandleFunc("/signUp/", application.authHandler.RegisterHandler)
 	handler.HandleFunc("/getCinemaList/", application.cinemaHandler.GetCinemaList)
 	handler.HandleFunc("/getCinema/", application.cinemaHandler.GetCinema)
+	handler.HandleFunc("/getMovie/", application.movieHandler.GetMovie)
+	handler.HandleFunc("/getMovieList/", application.movieHandler.GetMovieList)
+
+	staticHandler := http.StripPrefix(
+		"/media/",
+		http.FileServer(http.Dir("../../media")),
+	)
+	handler.Handle("/media/", staticHandler)
 
 	return handler
 }
