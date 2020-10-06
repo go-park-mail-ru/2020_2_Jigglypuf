@@ -23,6 +23,14 @@ const StaticPath = "../static/"
 const MediaPath = "../../media/"
 const salt = "oisndoiqwe123"
 
+
+func setupCORS(w *http.ResponseWriter, req *http.Request) {
+	(*w).Header().Set("Access-Control-Allow-Origin", req.Header.Get("Origin"))
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET")
+	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+}
+
 type ServerStruct struct{
 	authHandler *authDelivery.UserHandler
 	cinemaHandler *cinemaDelivery.CinemaHandler
@@ -59,6 +67,11 @@ func configureAPI() *ServerStruct{
 func configureRouter(application *ServerStruct) *http.ServeMux{
 	handler := http.NewServeMux()
 	handler.HandleFunc("/signin/", func(w http.ResponseWriter, r *http.Request){
+		setupCORS(&w, r)
+		if (*r).Method == http.MethodOptions {
+			return
+		}
+
 		if /*cookie.CheckCookie(r) ||*/ r.Method != http.MethodPost{
 			w.WriteHeader(http.StatusBadRequest)
 			return
@@ -67,6 +80,11 @@ func configureRouter(application *ServerStruct) *http.ServeMux{
 	})
 
 	handler.HandleFunc("/signup/", func(w http.ResponseWriter, r *http.Request){
+		setupCORS(&w, r)
+		if (*r).Method == http.MethodOptions {
+			return
+		}
+
 		if /*cookie.CheckCookie(r) ||*/ r.Method != http.MethodPost {
 			w.WriteHeader(http.StatusBadRequest)
 			return
@@ -74,12 +92,28 @@ func configureRouter(application *ServerStruct) *http.ServeMux{
 		application.authHandler.RegisterHandler(w, r)
 	})
 
+	handler.HandleFunc("/getprofile/", func(w http.ResponseWriter, r *http.Request){
+		setupCORS(&w, r)
+		if (*r).Method == http.MethodOptions {
+			return
+		}
+
+		application.profileHandler.GetProfile(w,r)
+	})
+	handler.HandleFunc("/updateprofile/",func(w http.ResponseWriter, r *http.Request){
+		setupCORS(&w, r)
+		if (*r).Method == http.MethodOptions {
+			return
+		}
+
+		application.profileHandler.UpdateProfile(w,r)
+	})
+
 	handler.HandleFunc("/getcinemalist/", application.cinemaHandler.GetCinemaList)
 	handler.HandleFunc("/getcinema/", application.cinemaHandler.GetCinema)
 	handler.HandleFunc("/getmovie/", application.movieHandler.GetMovie)
 	handler.HandleFunc("/getmovielist/", application.movieHandler.GetMovieList)
-	handler.HandleFunc("/getprofile/", application.profileHandler.GetProfile)
-	handler.HandleFunc("/updateprofile/", application.profileHandler.UpdateProfile)
+
 
 	staticHandler := http.StripPrefix(
 		"/media/",
