@@ -18,3 +18,4 @@ type RegistrationInput struct{
 	Login string
 	Password string
 }
+

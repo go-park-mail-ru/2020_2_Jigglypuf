@@ -20,7 +20,7 @@ func NewCinemaHandler(useCase cinemaService.CinemaUseCase) *CinemaHandler{
 
 func (t *CinemaHandler) CreateCinema(w http.ResponseWriter, r *http.Request){
 	defer r.Body.Close()
-
+	r.ParseForm()
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method != http.MethodPost{
