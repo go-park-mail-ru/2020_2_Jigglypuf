@@ -6,7 +6,7 @@ type User struct{
 	ID uint64
 	Username string
 	Password string
-	Cookie http.Cookie
+	Cookie http.Cookie `json:"-"`
 }
 
 type AuthInput struct{
