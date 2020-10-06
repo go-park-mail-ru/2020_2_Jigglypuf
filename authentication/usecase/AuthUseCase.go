@@ -46,7 +46,7 @@ func createUserCookie() http.Cookie{
 	return http.Cookie{
 		Name: "session_id",
 		Value: RandStringRunes(32),
-		Expires: time.Now().Add(24*time.Hour),
+		Expires: time.Now().Add(96*time.Hour),
 		Path: "/",
 	}
 }
