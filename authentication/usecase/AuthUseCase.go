@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"authentication"
+	"fmt"
 	"math/rand"
 	"models"
 	"net/http"
@@ -72,7 +73,6 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput)(*http.Cookie,error
 func (t *UserUseCase) SignIn (input *models.AuthInput)(*http.Cookie,error){
 	username := input.Login
 	password := input.Password
-
 	if username == "" || password == ""{
 		return new(http.Cookie),IncorrectInputError{}
 	}
@@ -87,7 +87,7 @@ func (t *UserUseCase) SignIn (input *models.AuthInput)(*http.Cookie,error){
 	if time.Now().After(user.Cookie.Expires){
 		user.Cookie = createUserCookie()
 	}
-
+	fmt.Println("kek")
 
 	return &user.Cookie, err
 }

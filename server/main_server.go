@@ -32,6 +32,15 @@ func setupCORS(w *http.ResponseWriter, req *http.Request) {
 	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 }
 
+func CORSDecorator(w http.ResponseWriter, r *http.Request, function func(w http.ResponseWriter, r *http.Request)){
+	setupCORS(&w, r)
+	if (*r).Method == http.MethodOptions {
+		return
+	}
+
+	function(w,r)
+}
+
 type ServerStruct struct{
 	authHandler *authDelivery.UserHandler
 	cinemaHandler *cinemaDelivery.CinemaHandler
@@ -94,26 +103,24 @@ func configureRouter(application *ServerStruct) *http.ServeMux{
 	})
 
 	handler.HandleFunc("/getprofile/", func(w http.ResponseWriter, r *http.Request){
-		setupCORS(&w, r)
-		if (*r).Method == http.MethodOptions {
-			return
-		}
-
-		application.profileHandler.GetProfile(w,r)
+		CORSDecorator(w,r, application.profileHandler.GetProfile)
 	})
 	handler.HandleFunc("/updateprofile/",func(w http.ResponseWriter, r *http.Request){
-		setupCORS(&w, r)
-		if (*r).Method == http.MethodOptions {
-			return
-		}
-
-		application.profileHandler.UpdateProfile(w,r)
+		CORSDecorator(w,r, application.profileHandler.UpdateProfile)
 	})
 
-	handler.HandleFunc("/getcinemalist/", application.cinemaHandler.GetCinemaList)
-	handler.HandleFunc("/getcinema/", application.cinemaHandler.GetCinema)
-	handler.HandleFunc("/getmovie/", application.movieHandler.GetMovie)
-	handler.HandleFunc("/getmovielist/", application.movieHandler.GetMovieList)
+	handler.HandleFunc("/getcinemalist/", func(w http.ResponseWriter, r *http.Request){
+		CORSDecorator(w,r, application.cinemaHandler.GetCinemaList)
+	})
+	handler.HandleFunc("/getcinema/", func(w http.ResponseWriter, r *http.Request){
+		CORSDecorator(w,r, application.cinemaHandler.GetCinema)
+	})
+	handler.HandleFunc("/getmovie/", func(w http.ResponseWriter, r *http.Request){
+		CORSDecorator(w,r, application.movieHandler.GetMovie)
+	})
+	handler.HandleFunc("/getmovielist/", func(w http.ResponseWriter, r *http.Request){
+		CORSDecorator(w,r, application.movieHandler.GetMovieList)
+	})
 
 
 	staticHandler := http.StripPrefix(

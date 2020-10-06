@@ -63,6 +63,7 @@ func (t *ProfileHandler) GetProfile( w http.ResponseWriter, r *http.Request ) {
 
 	if cookieErr != nil{
 		models.UnauthorizedHttpResponse(&w)
+		return
 	}
 
 	requiredProfile, profileError := t.useCase.GetProfileViaCookie(cookieValue)

@@ -5,6 +5,12 @@ import (
 	"net/http"
 )
 
+type IncorrectGetParameters struct{}
+
+func(t IncorrectGetParameters) Error()string{
+	return "Incorrect get parameters!"
+}
+
 type ServerResponse struct{
 	StatusCode int
 	Response []byte

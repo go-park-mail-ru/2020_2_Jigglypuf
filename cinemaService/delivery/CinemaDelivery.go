@@ -62,7 +62,7 @@ func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r* http.Request){
 	name := r.URL.Query()["name"]
 
 	if len(name) == 0{
-		models.BadBodyHTTPResponse(&w, nil)
+		models.BadBodyHTTPResponse(&w, models.IncorrectGetParameters{})
 		return
 	}
 
@@ -97,7 +97,7 @@ func (t *CinemaHandler) GetCinemaList(w http.ResponseWriter, r* http.Request){
 	Limit := r.URL.Query()["limit"]
 	Page := r.URL.Query()["page"]
 	if len(Limit) == 0 || len(Page) == 0{
-		models.BadBodyHTTPResponse(&w, nil)
+		models.BadBodyHTTPResponse(&w, models.IncorrectGetParameters{})
 		return
 	}
 	limit,limitErr := strconv.Atoi(Limit[0])

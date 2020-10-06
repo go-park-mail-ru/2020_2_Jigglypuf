@@ -2,6 +2,7 @@ package delivery
 
 import(
 	"authentication"
+	"fmt"
 	"models"
 	"net/http"
 	"encoding/json"
@@ -29,9 +30,9 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request){
 	decoder := json.NewDecoder(r.Body)
 	authInput := new(models.AuthInput)
 	translationError := decoder.Decode(authInput)
-
 	if translationError != nil{
 		models.BadBodyHTTPResponse(&w, translationError)
+		fmt.Println("lolkek", translationError)
 		return
 	}
 
