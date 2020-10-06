@@ -58,7 +58,7 @@ func configureAPI() *ServerStruct{
 
 func configureRouter(application *ServerStruct) *http.ServeMux{
 	handler := http.NewServeMux()
-	handler.HandleFunc("/signIn/", func(w http.ResponseWriter, r *http.Request){
+	handler.HandleFunc("/signin/", func(w http.ResponseWriter, r *http.Request){
 		if /*cookie.CheckCookie(r) ||*/ r.Method != http.MethodPost{
 			w.WriteHeader(http.StatusBadRequest)
 			return
@@ -66,7 +66,7 @@ func configureRouter(application *ServerStruct) *http.ServeMux{
 		application.authHandler.AuthHandler(w,r)
 	})
 
-	handler.HandleFunc("/signUp/", func(w http.ResponseWriter, r *http.Request){
+	handler.HandleFunc("/signup/", func(w http.ResponseWriter, r *http.Request){
 		if /*cookie.CheckCookie(r) ||*/ r.Method != http.MethodPost {
 			w.WriteHeader(http.StatusBadRequest)
 			return
@@ -74,12 +74,12 @@ func configureRouter(application *ServerStruct) *http.ServeMux{
 		application.authHandler.RegisterHandler(w, r)
 	})
 
-	handler.HandleFunc("/getCinemaList/", application.cinemaHandler.GetCinemaList)
-	handler.HandleFunc("/getCinema/", application.cinemaHandler.GetCinema)
-	handler.HandleFunc("/getMovie/", application.movieHandler.GetMovie)
-	handler.HandleFunc("/getMovieList/", application.movieHandler.GetMovieList)
-	handler.HandleFunc("/GetProfile/", application.profileHandler.GetProfile)
-	handler.HandleFunc("/UpdateProfile/", application.profileHandler.UpdateProfile)
+	handler.HandleFunc("/getcinemalist/", application.cinemaHandler.GetCinemaList)
+	handler.HandleFunc("/getcinema/", application.cinemaHandler.GetCinema)
+	handler.HandleFunc("/getmovie/", application.movieHandler.GetMovie)
+	handler.HandleFunc("/getmovielist/", application.movieHandler.GetMovieList)
+	handler.HandleFunc("/getprofile/", application.profileHandler.GetProfile)
+	handler.HandleFunc("/updateprofile/", application.profileHandler.UpdateProfile)
 
 	staticHandler := http.StripPrefix(
 		"/media/",
