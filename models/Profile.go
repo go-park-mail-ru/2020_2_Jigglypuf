@@ -1,7 +1,7 @@
 package models
 
 type Profile struct {
-	Login *User
+	Login *User `json:"-"`
 	Name string
 	Surname string
 	AvatarPath string
