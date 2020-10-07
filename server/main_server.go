@@ -7,11 +7,13 @@ import (
 	cinemaDelivery "cinemaService/delivery"
 	cinemaRepository "cinemaService/repository"
 	cinemaUsecase "cinemaService/usecase"
+	"io/ioutil"
 	"log"
 	movieDelivery "movieService/delivery"
 	movieRepository "movieService/repository"
 	movieUsecase "movieService/usecase"
 	"net/http"
+	"os"
 	profileDelivery "profile/delivery"
 	profileRepository "profile/repository"
 	profileUseCase "profile/usecase"
@@ -19,7 +21,7 @@ import (
 	"time"
 )
 
-const StaticPath = "../static/"
+const StaticPath = "../../static/2020_2_Jigglypuff/public/"
 const MediaPath = "../../media/"
 const salt = "oisndoiqwe123"
 
@@ -71,6 +73,29 @@ func configureAPI() *ServerStruct{
 		cinemaHandler: cinHandler,
 		movieHandler: movHandler,
 		profileHandler: profHandler,
+	}
+}
+func mainHandler(w http.ResponseWriter, r *http.Request){
+	w.Header().Set("Content-Type", "text/html")
+
+	file, err := os.Open(StaticPath + "index.html")
+	if err != nil{
+		_, responseErr := w.Write([]byte(`404 NOT FOUND`))
+		log.Println("Cannot open index.html file")
+		if responseErr != nil{
+			log.Println(err)
+		}
+	}
+	defer file.Close()
+
+	streamBytes, inputErr := ioutil.ReadAll(file)
+	if inputErr != nil{
+		log.Println(inputErr)
+	}
+
+	_, outputErr := w.Write(streamBytes)
+	if outputErr != nil{
+		log.Println(outputErr)
 	}
 }
 
@@ -128,13 +153,17 @@ func configureRouter(application *ServerStruct) *http.ServeMux{
 		CORSDecorator(w,r, application.movieHandler.GetMovieRating)
 	})
 
+	handler.HandleFunc("/", mainHandler)
 
-	staticHandler := http.StripPrefix(
+
+	mediaHandler := http.StripPrefix(
 		"/media/",
 		http.FileServer(http.Dir(MediaPath)),
 	)
-	handler.Handle("/media/", staticHandler)
+	handler.Handle("/media/", mediaHandler)
 
+	staticHandler := http.StripPrefix("/static/", http.FileServer(http.Dir(StaticPath)))
+	handler.Handle("/static/", staticHandler)
 	return handler
 }
 
