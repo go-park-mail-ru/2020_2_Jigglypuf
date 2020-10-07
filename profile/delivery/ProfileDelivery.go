@@ -119,8 +119,7 @@ func (t *ProfileHandler) UpdateProfile( w http.ResponseWriter, r *http.Request )
 
 	avatarPath, savingErr := SaveAvatarImage(r.FormFile("avatar"))
 	if savingErr != nil{
-		models.BadBodyHTTPResponse(&w, savingErr)
-		return
+		avatarPath = ""
 	}
 
 	err := t.useCase.UpdateProfile(profileUpdate,r.FormValue("name"),r.FormValue("surname"), avatarPath)
