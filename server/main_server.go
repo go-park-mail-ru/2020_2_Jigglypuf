@@ -179,7 +179,7 @@ func configureServer(port string, funcHandler *http.ServeMux) *http.Server{
 func main(){
 	serverConfig := configureAPI()
 	responseHandler := configureRouter(serverConfig)
-	serverConfig.httpServer = configureServer("8080",responseHandler)
+	serverConfig.httpServer = configureServer("80",responseHandler)
 
 	err := serverConfig.httpServer.ListenAndServe()
 
