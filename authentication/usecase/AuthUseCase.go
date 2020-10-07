@@ -2,7 +2,8 @@ package usecase
 
 import (
 	"authentication"
-	"math/rand"
+	"math/big"
+	"crypto/rand"
 	"models"
 	"net/http"
 	"time"
@@ -33,7 +34,8 @@ var (
 func RandStringRunes(n int) string {
 	b := make([]rune, n)
 	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+		randInt, _ := rand.Int(rand.Reader, big.NewInt(int64(len(letterRunes))))
+		b[i] = letterRunes[randInt.Int64()]
 	}
 	return string(b)
 }
