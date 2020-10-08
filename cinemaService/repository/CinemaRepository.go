@@ -15,22 +15,22 @@ func NewCinemaRepository (mutex *sync.RWMutex) *CinemaRepository{
 		Cinema: []models.Cinema{
 			models.Cinema{
 				1,
-				"CinemaScope 1",
+				"CinemaScope1",
 				"Москва, Первая улица, д.1",
 			},
 			models.Cinema{
 				2,
-				"CinemaScope 2",
+				"CinemaScope2",
 				"Москва, Первая улица, д.2",
 			},
 			models.Cinema{
 				3,
-				"CinemaScope 3",
+				"CinemaScope3",
 				"Москва, Первая улица, д.3",
 			},
 			models.Cinema{
 				4,
-				"CinemaScope 4",
+				"CinemaScope4",
 				"Москва, Первая улица, д.4",
 			},
 		},

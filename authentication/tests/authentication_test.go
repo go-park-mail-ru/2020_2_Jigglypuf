@@ -24,7 +24,8 @@ func TestAuthenticationAPISuccessCases(t *testing.T){
 	authUseCase := usecase.NewUserUseCase(authrep, salt)
 	authHandler := delivery.NewUserHandler(authUseCase)
 
-	authenticationBody := "{ \"Login\": \"Aydar\", \"Password\": \"aydar\" }"
+	//authenticationBody := "{\"Login\": \"Aydar\", \"Password\": \"aydar\"}"
+	authenticationBody := "{\"Login\": \"Pro100\", \"Password\": \"1234\"}"
 
 	var testCases = []struct{
 		TestName string
