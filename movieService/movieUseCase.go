@@ -1,6 +1,6 @@
 package movieService
 
-import "models"
+import "backend/models"
 
 type MovieUseCase interface{
 	GetMovie(name string)(*models.Movie, error)

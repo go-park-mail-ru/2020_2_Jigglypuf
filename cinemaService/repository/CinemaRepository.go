@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"models"
+	"backend/models"
 	"sync"
 )
 

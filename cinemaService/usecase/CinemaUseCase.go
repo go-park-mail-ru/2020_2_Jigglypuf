@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"cinemaService"
-	"models"
+	"backend/cinemaService"
+	"backend/models"
 )
 
 type CinemaUseCase struct{

@@ -1,12 +1,12 @@
 package usecase
 
 import (
-	"authentication"
+	"backend/authentication"
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
 	"math/big"
-	"models"
+	"backend/models"
 	"net/http"
 	"time"
 )

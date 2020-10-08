@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"io"
 	"mime/multipart"
-	"models"
+	"backend/models"
 	"net/http"
 	"os"
-	"profile"
+	"backend/profile"
 )
 
 

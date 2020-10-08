@@ -1,7 +1,7 @@
 package authentication
 
 import (
-	"models"
+	"backend/models"
 	"net/http"
 )
 

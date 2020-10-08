@@ -1,10 +1,10 @@
 package delivery
 
 import (
-	"authentication"
+	"backend/authentication"
 	"encoding/json"
-	"models"
-	"movieService"
+	"backend/models"
+	"backend/movieService"
 	"net/http"
 	"strconv"
 )

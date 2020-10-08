@@ -1,7 +1,7 @@
 package profile
 
 import (
-	"models"
+	"backend/models"
 	"net/http"
 )
 

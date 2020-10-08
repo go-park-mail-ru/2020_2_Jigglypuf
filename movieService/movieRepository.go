@@ -1,7 +1,7 @@
 package movieService
 
 import(
-	"models"
+	"backend/models"
 )
 
 type MovieRepository interface{

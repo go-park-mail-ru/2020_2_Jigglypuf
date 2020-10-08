@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"authentication"
-	"models"
+	"backend/authentication"
+	"backend/models"
 	"net/http"
 	"sync"
 )
