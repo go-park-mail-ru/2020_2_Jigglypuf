@@ -18,34 +18,6 @@ func NewCinemaHandler(useCase cinemaService.CinemaUseCase) *CinemaHandler{
 	}
 }
 
-func (t *CinemaHandler) CreateCinema(w http.ResponseWriter, r *http.Request){
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json")
-
-	if r.Method != http.MethodPost{
-		models.BadMethodHttpResponse(&w)
-		return
-	}
-
-	decoder := json.NewDecoder(r.Body)
-	cinema := new(models.Cinema)
-	translationError := decoder.Decode(cinema)
-
-	if translationError != nil{
-		models.BadBodyHTTPResponse(&w, translationError)
-		return
-	}
-
-	createCinemaError := t.cinemaUseCase.CreateCinema(cinema)
-
-	if createCinemaError != nil{
-		models.BadBodyHTTPResponse(&w, createCinemaError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-}
-
 func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r* http.Request){
 	defer r.Body.Close()
 
