@@ -14,7 +14,7 @@ import (
 	"testing"
 )
 
-func TestAuthenticationAPISuccessCases(t *testing.T) {
+func TestCinemaServiceAPISuccessCases(t *testing.T) {
 	mutex := sync.RWMutex{}
 	cinemarep := repository.NewCinemaRepository(&mutex)
 	cinemaUC := usecase.NewCinemaUseCase(cinemarep)
@@ -62,7 +62,7 @@ func TestAuthenticationAPISuccessCases(t *testing.T) {
 	}
 }
 
-func TestAuthenticationAPIFAILCases(t *testing.T) {
+func TestCinemaServiceAPIFAILCases(t *testing.T) {
 	mutex := sync.RWMutex{}
 	cinemarep := repository.NewCinemaRepository(&mutex)
 	cinemaUC := usecase.NewCinemaUseCase(cinemarep)
