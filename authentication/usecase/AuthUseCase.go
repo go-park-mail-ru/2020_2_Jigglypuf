@@ -2,8 +2,10 @@ package usecase
 
 import (
 	"authentication"
-	"math/big"
 	"crypto/rand"
+	"crypto/sha256"
+	"encoding/hex"
+	"math/big"
 	"models"
 	"net/http"
 	"time"
@@ -41,7 +43,11 @@ func RandStringRunes(n int) string {
 }
 
 func createHashPassword(password, salt string) string{
-	return password + salt
+	reqString := password + salt
+	decoder := sha256.New()
+	decoder.Write([]byte(reqString))
+	resultString := hex.EncodeToString(decoder.Sum(nil))
+	return resultString
 }
 
 func createUserCookie() http.Cookie{

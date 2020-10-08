@@ -1,11 +1,10 @@
 package delivery
 
-import(
+import (
 	"authentication"
-	"fmt"
+	"encoding/json"
 	"models"
 	"net/http"
-	"encoding/json"
 )
 
 
@@ -25,6 +24,11 @@ func NewUserHandler(useCase authentication.UserUseCase) *UserHandler{
 func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request){
 	defer r.Body.Close()
 
+	if r.Method != http.MethodPost{
+		models.BadMethodHttpResponse(&w)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 
 	decoder := json.NewDecoder(r.Body)
@@ -32,12 +36,10 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request){
 	translationError := decoder.Decode(authInput)
 	if translationError != nil{
 		models.BadBodyHTTPResponse(&w, translationError)
-		fmt.Println("lolkek", translationError)
 		return
 	}
 
 	cookie,err := t.useCase.SignIn(authInput)
-
 	if err != nil{
 		models.BadBodyHTTPResponse(&w, err)
 		return
@@ -49,6 +51,10 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request){
 
 func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request){
 	defer r.Body.Close()
+	if r.Method != http.MethodPost{
+		models.BadMethodHttpResponse(&w)
+		return
+	}
 
 	w.Header().Set("Content-Type","application/json")
 

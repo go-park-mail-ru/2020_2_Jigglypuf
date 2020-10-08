@@ -2,7 +2,6 @@ package delivery
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"mime/multipart"
 	"models"
@@ -64,7 +63,6 @@ func (t *ProfileHandler) GetProfile( w http.ResponseWriter, r *http.Request ) {
 
 	if cookieErr != nil{
 		models.UnauthorizedHttpResponse(&w)
-		fmt.Println("kek")
 		return
 	}
 
