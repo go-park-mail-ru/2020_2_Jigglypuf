@@ -1,4 +1,4 @@
-package models
+package backend
 
 type Cinema struct{
 	Id uint64

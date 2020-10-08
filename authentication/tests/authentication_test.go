@@ -1,9 +1,9 @@
-package tests
+package backend
 
 import (
-	"backend/authentication/delivery"
-	"backend/authentication/repository"
-	"backend/authentication/usecase"
+	delivery "backend/authentication/delivery"
+	repository "backend/authentication/repository"
+	usecase "backend/authentication/usecase"
 	"net/http"
 	"net/http/httptest"
 	"strings"

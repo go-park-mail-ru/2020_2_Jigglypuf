@@ -1,9 +1,9 @@
-package delivery
+package backend
 
 import (
-	"backend/authentication"
+	authentication "backend/authentication"
 	"encoding/json"
-	"backend/models"
+	models "backend/models"
 	"net/http"
 )
 

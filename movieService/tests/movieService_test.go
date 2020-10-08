@@ -1,11 +1,11 @@
-package tests
+package backend
 
 import (
-	"backend/models"
-	"backend/movieService/delivery"
-	"backend/movieService/repository"
+	models "backend/models"
+	delivery "backend/movieService/delivery"
+	repository "backend/movieService/repository"
 	userRepository "backend/authentication/repository"
-	"backend/movieService/usecase"
+	usecase "backend/movieService/usecase"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"

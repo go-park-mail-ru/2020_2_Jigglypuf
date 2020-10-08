@@ -1,4 +1,4 @@
-package tests
+package backend
 
 import (
 	authDelivery "backend/authentication/delivery"

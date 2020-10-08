@@ -1,4 +1,4 @@
-package models
+package backend
 
 type Movie struct{
 	Id uint64

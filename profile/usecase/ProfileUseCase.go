@@ -1,9 +1,9 @@
-package usecase
+package backend
 
 import (
-	"backend/models"
+	models "backend/models"
 	"net/http"
-	"backend/profile"
+	profile "backend/profile"
 )
 
 

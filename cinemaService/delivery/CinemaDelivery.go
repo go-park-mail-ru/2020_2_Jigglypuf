@@ -1,9 +1,9 @@
-package delivery
+package backend
 
 import (
-	"backend/cinemaService"
+	cinemaService "backend/cinemaService"
 	"encoding/json"
-	"backend/models"
+	models "backend/models"
 	"net/http"
 	"strconv"
 )

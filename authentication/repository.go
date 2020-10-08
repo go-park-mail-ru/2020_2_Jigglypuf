@@ -1,7 +1,7 @@
-package authentication
+package backend
 
 import (
-	"backend/models"
+	models "backend/models"
 	"net/http"
 )
 

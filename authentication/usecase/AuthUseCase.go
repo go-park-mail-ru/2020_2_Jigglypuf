@@ -1,12 +1,12 @@
-package usecase
+package backend
 
 import (
-	"backend/authentication"
+	authentication "backend/authentication"
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
 	"math/big"
-	"backend/models"
+	models "backend/models"
 	"net/http"
 	"time"
 )

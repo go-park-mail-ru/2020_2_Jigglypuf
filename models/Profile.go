@@ -1,4 +1,4 @@
-package models
+package backend
 
 type Profile struct {
 	Login *User `json:"-"`
