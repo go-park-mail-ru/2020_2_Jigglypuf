@@ -2,17 +2,17 @@ module backend
 
 go 1.15
 
-replace authentication => ./authentication
+replace authentication => ./internal/pkg/authentication
 
-replace cinemaService => ./cinemaService
+replace cinemaService => ./internal/pkg/cinemaService
 
-replace cookie => ./cookie
+replace cookie => ./internal/pkg/cookie
 
 replace models => ./models
 
-replace movieService => ./movieService
+replace movieService => ./internal/pkg/movieService
 
-replace profile => ./profile
+replace profile => ./internal/pkg/profile
 
 replace server => ./server
 

@@ -1,19 +1,19 @@
 package usecase
 
 import (
-	"backend/authentication"
+	"backend/internal/pkg/authentication"
+	"backend/internal/pkg/models"
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
 	"math/big"
-	"backend/models"
 	"net/http"
 	"time"
 )
 
 type UserUseCase struct{
 	memConn authentication.AuthRepository
-	salt string
+	salt    string
 }
 
 type IncorrectInputError struct{}
@@ -22,7 +22,7 @@ func (t IncorrectInputError) Error() string{
 	return "Incorrect Login or Password!"
 }
 
-func NewUserUseCase(dbConn authentication.AuthRepository, Salt string) *UserUseCase{
+func NewUserUseCase(dbConn authentication.AuthRepository, Salt string) *UserUseCase {
 	return &UserUseCase{
 		memConn: dbConn,
 		salt: Salt,
@@ -52,10 +52,10 @@ func createHashPassword(password, salt string) string{
 
 func createUserCookie() http.Cookie{
 	return http.Cookie{
-		Name: "session_id",
-		Value: RandStringRunes(32),
+		Name:    "session_id",
+		Value:   RandStringRunes(32),
 		Expires: time.Now().Add(96*time.Hour),
-		Path: "/",
+		Path:    "/",
 	}
 }
 
@@ -63,7 +63,7 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput)(*http.Cookie,error
 	username := input.Login
 	password := input.Password
 	if username == "" || password == ""{
-		return new(http.Cookie),IncorrectInputError{}
+		return new(http.Cookie), IncorrectInputError{}
 	}
 	hashPassword := createHashPassword(password, t.salt)
 	cookieValue := createUserCookie()
@@ -81,7 +81,7 @@ func (t *UserUseCase) SignIn (input *models.AuthInput)(*http.Cookie,error){
 	username := input.Login
 	password := input.Password
 	if username == "" || password == ""{
-		return new(http.Cookie),IncorrectInputError{}
+		return new(http.Cookie), IncorrectInputError{}
 	}
 
 	hashPassword := createHashPassword(password, t.salt)

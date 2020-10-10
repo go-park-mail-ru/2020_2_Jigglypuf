@@ -1,13 +1,13 @@
 package delivery
 
 import (
+	"backend/internal/pkg/profile"
+	"backend/internal/pkg/models"
 	"encoding/json"
 	"io"
 	"mime/multipart"
-	"backend/models"
 	"net/http"
 	"os"
-	"backend/profile"
 )
 
 

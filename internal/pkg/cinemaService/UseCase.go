@@ -1,6 +1,6 @@
 package cinemaService
 
-import "backend/models"
+import "backend/internal/pkg/models"
 
 type CinemaUseCase interface{
 	CreateCinema(*models.Cinema) error

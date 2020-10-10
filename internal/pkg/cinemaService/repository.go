@@ -1,7 +1,7 @@
 package cinemaService
 
 import (
-	"backend/models"
+	"backend/internal/pkg/models"
 )
 
 type CinemaRepository interface{

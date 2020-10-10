@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"backend/models"
+	"backend/internal/pkg/models"
 	"sync"
 )
 
@@ -32,7 +32,7 @@ func (t MovieAlreadyRated) Error() string{
 	return "Movie Already rated!"
 }
 
-func NewMovieRepository(mutex *sync.RWMutex) *MovieRepository{
+func NewMovieRepository(mutex *sync.RWMutex) *MovieRepository {
 	return &MovieRepository{
 		Movies: []models.Movie{
 			models.Movie{
@@ -170,7 +170,7 @@ func (t *MovieRepository) GetMovieList(limit, page int)(*[]models.Movie, error){
 	t.mutex.RUnlock()
 
 	if !success{
-		return &resultArray,PageNotFound{}
+		return &resultArray, PageNotFound{}
 	}
 	return &resultArray, nil
 }
@@ -225,7 +225,7 @@ func (t *MovieRepository) GetRating(user *models.User, name string)(int64, error
 	}
 	t.mutex.RUnlock()
 	if !success{
-		return result,MovieNotFound{}
+		return result, MovieNotFound{}
 	}
 	return result,nil
 }

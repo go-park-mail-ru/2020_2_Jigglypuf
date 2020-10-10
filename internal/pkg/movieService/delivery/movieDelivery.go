@@ -1,20 +1,20 @@
 package delivery
 
 import (
-	"backend/authentication"
+	"backend/internal/pkg/authentication"
+	"backend/internal/pkg/movieService"
+	"backend/internal/pkg/models"
 	"encoding/json"
-	"backend/models"
-	"backend/movieService"
 	"net/http"
 	"strconv"
 )
 
 type MovieHandler struct{
-	movieUseCase movieService.MovieUseCase
+	movieUseCase   movieService.MovieUseCase
 	userRepository authentication.AuthRepository
 }
 
-func NewMovieHandler(usecase movieService.MovieUseCase, userRepository authentication.AuthRepository) *MovieHandler{
+func NewMovieHandler(usecase movieService.MovieUseCase, userRepository authentication.AuthRepository) *MovieHandler {
 	return &MovieHandler{
 		movieUseCase: usecase,
 		userRepository: userRepository,

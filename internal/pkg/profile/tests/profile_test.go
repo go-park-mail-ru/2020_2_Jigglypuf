@@ -1,16 +1,16 @@
 package tests
 
 import (
-	authDelivery "backend/authentication/delivery"
-	authRepository "backend/authentication/repository"
-	authUseCase "backend/authentication/usecase"
+	authDelivery "backend/internal/pkg/authentication/delivery"
+	authRepository "backend/internal/pkg/authentication/repository"
+	authUseCase "backend/internal/pkg/authentication/usecase"
+	profileDelivery "backend/internal/pkg/profile/delivery"
+	profileRepository "backend/internal/pkg/profile/repository"
+	profileUseCase "backend/internal/pkg/profile/usecase"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	profileDelivery "backend/profile/delivery"
-	profileRepository "backend/profile/repository"
-	profileUseCase "backend/profile/usecase"
 	"strconv"
 	"strings"
 	"sync"

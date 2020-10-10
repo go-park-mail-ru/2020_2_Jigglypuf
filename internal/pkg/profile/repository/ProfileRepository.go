@@ -1,21 +1,21 @@
 package repository
 
 import (
-	"backend/authentication"
-	"backend/models"
+	"backend/internal/pkg/authentication"
+	"backend/internal/pkg/models"
 	"net/http"
 	"sync"
 )
 
 
 type ProfileRepository struct {
-	Profiles []models.Profile
-	Mu *sync.RWMutex
+	Profiles       []models.Profile
+	Mu             *sync.RWMutex
 	UserRepository authentication.AuthRepository
 }
 
 
-func NewProfileRepository( mutex *sync.RWMutex, repository authentication.AuthRepository ) *ProfileRepository {
+func NewProfileRepository( mutex *sync.RWMutex, repository authentication.AuthRepository) *ProfileRepository {
 	return &ProfileRepository{
 		Profiles: []models.Profile{},
 		Mu: mutex,

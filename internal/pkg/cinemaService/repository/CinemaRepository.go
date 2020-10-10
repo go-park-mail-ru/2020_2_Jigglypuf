@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"backend/models"
+	"backend/internal/pkg/models"
 	"sync"
 )
 
@@ -10,7 +10,7 @@ type CinemaRepository struct{
 	mu *sync.RWMutex
 }
 
-func NewCinemaRepository (mutex *sync.RWMutex) *CinemaRepository{
+func NewCinemaRepository (mutex *sync.RWMutex) *CinemaRepository {
 	return &CinemaRepository{
 		Cinema: []models.Cinema{
 			models.Cinema{
@@ -125,7 +125,7 @@ func (t *CinemaRepository) GetCinemaList(limit int, page int)( *[]models.Cinema,
 	t.mu.RUnlock()
 
 	if !success{
-		return &resultArray,PageNotFound{}
+		return &resultArray, PageNotFound{}
 	}
 	return &resultArray, nil
 }

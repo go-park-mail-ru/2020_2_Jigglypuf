@@ -1,9 +1,9 @@
 package delivery
 
 import (
-	"backend/authentication"
+	"backend/internal/pkg/authentication"
+	"backend/internal/pkg/models"
 	"encoding/json"
-	"backend/models"
 	"net/http"
 )
 
@@ -13,7 +13,7 @@ type UserHandler struct {
 }
 
 
-func NewUserHandler(useCase authentication.UserUseCase) *UserHandler{
+func NewUserHandler(useCase authentication.UserUseCase) *UserHandler {
 	return &UserHandler{
 		useCase: useCase,
 	}

@@ -1,15 +1,15 @@
 package usecase
 
 import (
-	"backend/models"
-	"backend/movieService"
+	"backend/internal/pkg/movieService"
+	"backend/internal/pkg/models"
 )
 
 type MovieUseCase struct{
 	DBConn movieService.MovieRepository
 }
 
-func NewMovieUseCase(rep movieService.MovieRepository) *MovieUseCase{
+func NewMovieUseCase(rep movieService.MovieRepository) *MovieUseCase {
 	return &MovieUseCase{
 		DBConn: rep,
 	}

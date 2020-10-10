@@ -1,12 +1,12 @@
 package tests
 
 import (
-	"backend/cinemaService/delivery"
-	"backend/cinemaService/repository"
-	"backend/cinemaService/usecase"
+	"backend/internal/pkg/cinemaService/delivery"
+	"backend/internal/pkg/cinemaService/repository"
+	"backend/internal/pkg/cinemaService/usecase"
+	"backend/internal/pkg/models"
 	"encoding/json"
 	"io/ioutil"
-	"backend/models"
 	"net/http"
 	"net/http/httptest"
 	"strings"

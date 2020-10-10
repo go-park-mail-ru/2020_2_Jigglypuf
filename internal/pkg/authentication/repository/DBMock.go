@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"backend/models"
+	"backend/internal/pkg/models"
 	"net/http"
 	"sync"
 	"time"
@@ -12,7 +12,7 @@ type AuthRepository struct{
 	Mu *sync.RWMutex
 }
 
-func NewUserRepository(mutex *sync.RWMutex) *AuthRepository{
+func NewUserRepository(mutex *sync.RWMutex) *AuthRepository {
 	return &AuthRepository{
 		Users: []models.User{},
 		Mu: mutex,

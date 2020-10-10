@@ -1,11 +1,11 @@
 package tests
 
 import (
-	"backend/models"
-	"backend/movieService/delivery"
-	"backend/movieService/repository"
-	userRepository "backend/authentication/repository"
-	"backend/movieService/usecase"
+	userRepository "backend/internal/pkg/authentication/repository"
+	"backend/internal/pkg/movieService/delivery"
+	"backend/internal/pkg/movieService/repository"
+	"backend/internal/pkg/movieService/usecase"
+	"backend/internal/pkg/models"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"

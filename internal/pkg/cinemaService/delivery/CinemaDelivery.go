@@ -1,9 +1,9 @@
 package delivery
 
 import (
-	"backend/cinemaService"
+	"backend/internal/pkg/cinemaService"
+	"backend/internal/pkg/models"
 	"encoding/json"
-	"backend/models"
 	"net/http"
 	"strconv"
 )
@@ -12,7 +12,7 @@ type CinemaHandler struct{
 	cinemaUseCase cinemaService.CinemaUseCase
 }
 
-func NewCinemaHandler(useCase cinemaService.CinemaUseCase) *CinemaHandler{
+func NewCinemaHandler(useCase cinemaService.CinemaUseCase) *CinemaHandler {
 	return &CinemaHandler{
 		cinemaUseCase: useCase,
 	}
