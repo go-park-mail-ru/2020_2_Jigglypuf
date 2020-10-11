@@ -19,8 +19,6 @@ import (
 	"time"
 )
 
-const StaticPath = "../../static/2020_2_Jigglypuff/public/"
-const MediaPath = "../../media/"
 const salt = "oisndoiqwe123"
 
 
