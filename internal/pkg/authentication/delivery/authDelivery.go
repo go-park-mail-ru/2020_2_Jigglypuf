@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"backend/internal/pkg/authentication"
+	cookieService "backend/internal/pkg/cookie"
 	"backend/internal/pkg/models"
 	"encoding/json"
 	"net/http"
@@ -79,7 +80,7 @@ func (t *UserHandler) SignOutHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	cookie, cookieError := r.Cookie("session_id")
+	cookie, cookieError := r.Cookie(cookieService.SessionCookieName)
 	if cookieError != nil{
 		models.UnauthorizedHttpResponse(&w)
 		return

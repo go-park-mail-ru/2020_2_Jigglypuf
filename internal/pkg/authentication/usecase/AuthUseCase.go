@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"backend/internal/pkg/authentication"
+	"backend/internal/pkg/cookie"
 	"backend/internal/pkg/models"
 	"crypto/rand"
 	"crypto/sha256"
@@ -51,7 +52,7 @@ func createHashPassword(password, salt string) string{
 
 func createUserCookie() http.Cookie{
 	return http.Cookie{
-		Name:    "session_id",
+		Name:    cookie.SessionCookieName,
 		Value:   randStringRunes(32),
 		Expires: time.Now().Add(96*time.Hour),
 		Path:    "/",

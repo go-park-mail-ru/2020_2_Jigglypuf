@@ -3,11 +3,13 @@ package delivery
 import (
 	"backend/internal/pkg/profile"
 	"backend/internal/pkg/models"
+	"backend/internal/pkg/cookie"
 	"encoding/json"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
+	"time"
 )
 
 
@@ -28,13 +30,14 @@ func NewProfileHandler (useCase profile.ProfileUseCase) *ProfileHandler {
 }
 
 func SaveAvatarImage( file multipart.File, handler *multipart.FileHeader, fileErr error )( string, error ){
-	returnPath := "/media/"
+	returnPath := profile.MediaPath
 	if fileErr != nil{
 		return "", SavingError{}
 	}
 
 	defer file.Close()
-	f, saveErr := os.OpenFile("../../media/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+	fileName := handler.Filename + time.Now().String()
+	f, saveErr := os.OpenFile(profile.SavingPath+fileName, os.O_WRONLY|os.O_CREATE, 0666)
 	if saveErr != nil {
 		return "", SavingError{}
 	}
@@ -45,7 +48,7 @@ func SaveAvatarImage( file multipart.File, handler *multipart.FileHeader, fileEr
 	if copyingError != nil{
 		return "", SavingError{}
 	}
-	returnPath += handler.Filename
+	returnPath += fileName
 	return returnPath, nil
 }
 
@@ -59,7 +62,7 @@ func (t *ProfileHandler) GetProfile( w http.ResponseWriter, r *http.Request ) {
 
 	w.Header().Set("Content-Type","application/json")
 
-	cookieValue, cookieErr := r.Cookie("session_id")
+	cookieValue, cookieErr := r.Cookie(cookie.SessionCookieName)
 
 	if cookieErr != nil{
 		models.UnauthorizedHttpResponse(&w)
@@ -101,7 +104,7 @@ func (t *ProfileHandler) UpdateProfile( w http.ResponseWriter, r *http.Request )
 		return
 	}
 
-	cookieValue, cookieErr := r.Cookie("session_id")
+	cookieValue, cookieErr := r.Cookie(cookie.SessionCookieName)
 
 	if cookieErr != nil{
 		models.UnauthorizedHttpResponse(&w)
@@ -115,12 +118,12 @@ func (t *ProfileHandler) UpdateProfile( w http.ResponseWriter, r *http.Request )
 		return
 	}
 
-	avatarPath, savingErr := SaveAvatarImage(r.FormFile("avatar"))
+	avatarPath, savingErr := SaveAvatarImage(r.FormFile(profile.AvatarFormName))
 	if savingErr != nil{
 		avatarPath = ""
 	}
 
-	err := t.useCase.UpdateProfile(profileUpdate,r.FormValue("name"),r.FormValue("surname"), avatarPath)
+	err := t.useCase.UpdateProfile(profileUpdate,r.FormValue(profile.ProfileNameFormName),r.FormValue(profile.ProfileSurnameFormName), avatarPath)
 
 	if err != nil{
 		models.BadBodyHTTPResponse(&w, err)
