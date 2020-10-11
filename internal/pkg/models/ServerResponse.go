@@ -13,13 +13,13 @@ func(t IncorrectGetParameters) Error()string{
 
 type ServerResponse struct{
 	StatusCode int
-	Response []byte
+	Response string
 }
 
 func BadBodyHTTPResponse(w *http.ResponseWriter, err error){
 	response, err := json.Marshal(ServerResponse{
 		StatusCode: 401,
-		Response:  []byte(err.Error()),
+		Response:  err.Error(),
 	})
 
 	(*w).WriteHeader(http.StatusBadRequest)
@@ -29,7 +29,7 @@ func BadBodyHTTPResponse(w *http.ResponseWriter, err error){
 func BadMethodHttpResponse(w *http.ResponseWriter){
 	response, _ := json.Marshal(ServerResponse{
 		StatusCode: http.StatusMethodNotAllowed,
-		Response:  []byte("MethodNotAllowed"),
+		Response:  "MethodNotAllowed!",
 	})
 
 	(*w).WriteHeader(http.StatusMethodNotAllowed)
@@ -39,7 +39,7 @@ func BadMethodHttpResponse(w *http.ResponseWriter){
 func UnauthorizedHttpResponse(w *http.ResponseWriter){
 	response, _ := json.Marshal(ServerResponse{
 		StatusCode: http.StatusUnauthorized,
-		Response:  []byte("MethodNotAllowed"),
+		Response: "You not authorized!",
 	})
 	(*w).WriteHeader(http.StatusUnauthorized)
 	(*w).Write(response)
