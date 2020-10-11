@@ -10,16 +10,19 @@ import (
 	"net/http"
 	"time"
 )
-
-type UserUseCase struct{
-	memConn authentication.AuthRepository
-	salt    string
-}
+var (
+	letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+)
 
 type IncorrectInputError struct{}
 
 func (t IncorrectInputError) Error() string{
 	return "Incorrect Login or Password!"
+}
+
+type UserUseCase struct{
+	memConn authentication.AuthRepository
+	salt    string
 }
 
 func NewUserUseCase(dbConn authentication.AuthRepository, Salt string) *UserUseCase {
@@ -29,11 +32,7 @@ func NewUserUseCase(dbConn authentication.AuthRepository, Salt string) *UserUseC
 	}
 }
 
-var (
-	letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-)
-
-func RandStringRunes(n int) string {
+func randStringRunes(n int) string {
 	b := make([]rune, n)
 	for i := range b {
 		randInt, _ := rand.Int(rand.Reader, big.NewInt(int64(len(letterRunes))))
@@ -53,7 +52,7 @@ func createHashPassword(password, salt string) string{
 func createUserCookie() http.Cookie{
 	return http.Cookie{
 		Name:    "session_id",
-		Value:   RandStringRunes(32),
+		Value:   randStringRunes(32),
 		Expires: time.Now().Add(96*time.Hour),
 		Path:    "/",
 	}
@@ -62,16 +61,20 @@ func createUserCookie() http.Cookie{
 func (t *UserUseCase) SignUp(input *models.RegistrationInput)(*http.Cookie,error){
 	username := input.Login
 	password := input.Password
+
 	if username == "" || password == ""{
 		return new(http.Cookie), IncorrectInputError{}
 	}
+
 	hashPassword := createHashPassword(password, t.salt)
 	cookieValue := createUserCookie()
+
 	user := models.User{
 		Username: username,
 		Password: hashPassword,
 		Cookie: cookieValue,
 	}
+
 	err := t.memConn.CreateUser(&user)
 
 	return &cookieValue,err
@@ -100,6 +103,7 @@ func (t *UserUseCase) SignIn (input *models.AuthInput)(*http.Cookie,error){
 	return &user.Cookie, err
 }
 
-func (t *UserUseCase) SignOut() error{
-	return nil
+func (t *UserUseCase) SignOut(cookie *http.Cookie) (*http.Cookie,error){
+	cookie.Expires = time.Now().Add(-time.Hour)
+	return cookie, nil
 }
