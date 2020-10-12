@@ -125,9 +125,8 @@ func configureRouter(application *ServerStruct) *http.ServeMux {
 		CORSDecorator(w, r, application.movieHandler.GetMovieRating)
 	})
 
-
-	handler.HandleFunc("/media/", func(w http.ResponseWriter, r *http.Request){
-		http.Redirect(w, r, r.RequestURI, 301)
+	handler.HandleFunc("/media/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, r.RequestURI, http.StatusMovedPermanently)
 	})
 
 	return handler

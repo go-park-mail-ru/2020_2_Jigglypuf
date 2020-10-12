@@ -53,12 +53,12 @@ func createHashPassword(password, salt string) string {
 
 func createUserCookie() http.Cookie {
 	return http.Cookie{
-		Name:    cookie.SessionCookieName,
-		Value:   randStringRunes(32),
-		Expires: time.Now().Add(96 * time.Hour),
-		Path:    "/",
+		Name:     cookie.SessionCookieName,
+		Value:    randStringRunes(32),
+		Expires:  time.Now().Add(96 * time.Hour),
+		Path:     "/",
 		SameSite: http.SameSiteNoneMode,
-		Secure: true,
+		Secure:   true,
 	}
 }
 

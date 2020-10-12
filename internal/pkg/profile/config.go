@@ -1,6 +1,5 @@
 package profile
 
-
 var (
 	MediaPath       = "/media/"
 	SavingPath      = "../../media"
