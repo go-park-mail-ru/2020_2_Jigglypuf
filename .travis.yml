@@ -10,3 +10,4 @@ before_script:
 
 script:
   - go test ./...
+  # - golangci-lint run -c .golangci.yml
