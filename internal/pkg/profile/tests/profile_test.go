@@ -26,12 +26,12 @@ const (
 
 
 var bodiesResponse = map[string]string {
-	"authorized": "{\"Name\":\"\",\"Surname\":\"\",\"AvatarPath\":\"\"}",
-	"unauthorized": "{\"StatusCode\":401,\"Response\":\"You not authorized!\"}",
+	"authorized": `{"Name":"","Surname":"","AvatarPath":""}`,
+	"unauthorized": `{"StatusCode":401,"Response":"You not authorized!"}`,
 }
 
 var bodiesRequest = map[string]string {
-	"authorized": "\"{\\\"Login\\\": \\\"Pro11\\\", \\\"Password\\\": \\\"1234\\\"}\"",
+	"authorized": `{"Login": "Pro100", "Password": "1234"}`,
 	"unauthorized": "",
 }
 
@@ -82,11 +82,11 @@ func TestGetProfileCases(t *testing.T) {
 				}
 
 				require.Equal(t, request.expectedResponseBody, string(body), "Response must be OK")
+				requestProfile.Header.Del("Cookie")
 				err = resp.Body.Close()
 				if err != nil {
 					t.Fatal(err)
 				}
-				requestProfile.Header.Del("Cookie")
 			}
 		})
 	}
