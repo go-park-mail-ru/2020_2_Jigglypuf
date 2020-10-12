@@ -1,0 +1,12 @@
+language: go
+
+go: "1.15"
+
+notifications:
+  email: false
+
+before_script:
+  - go mod tidy
+
+script:
+  - go test ./...
