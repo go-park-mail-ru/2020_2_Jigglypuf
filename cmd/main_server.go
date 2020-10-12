@@ -13,16 +13,12 @@ import (
 	profileDelivery "backend/internal/pkg/profile/delivery"
 	profileRepository "backend/internal/pkg/profile/repository"
 	profileUseCase "backend/internal/pkg/profile/usecase"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"sync"
 	"time"
 )
 
-const StaticPath = "../../static/2020_2_Jigglypuff/public/"
-const MediaPath = "../../media/"
 const salt = "oisndoiqwe123"
 
 func setupCORS(w *http.ResponseWriter, req *http.Request) {
@@ -72,29 +68,6 @@ func configureAPI() *ServerStruct {
 		cinemaHandler:  cinHandler,
 		movieHandler:   movHandler,
 		profileHandler: profHandler,
-	}
-}
-func mainHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-
-	file, err := os.Open(StaticPath + "index.html")
-	if err != nil {
-		_, responseErr := w.Write([]byte(`404 NOT FOUND`))
-		log.Println("Cannot open index.html file")
-		if responseErr != nil {
-			log.Println(err)
-		}
-	}
-	defer file.Close()
-
-	streamBytes, inputErr := ioutil.ReadAll(file)
-	if inputErr != nil {
-		log.Println(inputErr)
-	}
-
-	_, outputErr := w.Write(streamBytes)
-	if outputErr != nil {
-		log.Println(outputErr)
 	}
 }
 
@@ -152,16 +125,11 @@ func configureRouter(application *ServerStruct) *http.ServeMux {
 		CORSDecorator(w, r, application.movieHandler.GetMovieRating)
 	})
 
-	handler.HandleFunc("/", mainHandler)
 
-	mediaHandler := http.StripPrefix(
-		"/media/",
-		http.FileServer(http.Dir(MediaPath)),
-	)
-	handler.Handle("/media/", mediaHandler)
+	handler.HandleFunc("/media/", func(w http.ResponseWriter, r *http.Request){
+		http.Redirect(w, r, r.RequestURI, 301)
+	})
 
-	staticHandler := http.StripPrefix("/static/", http.FileServer(http.Dir(StaticPath)))
-	handler.Handle("/static/", staticHandler)
 	return handler
 }
 

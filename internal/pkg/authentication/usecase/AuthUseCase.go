@@ -57,6 +57,8 @@ func createUserCookie() http.Cookie {
 		Value:   randStringRunes(32),
 		Expires: time.Now().Add(96 * time.Hour),
 		Path:    "/",
+		SameSite: http.SameSiteNoneMode,
+		Secure: true,
 	}
 }
 
