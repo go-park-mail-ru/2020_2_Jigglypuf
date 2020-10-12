@@ -11,25 +11,26 @@ import (
 	"net/http"
 	"time"
 )
+
 var (
 	letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 )
 
 type IncorrectInputError struct{}
 
-func (t IncorrectInputError) Error() string{
+func (t IncorrectInputError) Error() string {
 	return "Incorrect Login or Password!"
 }
 
-type UserUseCase struct{
+type UserUseCase struct {
 	memConn authentication.AuthRepository
 	salt    string
 }
 
-func NewUserUseCase(dbConn authentication.AuthRepository, Salt string) *UserUseCase {
+func NewUserUseCase(dbConn authentication.AuthRepository, salt string) *UserUseCase {
 	return &UserUseCase{
 		memConn: dbConn,
-		salt: Salt,
+		salt:    salt,
 	}
 }
 
@@ -42,7 +43,7 @@ func randStringRunes(n int) string {
 	return string(b)
 }
 
-func createHashPassword(password, salt string) string{
+func createHashPassword(password, salt string) string {
 	reqString := password + salt
 	decoder := sha256.New()
 	decoder.Write([]byte(reqString))
@@ -50,22 +51,22 @@ func createHashPassword(password, salt string) string{
 	return resultString
 }
 
-func createUserCookie() http.Cookie{
+func createUserCookie() http.Cookie {
 	return http.Cookie{
-		Name:    cookie.SessionCookieName,
-		Value:   randStringRunes(32),
-		Expires: time.Now().Add(96*time.Hour),
-		Path:    "/",
+		Name:     cookie.SessionCookieName,
+		Value:    randStringRunes(32),
+		Expires:  time.Now().Add(96 * time.Hour),
+		Path:     "/",
 		SameSite: http.SameSiteNoneMode,
-		Secure: true,
+		Secure:   true,
 	}
 }
 
-func (t *UserUseCase) SignUp(input *models.RegistrationInput)(*http.Cookie,error){
+func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, error) {
 	username := input.Login
 	password := input.Password
 
-	if username == "" || password == ""{
+	if username == "" || password == "" {
 		return new(http.Cookie), IncorrectInputError{}
 	}
 
@@ -75,38 +76,38 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput)(*http.Cookie,error
 	user := models.User{
 		Username: username,
 		Password: hashPassword,
-		Cookie: cookieValue,
+		Cookie:   cookieValue,
 	}
 
 	err := t.memConn.CreateUser(&user)
 
-	return &cookieValue,err
+	return &cookieValue, err
 }
 
-func (t *UserUseCase) SignIn (input *models.AuthInput)(*http.Cookie,error){
+func (t *UserUseCase) SignIn(input *models.AuthInput) (*http.Cookie, error) {
 	username := input.Login
 	password := input.Password
-	if username == "" || password == ""{
+	if username == "" || password == "" {
 		return new(http.Cookie), IncorrectInputError{}
 	}
 
 	hashPassword := createHashPassword(password, t.salt)
 
-	user, err := t.memConn.GetUser(username,hashPassword)
-	if err != nil{
+	user, err := t.memConn.GetUser(username, hashPassword)
+	if err != nil {
 		return &http.Cookie{}, err
 	}
 
-	if time.Now().After(user.Cookie.Expires){
+	if time.Now().After(user.Cookie.Expires) {
 		cookieValue := createUserCookie()
 		user.Cookie = cookieValue
-		t.memConn.SetCookie(user,&cookieValue)
+		t.memConn.SetCookie(user, &cookieValue)
 	}
 
 	return &user.Cookie, err
 }
 
-func (t *UserUseCase) SignOut(cookie *http.Cookie) (*http.Cookie,error){
+func (t *UserUseCase) SignOut(cookie *http.Cookie) (*http.Cookie, error) {
 	cookie.Expires = time.Now().Add(-time.Hour)
 	return cookie, nil
 }

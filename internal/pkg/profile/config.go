@@ -1,9 +1,9 @@
 package profile
 
-var(
-	MediaPath = "/media/"
-	SavingPath = "../../media/"
-	AvatarFormName = "avatar"
-	ProfileNameFormName = "name"
-	ProfileSurnameFormName = "surname"
+var (
+	MediaPath       = "/media/"
+	SavingPath      = "../../media"
+	AvatarFormName  = "avatar"
+	NameFormName    = "name"
+	SurnameFormName = "surname"
 )

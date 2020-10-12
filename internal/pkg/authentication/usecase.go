@@ -5,8 +5,8 @@ import (
 	"net/http"
 )
 
-type UserUseCase interface{
-	SignUp(input *models.RegistrationInput)(*http.Cookie, error)
+type UserUseCase interface {
+	SignUp(input *models.RegistrationInput) (*http.Cookie, error)
 	SignIn(input *models.AuthInput) (*http.Cookie, error)
-	SignOut(cookie *http.Cookie)(*http.Cookie,error)
+	SignOut(cookie *http.Cookie) (*http.Cookie, error)
 }
