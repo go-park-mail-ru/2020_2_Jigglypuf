@@ -1,33 +1,33 @@
 package models
 
-type Movie struct{
-	Id uint64
-	Name string
-	Description string
-	Rating float64
+type Movie struct {
+	ID           uint64
+	Name         string
+	Description  string
+	Rating       float64
 	PathToAvatar string
 }
 
-type RatingSet struct{
+type RatingSet struct {
 	MovieRating *Movie
-	Rating int64
+	Rating      int64
 }
 
-type RatingInput struct{
-	Rating int64
+type RatingInput struct {
+	Rating    int64
 	MovieName string
 }
 
-type GetMovieList struct{
+type GetMovieList struct {
 	Limit int
-	Page int
+	Page  int
 }
 
-type SearchMovie struct{
+type SearchMovie struct {
 	Name string
 }
 
-type RateMovie struct{
-	Name string
+type RateMovie struct {
+	Name   string
 	Rating int64
 }

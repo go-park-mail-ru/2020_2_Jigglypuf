@@ -2,6 +2,6 @@ package cookie
 
 import "net/http"
 
-type CookieRepository interface{
+type Repository interface {
 	GetCookie(*http.Cookie) error
 }

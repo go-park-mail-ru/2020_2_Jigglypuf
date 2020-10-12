@@ -17,28 +17,26 @@ import (
 	"testing"
 )
 
-
 const (
-	getProfileUrl = "/getprofile/"
-	signUpUrl = "/signup/"
-	salt = "oisndoiqwe123"
+	getProfileURL = "/getprofile/"
+	signUpURL     = "/signup/"
+	salt          = "oisndoiqwe123"
 )
 
-
-var bodiesResponse = map[string]string {
-	"authorized": `{"Name":"","Surname":"","AvatarPath":""}`,
+var bodiesResponse = map[string]string{
+	"authorized":   `{"Name":"","Surname":"","AvatarPath":""}`,
 	"unauthorized": `{"StatusCode":401,"Response":"You not authorized!"}`,
 }
 
-var bodiesRequest = map[string]string {
-	"authorized": `{"Login": "Pro100", "Password": "1234"}`,
+var bodiesRequest = map[string]string{
+	"authorized":   `{"Login": "Pro100", "Password": "1234"}`,
 	"unauthorized": "",
 }
 
 var data = map[string][]struct {
-	expectedRequestBody string
+	expectedRequestBody  string
 	expectedResponseBody string
-	response int
+	response             int
 }{
 	"successRequest": {
 		{bodiesRequest["authorized"], bodiesResponse["authorized"], http.StatusOK},
@@ -48,21 +46,20 @@ var data = map[string][]struct {
 	},
 }
 
-
 func TestGetProfileCases(t *testing.T) {
 	mutex := sync.RWMutex{}
-	requestProfile := httptest.NewRequest("GET", getProfileUrl, nil)
+	requestProfile := httptest.NewRequest("GET", getProfileURL, nil)
 	authR := authRepository.NewUserRepository(&mutex)
 	authUC := authUseCase.NewUserUseCase(authR, salt)
 	authHandler := authDelivery.NewUserHandler(authUC)
 	profileUC := profileUseCase.NewProfileUseCase(profileRepository.NewProfileRepository(&mutex, authR))
 	for testName, requestsSlice := range data {
+		requestsSlice := requestsSlice
 		t.Run(testName, func(t *testing.T) {
 			for _, request := range requestsSlice {
-
 				signUpInfo := strings.NewReader(request.expectedRequestBody)
 				writerAuth := httptest.NewRecorder()
-				requestAuth := httptest.NewRequest("POST", signUpUrl, signUpInfo)
+				requestAuth := httptest.NewRequest("POST", signUpURL, signUpInfo)
 				authHandler.RegisterHandler(writerAuth, requestAuth)
 				if cookie := writerAuth.Header()["Set-Cookie"]; cookie != nil {
 					requestProfile.Header.Set("Cookie", cookie[0])
@@ -90,5 +87,4 @@ func TestGetProfileCases(t *testing.T) {
 			}
 		})
 	}
-
 }

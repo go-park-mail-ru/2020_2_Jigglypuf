@@ -5,27 +5,22 @@ import (
 	"net/http"
 )
 
-type CookieService struct{
-	dbConn cookie.CookieRepository
+type CookieService struct {
+	dbConn cookie.Repository
 }
 
-func NewCookieService(rep cookie.CookieRepository) *CookieService {
+func NewCookieService(rep cookie.Repository) *CookieService {
 	return &CookieService{
 		dbConn: rep,
 	}
 }
 
-
-func (t *CookieService) CheckCookie(r *http.Request) bool{
+func (t *CookieService) CheckCookie(r *http.Request) bool {
 	cookieValue, err := r.Cookie("session_id")
-	if err != nil{
+	if err != nil {
 		return false
 	}
 
 	cookieErr := t.dbConn.GetCookie(cookieValue)
-	if cookieErr != nil{
-		return false
-	}
-
-	return true
+	return cookieErr == nil
 }

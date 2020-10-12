@@ -5,17 +5,17 @@ import (
 	"net/http"
 )
 
-type CookieRepository struct{
+type CookieRepository struct {
 	userRep authentication.AuthRepository
 }
 
-func NewCookieRepository(rep authentication.AuthRepository) *CookieRepository{
+func NewCookieRepository(rep authentication.AuthRepository) *CookieRepository {
 	return &CookieRepository{
 		userRep: rep,
 	}
 }
 
-func (t *CookieRepository) GetCookie(cookie *http.Cookie) error{
+func (t *CookieRepository) GetCookie(cookie *http.Cookie) error {
 	_, getErr := t.userRep.GetUserViaCookie(cookie)
 	return getErr
 }

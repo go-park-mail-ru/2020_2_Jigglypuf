@@ -18,11 +18,11 @@ func NewUserHandler(useCase authentication.UserUseCase) *UserHandler {
 	}
 }
 
-func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request){
+func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
-	if r.Method != http.MethodPost{
-		models.BadMethodHttpResponse(&w)
+	if r.Method != http.MethodPost {
+		models.BadMethodHTTPResponse(&w)
 		return
 	}
 
@@ -31,13 +31,13 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request){
 	decoder := json.NewDecoder(r.Body)
 	authInput := new(models.AuthInput)
 	translationError := decoder.Decode(authInput)
-	if translationError != nil{
+	if translationError != nil {
 		models.BadBodyHTTPResponse(&w, translationError)
 		return
 	}
 
-	cookie,err := t.useCase.SignIn(authInput)
-	if err != nil{
+	cookie, err := t.useCase.SignIn(authInput)
+	if err != nil {
 		models.BadBodyHTTPResponse(&w, err)
 		return
 	}
@@ -45,28 +45,27 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request){
 	http.SetCookie(w, cookie)
 }
 
-
-func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request){
+func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
-	if r.Method != http.MethodPost{
-		models.BadMethodHttpResponse(&w)
+	if r.Method != http.MethodPost {
+		models.BadMethodHTTPResponse(&w)
 		return
 	}
 
-	w.Header().Set("Content-Type","application/json")
+	w.Header().Set("Content-Type", "application/json")
 
 	decoder := json.NewDecoder(r.Body)
 	authInput := new(models.RegistrationInput)
 
 	translationError := decoder.Decode(authInput)
-	if translationError != nil{
+	if translationError != nil {
 		models.BadBodyHTTPResponse(&w, translationError)
 		return
 	}
 
 	cookie, err := t.useCase.SignUp(authInput)
-	if err != nil{
+	if err != nil {
 		models.BadBodyHTTPResponse(&w, err)
 		return
 	}
@@ -74,21 +73,21 @@ func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request){
 	http.SetCookie(w, cookie)
 }
 
-func (t *UserHandler) SignOutHandler(w http.ResponseWriter, r *http.Request){
-	if r.Method != http.MethodPost{
-		models.BadMethodHttpResponse(&w)
+func (t *UserHandler) SignOutHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		models.BadMethodHTTPResponse(&w)
 		return
 	}
 
 	cookie, cookieError := r.Cookie(cookieService.SessionCookieName)
-	if cookieError != nil{
-		models.UnauthorizedHttpResponse(&w)
+	if cookieError != nil {
+		models.UnauthorizedHTTPResponse(&w)
 		return
 	}
 
 	expiredCookie, useCaseError := t.useCase.SignOut(cookie)
-	if useCaseError != nil{
-		models.UnauthorizedHttpResponse(&w)
+	if useCaseError != nil {
+		models.UnauthorizedHTTPResponse(&w)
 		return
 	}
 

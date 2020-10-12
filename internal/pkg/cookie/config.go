@@ -1,5 +1,5 @@
 package cookie
 
-var(
+var (
 	SessionCookieName = "session_id"
 )
