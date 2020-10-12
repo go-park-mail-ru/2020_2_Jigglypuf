@@ -1,0 +1,22 @@
+run:
+  concurrency: 4
+
+  tests: true
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+
+linters:
+  enable:
+    - megacheck
+    - govet
+  disable:
+    - maligned
+    - prealloc
+  disable-all: false
+  presets:
+    - bugs
+    - unused
+  fast: false
