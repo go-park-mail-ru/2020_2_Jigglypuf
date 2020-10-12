@@ -25,20 +25,26 @@ const (
 )
 
 
-var bodies = map[string]string {
+var bodiesResponse = map[string]string {
 	"authorized": "{\"Name\":\"\",\"Surname\":\"\",\"AvatarPath\":\"\"}",
-	"unauthorized": "{\"StatusCode\":401,\"Response\":\"TWV0aG9kTm90QWxsb3dlZA==\"}",
+	"unauthorized": "{\"StatusCode\":401,\"Response\":\"You not authorized!\"}",
+}
+
+var bodiesRequest = map[string]string {
+	"authorized": "\"{\\\"Login\\\": \\\"Pro11\\\", \\\"Password\\\": \\\"1234\\\"}\"",
+	"unauthorized": "",
 }
 
 var data = map[string][]struct {
 	expectedRequestBody string
+	expectedResponseBody string
 	response int
 }{
 	"successRequest": {
-		{bodies["authorized"], http.StatusOK},
+		{bodiesRequest["authorized"], bodiesResponse["authorized"], http.StatusOK},
 	},
 	"failureRequest": {
-		{bodies["unauthorized"], http.StatusUnauthorized},
+		{bodiesRequest["unauthorized"], bodiesResponse["unauthorized"], http.StatusUnauthorized},
 	},
 }
 
@@ -54,15 +60,13 @@ func TestGetProfileCases(t *testing.T) {
 		t.Run(testName, func(t *testing.T) {
 			for _, request := range requestsSlice {
 
-
-				if testName == "successRequest" {
-					signUpInfo := strings.NewReader("{\"Login\": \"Pro11\", \"Password\": \"1234\"}")
-					writerAuth := httptest.NewRecorder()
-					requestAuth := httptest.NewRequest("POST", signUpUrl, signUpInfo)
-					authHandler.RegisterHandler(writerAuth, requestAuth)
-					requestProfile.Header.Set("Cookie", writerAuth.Header()["Set-Cookie"][0])
+				signUpInfo := strings.NewReader(request.expectedRequestBody)
+				writerAuth := httptest.NewRecorder()
+				requestAuth := httptest.NewRequest("POST", signUpUrl, signUpInfo)
+				authHandler.RegisterHandler(writerAuth, requestAuth)
+				if cookie := writerAuth.Header()["Set-Cookie"]; cookie != nil {
+					requestProfile.Header.Set("Cookie", cookie[0])
 				}
-
 
 				profileHandler := profileDelivery.NewProfileHandler(profileUC)
 				writerProfile := httptest.NewRecorder()
@@ -77,7 +81,7 @@ func TestGetProfileCases(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				require.Equal(t, request.expectedRequestBody, string(body), "Response must be OK")
+				require.Equal(t, request.expectedResponseBody, string(body), "Response must be OK")
 				err = resp.Body.Close()
 				if err != nil {
 					t.Fatal(err)
