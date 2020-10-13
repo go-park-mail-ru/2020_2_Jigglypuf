@@ -1,9 +1,9 @@
 version: "3.8"
 services:
-	app:
-		image: teamproject-docker-image
-		ports:
-			- 8080:8080
-		volumes:
-			- ./:/app
+ app:
+  image: teamproject-docker-image
+   ports:
+    - 8080:8080
+   volumes:
+	- ./:/app
 		
