@@ -1,5 +1,6 @@
-FROM golang:latest
+FROM golang
 
-EXPOSE 3000
+WORKDIR /app
+COPY ./ /app
 
-CMD ["go run","../../cmd/main_server.go"]
+ENTRYPOINT go run cmd/main_server.go
