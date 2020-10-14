@@ -6,13 +6,13 @@ services:
    - 8080:8080
   volumes:
    - ./:/app
-   - ~/media:/media
+   - ../media:/media
  nginx:
   image: felixgreen/cinema-interface-nginx-docker
   ports:
   - 80:80
   - 443:443
   volumes:
-  - ~/media:/media
-  - ~/static:/static
+  - ./media:/media
+  - ./static:/static
   - /etc/letsencrypt:/etc/letsencrypt
