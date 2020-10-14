@@ -7,3 +7,12 @@ services:
   volumes:
    - ./:/app
    - ../media:/media
+ nginx:
+  image: felixgreen/cinema-interface-nginx-docker
+  ports:
+  - 80:80
+  - 443:443
+  volumes:
+  - ../media:/media
+  - ../static:/static
+  - /etc/letsencrypt:/etc/letsencrypt
