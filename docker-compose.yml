@@ -13,6 +13,6 @@ services:
   - 80:80
   - 443:443
   volumes:
-  - ./media:/media
-  - ./static:/static
+  - ../media:/media
+  - ../static:/static
   - /etc/letsencrypt:/etc/letsencrypt
