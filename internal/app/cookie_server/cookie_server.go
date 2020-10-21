@@ -11,12 +11,14 @@ type CookieService struct{
 	CookieRepository *cookieRepository.CookieRepository
 }
 
+var CookieManager *CookieService
+
 func Start(mutex *sync.RWMutex) *CookieService{
 	cookieRep := cookieRepository.NewCookieRepository(mutex)
 	cookieHandler := cookieDelivery.NewCookieHandler(cookieRep)
-
-	return &CookieService{
+	CookieManager = &CookieService{
 		cookieHandler,
 		cookieRep,
 	}
+	return CookieManager
 }

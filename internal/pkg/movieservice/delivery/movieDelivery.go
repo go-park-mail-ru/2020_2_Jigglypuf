@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"backend/internal/pkg/authentication"
+	cookieService "backend/internal/pkg/middleware/cookie"
 	"backend/internal/pkg/models"
 	"backend/internal/pkg/movieservice"
 	"encoding/json"
@@ -98,13 +99,13 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request, params 
 
 	w.Header().Set("Content-Type", "application/json")
 
-	cookieValue, cookieErr := r.Cookie("session_id")
-
-	if cookieErr != nil {
+	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
+	if isAuth == nil || isAuth.(bool) == false {
 		models.UnauthorizedHTTPResponse(&w)
 		return
 	}
 
+	cookieValue, _ := r.Cookie("session_id")
 	reqUser, userError := t.userRepository.GetUserViaCookie(cookieValue)
 	if userError != nil {
 		models.UnauthorizedHTTPResponse(&w)

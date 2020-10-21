@@ -9,6 +9,7 @@ import (
 	authConfig "backend/internal/pkg/authentication"
 	cinemaConfig "backend/internal/pkg/cinemaservice"
 	"backend/internal/pkg/middleware/CORS"
+	"backend/internal/pkg/middleware/cookie/middleware"
 	movieConfig "backend/internal/pkg/movieservice"
 	profileConfig "backend/internal/pkg/profile"
 	"log"
@@ -26,10 +27,11 @@ type ServerStruct struct {
 	httpServer     *http.Server
 }
 
+
 func configureAPI() *ServerStruct {
 	mutex := sync.RWMutex{}
-	newCookieService := cookieService.Start(&mutex)
-	newAuthService := authService.Start(&mutex, newCookieService.CookieRepository)
+	NewCookieService := cookieService.Start(&mutex)
+	newAuthService := authService.Start(&mutex, NewCookieService.CookieRepository)
 	newCinemaService := cinemaService.Start(&mutex)
 	newMovieService := movieService.Start(&mutex, newAuthService.AuthenticationRepository)
 	newProfileService := profileService.Start(&mutex,newAuthService.AuthenticationRepository)
@@ -39,7 +41,7 @@ func configureAPI() *ServerStruct {
 		cinemaService:  newCinemaService,
 		movieService:   newMovieService,
 		profileService: newProfileService,
-		cookieService: newCookieService,
+		cookieService: NewCookieService,
 	}
 }
 
@@ -56,8 +58,8 @@ func configureRouter(application *ServerStruct) http.Handler {
 	handler.HandleFunc("/media/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, r.RequestURI, http.StatusMovedPermanently)
 	})
-
-	middlewareHandler := CORS.MiddlewareCORS(handler)
+	middlewareHandler := middleware.CookieMiddleware(handler)
+	middlewareHandler = CORS.MiddlewareCORS(middlewareHandler)
 
 	return middlewareHandler
 }

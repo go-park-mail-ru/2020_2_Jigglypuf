@@ -79,14 +79,14 @@ func (t *UserHandler) SignOutHandler(w http.ResponseWriter, r *http.Request, par
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
-
-	cookie, cookieError := r.Cookie(cookieService.SessionCookieName)
-	if cookieError != nil {
+	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
+	if isAuth == nil || isAuth.(bool) == false {
 		models.UnauthorizedHTTPResponse(&w)
 		return
 	}
 
-	expiredCookie, useCaseError := t.useCase.SignOut(cookie)
+	cookieValue, _ := r.Cookie(cookieService.SessionCookieName)
+	expiredCookie, useCaseError := t.useCase.SignOut(cookieValue)
 	if useCaseError != nil {
 		models.UnauthorizedHTTPResponse(&w)
 		return
