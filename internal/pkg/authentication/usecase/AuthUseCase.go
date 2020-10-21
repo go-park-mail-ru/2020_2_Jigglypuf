@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"backend/internal/pkg/authentication"
-	"backend/internal/pkg/cookie"
+	"backend/internal/pkg/middleware/cookie"
 	"backend/internal/pkg/models"
 	"crypto/rand"
 	"crypto/sha256"
@@ -24,13 +24,15 @@ func (t IncorrectInputError) Error() string {
 
 type UserUseCase struct {
 	memConn authentication.AuthRepository
+	cookieDbConn cookie.Repository
 	salt    string
 }
 
-func NewUserUseCase(dbConn authentication.AuthRepository, salt string) *UserUseCase {
+func NewUserUseCase(dbConn authentication.AuthRepository,cookieConn cookie.Repository, salt string) *UserUseCase {
 	return &UserUseCase{
 		memConn: dbConn,
-		salt:    salt,
+		cookieDbConn: cookieConn,
+		salt: salt,
 	}
 }
 
@@ -72,6 +74,10 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 
 	hashPassword := createHashPassword(password, t.salt)
 	cookieValue := createUserCookie()
+	cookieerr := t.cookieDbConn.SetCookie(&cookieValue)
+	if cookieerr != nil{
+		return &http.Cookie{}, cookieerr
+	}
 
 	user := models.User{
 		Username: username,
@@ -102,6 +108,10 @@ func (t *UserUseCase) SignIn(input *models.AuthInput) (*http.Cookie, error) {
 		cookieValue := createUserCookie()
 		user.Cookie = cookieValue
 		t.memConn.SetCookie(user, &cookieValue)
+		err := t.cookieDbConn.SetCookie(&cookieValue)
+		if err != nil{
+			return &http.Cookie{}, err
+		}
 	}
 
 	return &user.Cookie, err
@@ -109,5 +119,6 @@ func (t *UserUseCase) SignIn(input *models.AuthInput) (*http.Cookie, error) {
 
 func (t *UserUseCase) SignOut(cookie *http.Cookie) (*http.Cookie, error) {
 	cookie.Expires = time.Now().Add(-time.Hour)
+	_ = t.cookieDbConn.RemoveCookie(cookie)
 	return cookie, nil
 }

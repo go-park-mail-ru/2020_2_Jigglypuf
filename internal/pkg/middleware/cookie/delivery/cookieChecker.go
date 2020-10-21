@@ -1,21 +1,21 @@
 package delivery
 
 import (
-	"backend/internal/pkg/cookie"
+	"backend/internal/pkg/middleware/cookie"
 	"net/http"
 )
 
-type CookieService struct {
+type CookieHandler struct {
 	dbConn cookie.Repository
 }
 
-func NewCookieService(rep cookie.Repository) *CookieService {
-	return &CookieService{
+func NewCookieHandler(rep cookie.Repository) *CookieHandler {
+	return &CookieHandler{
 		dbConn: rep,
 	}
 }
 
-func (t *CookieService) CheckCookie(r *http.Request) bool {
+func (t *CookieHandler) CheckCookie(r *http.Request) bool {
 	cookieValue, err := r.Cookie("session_id")
 	if err != nil {
 		return false

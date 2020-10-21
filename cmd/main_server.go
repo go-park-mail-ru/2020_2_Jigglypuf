@@ -1,138 +1,69 @@
 package main
 
 import (
-	authDelivery "backend/internal/pkg/authentication/delivery"
-	authRepository "backend/internal/pkg/authentication/repository"
-	authUseCase "backend/internal/pkg/authentication/usecase"
-	cinemaDelivery "backend/internal/pkg/cinemaservice/delivery"
-	cinemaRepository "backend/internal/pkg/cinemaservice/repository"
-	cinemaUsecase "backend/internal/pkg/cinemaservice/usecase"
-	movieDelivery "backend/internal/pkg/movieservice/delivery"
-	movieRepository "backend/internal/pkg/movieservice/repository"
-	movieUsecase "backend/internal/pkg/movieservice/usecase"
-	profileDelivery "backend/internal/pkg/profile/delivery"
-	profileRepository "backend/internal/pkg/profile/repository"
-	profileUseCase "backend/internal/pkg/profile/usecase"
+	authService "backend/internal/app/auth_server"
+	cinemaService "backend/internal/app/cinema_server"
+	cookieService "backend/internal/app/cookie_server"
+	movieService "backend/internal/app/movie_server"
+	profileService "backend/internal/app/profile_server"
+	authConfig "backend/internal/pkg/authentication"
+	cinemaConfig "backend/internal/pkg/cinemaservice"
+	"backend/internal/pkg/middleware/CORS"
+	movieConfig "backend/internal/pkg/movieservice"
+	profileConfig "backend/internal/pkg/profile"
 	"log"
 	"net/http"
 	"sync"
 	"time"
 )
 
-const salt = "oisndoiqwe123"
-
-func setupCORS(w *http.ResponseWriter, req *http.Request) {
-	(*w).Header().Set("Access-Control-Allow-Origin", req.Header.Get("Origin"))
-	log.Println(req.Header.Get("Origin"))
-	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET")
-	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
-	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-}
-
-func CORSDecorator(w http.ResponseWriter, r *http.Request, function func(w http.ResponseWriter, r *http.Request)) {
-	setupCORS(&w, r)
-	if r.Method == http.MethodOptions {
-		return
-	}
-
-	function(w, r)
-}
-
 type ServerStruct struct {
-	authHandler    *authDelivery.UserHandler
-	cinemaHandler  *cinemaDelivery.CinemaHandler
-	movieHandler   *movieDelivery.MovieHandler
-	profileHandler *profileDelivery.ProfileHandler
+	authService    *authService.AuthService
+	cinemaService  *cinemaService.CinemaService
+	movieService   *movieService.MovieService
+	profileService *profileService.ProfileService
+	cookieService  *cookieService.CookieService
 	httpServer     *http.Server
 }
 
 func configureAPI() *ServerStruct {
 	mutex := sync.RWMutex{}
-	userRepository := authRepository.NewUserRepository(&mutex)
-	cinRepository := cinemaRepository.NewCinemaRepository(&mutex)
-	movRepository := movieRepository.NewMovieRepository(&mutex)
-	profRepository := profileRepository.NewProfileRepository(&mutex, userRepository)
-
-	cinUseCase := cinemaUsecase.NewCinemaUseCase(cinRepository)
-	userUseCase := authUseCase.NewUserUseCase(userRepository, salt)
-	movUseCase := movieUsecase.NewMovieUseCase(movRepository)
-	profUseCase := profileUseCase.NewProfileUseCase(profRepository)
-
-	cinHandler := cinemaDelivery.NewCinemaHandler(cinUseCase)
-	userHandler := authDelivery.NewUserHandler(userUseCase)
-	movHandler := movieDelivery.NewMovieHandler(movUseCase, userRepository)
-	profHandler := profileDelivery.NewProfileHandler(profUseCase)
+	newCookieService := cookieService.Start(&mutex)
+	newAuthService := authService.Start(&mutex, newCookieService.CookieRepository)
+	newCinemaService := cinemaService.Start(&mutex)
+	newMovieService := movieService.Start(&mutex, newAuthService.AuthenticationRepository)
+	newProfileService := profileService.Start(&mutex,newAuthService.AuthenticationRepository)
 
 	return &ServerStruct{
-		authHandler:    userHandler,
-		cinemaHandler:  cinHandler,
-		movieHandler:   movHandler,
-		profileHandler: profHandler,
+		authService:    newAuthService,
+		cinemaService:  newCinemaService,
+		movieService:   newMovieService,
+		profileService: newProfileService,
+		cookieService: newCookieService,
 	}
 }
 
-func configureRouter(application *ServerStruct) *http.ServeMux {
+func configureRouter(application *ServerStruct) http.Handler {
 	handler := http.NewServeMux()
-	handler.HandleFunc("/signin/", func(w http.ResponseWriter, r *http.Request) {
-		setupCORS(&w, r)
-		if r.Method == http.MethodOptions {
-			return
-		}
 
-		if /*cookie.CheckCookie(r) ||*/ r.Method != http.MethodPost {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		application.authHandler.AuthHandler(w, r)
-	})
+	handler.Handle(movieConfig.UrlPattern, application.movieService.MovieRouter)
+	handler.Handle(cinemaConfig.UrlPattern, application.cinemaService.CinemaRouter)
+	handler.Handle(authConfig.UrlPattern, application.authService.AuthRouter)
+	handler.Handle(profileConfig.UrlPattern, application.profileService.ProfileRouter)
 
-	handler.HandleFunc("/signup/", func(w http.ResponseWriter, r *http.Request) {
-		setupCORS(&w, r)
-		if r.Method == http.MethodOptions {
-			return
-		}
 
-		if /*cookie.CheckCookie(r) ||*/ r.Method != http.MethodPost {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		application.authHandler.RegisterHandler(w, r)
-	})
-
-	handler.HandleFunc("/getprofile/", func(w http.ResponseWriter, r *http.Request) {
-		CORSDecorator(w, r, application.profileHandler.GetProfile)
-	})
-	handler.HandleFunc("/updateprofile/", func(w http.ResponseWriter, r *http.Request) {
-		CORSDecorator(w, r, application.profileHandler.UpdateProfile)
-	})
-
-	handler.HandleFunc("/getcinemalist/", func(w http.ResponseWriter, r *http.Request) {
-		CORSDecorator(w, r, application.cinemaHandler.GetCinemaList)
-	})
-	handler.HandleFunc("/getcinema/", func(w http.ResponseWriter, r *http.Request) {
-		CORSDecorator(w, r, application.cinemaHandler.GetCinema)
-	})
-	handler.HandleFunc("/getmovie/", func(w http.ResponseWriter, r *http.Request) {
-		CORSDecorator(w, r, application.movieHandler.GetMovie)
-	})
-	handler.HandleFunc("/getmovielist/", func(w http.ResponseWriter, r *http.Request) {
-		CORSDecorator(w, r, application.movieHandler.GetMovieList)
-	})
-	handler.HandleFunc("/ratemovie/", func(w http.ResponseWriter, r *http.Request) {
-		CORSDecorator(w, r, application.movieHandler.RateMovie)
-	})
-	handler.HandleFunc("/getmovierating/", func(w http.ResponseWriter, r *http.Request) {
-		CORSDecorator(w, r, application.movieHandler.GetMovieRating)
-	})
 
 	handler.HandleFunc("/media/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, r.RequestURI, http.StatusMovedPermanently)
 	})
 
-	return handler
+	middlewareHandler := CORS.MiddlewareCORS(handler)
+
+	return middlewareHandler
 }
 
-func configureServer(port string, funcHandler *http.ServeMux) *http.Server {
+
+func configureServer(port string, funcHandler http.Handler) *http.Server {
 	return &http.Server{
 		Addr:         ":" + port,
 		Handler:      funcHandler,

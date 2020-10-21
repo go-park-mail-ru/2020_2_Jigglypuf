@@ -5,6 +5,7 @@ import (
 	"backend/internal/pkg/models"
 	"backend/internal/pkg/movieservice"
 	"encoding/json"
+	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strconv"
 )
@@ -21,7 +22,7 @@ func NewMovieHandler(usecase movieservice.MovieUseCase, userRepository authentic
 	}
 }
 
-func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request) {
+func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
@@ -57,20 +58,20 @@ func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(response)
 }
 
-func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
+func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
 
-	name := r.URL.Query()["name"]
-
-	if len(name) == 0 {
+	name := params.ByName(movieservice.GetMovieId)
+	integerName, castErr := strconv.Atoi(name)
+	if castErr != nil || len(name) == 0 {
 		models.BadBodyHTTPResponse(&w, models.IncorrectGetParameters{})
 		return
 	}
 
-	result, err := t.movieUseCase.GetMovie(name[0])
+	result, err := t.movieUseCase.GetMovie(uint64(integerName))
 
 	if err != nil {
 		models.BadBodyHTTPResponse(&w, err)
@@ -87,7 +88,7 @@ func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(response)
 }
 
-func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
+func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 
 	if r.Method != http.MethodPost {
@@ -118,7 +119,7 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	RateErr := t.movieUseCase.RateMovie(reqUser, movie.Name, movie.Rating)
+	RateErr := t.movieUseCase.RateMovie(reqUser, movie.ID, movie.Rating)
 	if RateErr != nil {
 		models.BadBodyHTTPResponse(&w, RateErr)
 		return
@@ -146,14 +147,14 @@ func (t *MovieHandler) GetMovieRating(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	name := r.URL.Query()["name"]
-
-	if len(name) == 0 {
+	name := r.URL.Query()["id"]
+	integerName, castErr := strconv.Atoi(name[0])
+	if castErr != nil || len(name) == 0 {
 		models.BadBodyHTTPResponse(&w, models.IncorrectGetParameters{})
 		return
 	}
 
-	result, RatingErr := t.movieUseCase.GetRating(reqUser, name[0])
+	result, RatingErr := t.movieUseCase.GetRating(reqUser, uint64(integerName))
 	if RatingErr != nil {
 		models.BadBodyHTTPResponse(&w, RatingErr)
 		return
