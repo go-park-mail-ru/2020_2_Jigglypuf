@@ -28,6 +28,6 @@ type SearchMovie struct {
 }
 
 type RateMovie struct {
-	ID   uint64
+	ID     uint64
 	Rating int64
 }

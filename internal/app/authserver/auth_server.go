@@ -1,5 +1,4 @@
-package auth_server
-
+package authserver
 
 import (
 	authConfig "backend/internal/pkg/authentication"
@@ -11,25 +10,24 @@ import (
 	"sync"
 )
 
-type AuthService struct{
-	AuthenticationDelivery *authDelivery.UserHandler
-	AuthenticationUseCase *authUseCase.UserUseCase
+type AuthService struct {
+	AuthenticationDelivery   *authDelivery.UserHandler
+	AuthenticationUseCase    *authUseCase.UserUseCase
 	AuthenticationRepository *authRepository.AuthRepository
-	AuthRouter *httprouter.Router
+	AuthRouter               *httprouter.Router
 }
 
-func configureAuthRouter(authHandler *authDelivery.UserHandler) *httprouter.Router{
+func configureAuthRouter(authHandler *authDelivery.UserHandler) *httprouter.Router {
+	authAPIHandler := httprouter.New()
 
-	authApiHandler := httprouter.New()
+	authAPIHandler.POST(authConfig.URLPattern+"register/", authHandler.RegisterHandler)
+	authAPIHandler.POST(authConfig.URLPattern+"login/", authHandler.AuthHandler)
+	authAPIHandler.POST(authConfig.URLPattern+"logout/", authHandler.SignOutHandler)
 
-	authApiHandler.POST(authConfig.UrlPattern + "register/",authHandler.RegisterHandler)
-	authApiHandler.POST(authConfig.UrlPattern + "login/", authHandler.AuthHandler)
-	authApiHandler.POST(authConfig.UrlPattern + "logout/", authHandler.SignOutHandler)
-
-	return authApiHandler
+	return authAPIHandler
 }
 
-func Start(mutex *sync.RWMutex, cookieRepository cookie.Repository) *AuthService{
+func Start(mutex *sync.RWMutex, cookieRepository cookie.Repository) *AuthService {
 	authrep := authRepository.NewUserRepository(mutex)
 	authCase := authUseCase.NewUserUseCase(authrep, cookieRepository, authConfig.Salt)
 	authHandler := authDelivery.NewUserHandler(authCase)

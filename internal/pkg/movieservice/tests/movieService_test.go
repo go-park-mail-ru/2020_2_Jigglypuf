@@ -1,6 +1,7 @@
 package tests
+
 //
-//import (
+// import (
 //	userRepository "backend/internal/pkg/authentication/repository"
 //	"backend/internal/pkg/movieservice/delivery"
 //	"backend/internal/pkg/movieservice/repository"
@@ -11,9 +12,9 @@ package tests
 //	"strings"
 //	"sync"
 //	"testing"
-//)
+// )
 //
-//func TestMovieServiceAPISuccessCases(t *testing.T) {
+// func TestMovieServiceAPISuccessCases(t *testing.T) {
 //	mutex := sync.RWMutex{}
 //	movieRep := repository.NewMovieRepository(&mutex)
 //	movieUC := usecase.NewMovieUseCase(movieRep)
@@ -70,4 +71,4 @@ package tests
 //				"handler returned wrong value: got %v want %v",cin2.Name, cin.Name)
 //		} */
 //	}
-//}
+// }

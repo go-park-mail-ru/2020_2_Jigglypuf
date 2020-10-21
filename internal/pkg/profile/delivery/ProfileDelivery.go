@@ -1,7 +1,6 @@
 package delivery
 
 import (
-	"backend/internal/pkg/middleware/cookie"
 	cookieService "backend/internal/pkg/middleware/cookie"
 	"backend/internal/pkg/models"
 	"backend/internal/pkg/profile"
@@ -64,12 +63,12 @@ func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, para
 	w.Header().Set("Content-Type", "application/json")
 
 	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
-	if isAuth == nil || isAuth.(bool) == false {
+	if isAuth == nil || !isAuth.(bool) {
 		models.UnauthorizedHTTPResponse(&w)
 		return
 	}
 
-	cookieValue, _ := r.Cookie(cookie.SessionCookieName)
+	cookieValue, _ := r.Cookie(cookieService.SessionCookieName)
 	requiredProfile, profileError := t.useCase.GetProfileViaCookie(cookieValue)
 
 	if profileError != nil {
@@ -105,11 +104,11 @@ func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request, p
 	}
 
 	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
-	if isAuth == nil || isAuth.(bool) == false {
+	if isAuth == nil || !isAuth.(bool) {
 		models.UnauthorizedHTTPResponse(&w)
 		return
 	}
-	cookieValue, _ := r.Cookie(cookie.SessionCookieName)
+	cookieValue, _ := r.Cookie(cookieService.SessionCookieName)
 
 	profileUpdate, profileError := t.useCase.GetProfileViaCookie(cookieValue)
 

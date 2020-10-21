@@ -1,4 +1,4 @@
-package CORS
+package cors
 
 import (
 	"log"
@@ -14,7 +14,7 @@ func setupCORS(w *http.ResponseWriter, req *http.Request) {
 }
 
 func MiddlewareCORS(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		setupCORS(&w, r)
 		if r.Method == http.MethodOptions {
 			return

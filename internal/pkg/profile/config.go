@@ -6,5 +6,5 @@ var (
 	AvatarFormName  = "avatar"
 	NameFormName    = "name"
 	SurnameFormName = "surname"
-	UrlPattern = "/profile/"
+	URLPattern      = "/profile/"
 )

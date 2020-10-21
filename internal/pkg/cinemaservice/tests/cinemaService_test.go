@@ -1,6 +1,7 @@
 package tests
+
 //
-//import (
+// import (
 //	"backend/internal/pkg/cinemaservice/delivery"
 //	"backend/internal/pkg/cinemaservice/repository"
 //	"backend/internal/pkg/cinemaservice/usecase"
@@ -10,9 +11,9 @@ package tests
 //	"strings"
 //	"sync"
 //	"testing"
-//)
+// )
 //
-//func TestCinemaServiceAPISuccessCases(t *testing.T) {
+// func TestCinemaServiceAPISuccessCases(t *testing.T) {
 //	mutex := sync.RWMutex{}
 //	cinemarep := repository.NewCinemaRepository(&mutex)
 //	cinemaUC := usecase.NewCinemaUseCase(cinemarep)
@@ -58,9 +59,9 @@ package tests
 //				"handler returned wrong value: got %v want %v",cin2.Name, cin.Name)
 //		} */
 //	}
-//}
+// }
 //
-//func TestCinemaServiceAPIFAILCases(t *testing.T) {
+// func TestCinemaServiceAPIFAILCases(t *testing.T) {
 //	mutex := sync.RWMutex{}
 //	cinemarep := repository.NewCinemaRepository(&mutex)
 //	cinemaUC := usecase.NewCinemaUseCase(cinemarep)
@@ -124,4 +125,4 @@ package tests
 //				"handler returned wrong status code: got %v want %v", val.TestResponseWriter.Code, val.TestResponse.StatusCode)
 //		}
 //	}
-//}
+// }

@@ -1,7 +1,6 @@
 package delivery
 
 import (
-	cinemaConfig "backend/internal/pkg/cinemaservice"
 	"backend/internal/pkg/cinemaservice"
 	"backend/internal/pkg/models"
 	"encoding/json"
@@ -30,8 +29,8 @@ func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r *http.Request, params
 		return
 	}
 
-	name := params.ByName(cinemaConfig.CinemaIdParam)
-	integerName, castErr := strconv.Atoi(name);
+	name := params.ByName(cinemaservice.CinemaIDParam)
+	integerName, castErr := strconv.Atoi(name)
 	if castErr != nil || len(name) == 0 {
 		models.BadBodyHTTPResponse(&w, models.IncorrectGetParameters{})
 		return

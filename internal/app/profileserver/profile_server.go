@@ -1,4 +1,4 @@
-package profile_server
+package profileserver
 
 import (
 	"backend/internal/pkg/authentication"
@@ -10,23 +10,23 @@ import (
 	"sync"
 )
 
-type ProfileService struct{
+type ProfileService struct {
 	ProfileRepository *profileRepository.ProfileRepository
-	ProfileUseCase *profileUseCase.ProfileUseCase
-	ProfileDelivery *profileDelivery.ProfileHandler
-	ProfileRouter *httprouter.Router
+	ProfileUseCase    *profileUseCase.ProfileUseCase
+	ProfileDelivery   *profileDelivery.ProfileHandler
+	ProfileRouter     *httprouter.Router
 }
 
-func configureProfileRouter(handler *profileDelivery.ProfileHandler) * httprouter.Router{
+func configureProfileRouter(handler *profileDelivery.ProfileHandler) *httprouter.Router {
 	router := httprouter.New()
 
-	router.GET(profileConfig.UrlPattern, handler.GetProfile)
-	router.PUT(profileConfig.UrlPattern, handler.UpdateProfile)
+	router.GET(profileConfig.URLPattern, handler.GetProfile)
+	router.PUT(profileConfig.URLPattern, handler.UpdateProfile)
 
 	return router
 }
 
-func Start(mutex *sync.RWMutex, authRep authentication.AuthRepository) *ProfileService{
+func Start(mutex *sync.RWMutex, authRep authentication.AuthRepository) *ProfileService {
 	profileRep := profileRepository.NewProfileRepository(mutex, authRep)
 	profileUC := profileUseCase.NewProfileUseCase(profileRep)
 	profileHandler := profileDelivery.NewProfileHandler(profileUC)

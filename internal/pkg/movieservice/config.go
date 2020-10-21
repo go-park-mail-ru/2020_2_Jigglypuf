@@ -1,7 +1,6 @@
 package movieservice
 
-
 const (
-	UrlPattern = "/movie/"
-	GetMovieId = "id"
+	URLPattern = "/movie/"
+	GetMovieID = "id"
 )

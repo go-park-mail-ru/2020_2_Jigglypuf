@@ -1,20 +1,19 @@
 package repository
 
 import (
-	"net/http"
 	"errors"
+	"net/http"
 	"sync"
 )
 
 type CookieRepository struct {
 	cookieArr []http.Cookie
-	mu *sync.RWMutex
+	mu        *sync.RWMutex
 }
-
 
 func NewCookieRepository(mutex *sync.RWMutex) *CookieRepository {
 	return &CookieRepository{
-		make([]http.Cookie,3),
+		make([]http.Cookie, 3),
 		mutex,
 	}
 }
@@ -23,21 +22,21 @@ func (t *CookieRepository) GetCookie(cookie *http.Cookie) error {
 	success := false
 	t.mu.RLock()
 	{
-		for _,val := range t.cookieArr{
-			if val.Value == cookie.Value{
+		for _, val := range t.cookieArr {
+			if val.Value == cookie.Value {
 				success = true
 			}
 		}
 	}
 	t.mu.RUnlock()
 
-	if !success{
-		return errors.New("Cookie doesnt exist")
+	if !success {
+		return errors.New("cookie doesnt exist")
 	}
 	return nil
 }
 
-func (t *CookieRepository) SetCookie(cookie *http.Cookie)error{
+func (t *CookieRepository) SetCookie(cookie *http.Cookie) error {
 	success := false
 	t.mu.Lock()
 	{
@@ -46,29 +45,28 @@ func (t *CookieRepository) SetCookie(cookie *http.Cookie)error{
 	}
 	t.mu.Unlock()
 
-	if !success{
-		return errors.New("Cookie doesnt saved")
+	if !success {
+		return errors.New("cookie doesnt saved")
 	}
 	return nil
-
 }
 
-func (t *CookieRepository) RemoveCookie(cookie *http.Cookie)error{
+func (t *CookieRepository) RemoveCookie(cookie *http.Cookie) error {
 	success := false
 	t.mu.Lock()
 	{
-		for index, val := range t.cookieArr{
-			if val.Value == cookie.Value{
-				t.cookieArr[index] = t.cookieArr[len(t.cookieArr) - 1]
-				t.cookieArr = t.cookieArr[:len(t.cookieArr) - 1]
+		for index, val := range t.cookieArr {
+			if val.Value == cookie.Value {
+				t.cookieArr[index] = t.cookieArr[len(t.cookieArr)-1]
+				t.cookieArr = t.cookieArr[:len(t.cookieArr)-1]
 				success = true
 			}
 		}
 	}
 	t.mu.Unlock()
 
-	if !success{
-		return errors.New("Cookie not found")
+	if !success {
+		return errors.New("cookie not found")
 	}
 	return nil
 }

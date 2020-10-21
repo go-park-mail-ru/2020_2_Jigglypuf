@@ -23,16 +23,16 @@ func (t IncorrectInputError) Error() string {
 }
 
 type UserUseCase struct {
-	memConn authentication.AuthRepository
-	cookieDbConn cookie.Repository
-	salt    string
+	memConn      authentication.AuthRepository
+	cookieDBConn cookie.Repository
+	salt         string
 }
 
-func NewUserUseCase(dbConn authentication.AuthRepository,cookieConn cookie.Repository, salt string) *UserUseCase {
+func NewUserUseCase(dbConn authentication.AuthRepository, cookieConn cookie.Repository, salt string) *UserUseCase {
 	return &UserUseCase{
-		memConn: dbConn,
-		cookieDbConn: cookieConn,
-		salt: salt,
+		memConn:      dbConn,
+		cookieDBConn: cookieConn,
+		salt:         salt,
 	}
 }
 
@@ -74,8 +74,8 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 
 	hashPassword := createHashPassword(password, t.salt)
 	cookieValue := createUserCookie()
-	cookieerr := t.cookieDbConn.SetCookie(&cookieValue)
-	if cookieerr != nil{
+	cookieerr := t.cookieDBConn.SetCookie(&cookieValue)
+	if cookieerr != nil {
 		return &http.Cookie{}, cookieerr
 	}
 
@@ -108,8 +108,8 @@ func (t *UserUseCase) SignIn(input *models.AuthInput) (*http.Cookie, error) {
 		cookieValue := createUserCookie()
 		user.Cookie = cookieValue
 		t.memConn.SetCookie(user, &cookieValue)
-		err := t.cookieDbConn.SetCookie(&cookieValue)
-		if err != nil{
+		err := t.cookieDBConn.SetCookie(&cookieValue)
+		if err != nil {
 			return &http.Cookie{}, err
 		}
 	}
@@ -119,6 +119,6 @@ func (t *UserUseCase) SignIn(input *models.AuthInput) (*http.Cookie, error) {
 
 func (t *UserUseCase) SignOut(cookie *http.Cookie) (*http.Cookie, error) {
 	cookie.Expires = time.Now().Add(-time.Hour)
-	_ = t.cookieDbConn.RemoveCookie(cookie)
+	_ = t.cookieDBConn.RemoveCookie(cookie)
 	return cookie, nil
 }

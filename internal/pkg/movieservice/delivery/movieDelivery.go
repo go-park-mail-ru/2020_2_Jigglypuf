@@ -65,7 +65,7 @@ func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request, params h
 		return
 	}
 
-	name := params.ByName(movieservice.GetMovieId)
+	name := params.ByName(movieservice.GetMovieID)
 	integerName, castErr := strconv.Atoi(name)
 	if castErr != nil || len(name) == 0 {
 		models.BadBodyHTTPResponse(&w, models.IncorrectGetParameters{})
@@ -100,7 +100,7 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request, params 
 	w.Header().Set("Content-Type", "application/json")
 
 	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
-	if isAuth == nil || isAuth.(bool) == false {
+	if isAuth == nil || !isAuth.(bool) {
 		models.UnauthorizedHTTPResponse(&w)
 		return
 	}

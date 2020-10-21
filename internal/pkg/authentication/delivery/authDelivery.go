@@ -80,7 +80,7 @@ func (t *UserHandler) SignOutHandler(w http.ResponseWriter, r *http.Request, par
 		return
 	}
 	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
-	if isAuth == nil || isAuth.(bool) == false {
+	if isAuth == nil || !isAuth.(bool) {
 		models.UnauthorizedHTTPResponse(&w)
 		return
 	}

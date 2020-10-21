@@ -1,19 +1,19 @@
-package cookie_server
+package cookieserver
 
-import(
+import (
 	cookieDelivery "backend/internal/pkg/middleware/cookie/delivery"
 	cookieRepository "backend/internal/pkg/middleware/cookie/repository"
 	"sync"
 )
 
-type CookieService struct{
-	CookieDelivery *cookieDelivery.CookieHandler
+type CookieService struct {
+	CookieDelivery   *cookieDelivery.CookieHandler
 	CookieRepository *cookieRepository.CookieRepository
 }
 
 var CookieManager *CookieService
 
-func Start(mutex *sync.RWMutex) *CookieService{
+func Start(mutex *sync.RWMutex) *CookieService {
 	cookieRep := cookieRepository.NewCookieRepository(mutex)
 	cookieHandler := cookieDelivery.NewCookieHandler(cookieRep)
 	CookieManager = &CookieService{
