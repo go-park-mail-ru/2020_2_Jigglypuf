@@ -1,0 +1,3 @@
+sudo docker build -t felixgreen/teamproject_tarantool_image .
+sudo docker tag felixgreen/teamproject_tarantool felixgreen/cinema_interfaceservice_image
+sudo docker push felixgreen/cinema_interfaceservice_image
