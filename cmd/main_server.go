@@ -75,15 +75,15 @@ func configureServer(port string, funcHandler http.Handler) *http.Server {
 }
 
 func main() {
+	log.Println("Starting server at port 8080")
 	serverConfig, configErr := configureAPI()
 	if configErr != nil{
 		return
 	}
 	responseHandler := configureRouter(serverConfig)
 	serverConfig.httpServer = configureServer("8080", responseHandler)
-
-	err := serverConfig.httpServer.ListenAndServe()
 	log.Println("Starting server at port 8080")
+	err := serverConfig.httpServer.ListenAndServe()
 	if err != nil {
 		log.Fatalln(err)
 	}
