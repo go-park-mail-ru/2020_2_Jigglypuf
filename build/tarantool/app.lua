@@ -9,6 +9,7 @@ box.once('init', function()
     s:format({
         {name = 'session_value', type = 'string'},
         {name = 'user_id', type = 'unsigned'},
+        {name = 'cookie_data', type = 'string'}
     })
 
     s:create_index('primary', {type = 'HASH', parts = {'session_value'}})
