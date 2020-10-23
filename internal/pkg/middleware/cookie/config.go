@@ -7,5 +7,5 @@ var (
 	SessionCookieName        = "session_id"
 	ContextIsAuthName isAuth = 401
 	ContextUserIDName UserID = "UserID"
-	DBSpaceName = "sessions"
+	DBSpaceName              = "sessions"
 )

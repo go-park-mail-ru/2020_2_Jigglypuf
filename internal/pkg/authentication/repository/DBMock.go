@@ -38,7 +38,7 @@ func (t *AuthRepository) CreateUser(user *models.User) error {
 				success = false
 				break
 			}
-			if val.ID >= lastID{
+			if val.ID >= lastID {
 				lastID = val.ID + 1
 			}
 		}
@@ -86,7 +86,7 @@ func (t *AuthRepository) GetUserByID(userID uint64) (*models.User, error) {
 
 	t.Mu.RLock()
 	for _, val := range t.Users {
-		if val.ID == userID{
+		if val.ID == userID {
 			*user = val
 			success = true
 		}
@@ -98,4 +98,3 @@ func (t *AuthRepository) GetUserByID(userID uint64) (*models.User, error) {
 
 	return user, nil
 }
-

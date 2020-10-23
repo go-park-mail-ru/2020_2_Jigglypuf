@@ -14,12 +14,12 @@ type CookieService struct {
 
 var CookieManager *CookieService
 
-func Start() (*CookieService,error) {
-	cookieRep,DBErr := cookieRepository.NewCookieTarantoolRepository()
-	if DBErr != nil{
+func Start() (*CookieService, error) {
+	cookieRep, DBErr := cookieRepository.NewCookieTarantoolRepository()
+	if DBErr != nil {
 		return nil, DBErr
 	}
-	//cookieRep := cookieRepository.NewCookieRepository(mutex)
+	// cookieRep := cookieRepository.NewCookieRepository(mutex)
 	cookieHandler := cookieDelivery.NewCookieHandler(cookieRep)
 	CookieManager = &CookieService{
 		cookieHandler,
@@ -28,7 +28,7 @@ func Start() (*CookieService,error) {
 	return CookieManager, nil
 }
 
-func StartMock(mutex *sync.RWMutex) *CookieService{
+func StartMock(mutex *sync.RWMutex) *CookieService {
 	cookieRep := cookieRepository.NewCookieRepository(mutex)
 	cookieHandler := cookieDelivery.NewCookieHandler(cookieRep)
 	CookieManager = &CookieService{

@@ -27,10 +27,10 @@ type ServerStruct struct {
 	httpServer     *http.Server
 }
 
-func configureAPI() (*ServerStruct,error) {
+func configureAPI() (*ServerStruct, error) {
 	mutex := sync.RWMutex{}
 	NewCookieService, cookieErr := cookieService.Start()
-	if cookieErr != nil{
+	if cookieErr != nil {
 		log.Println("No Tarantool Cookie DB connection")
 		return nil, cookieErr
 	}
@@ -76,7 +76,7 @@ func configureServer(port string, funcHandler http.Handler) *http.Server {
 
 func main() {
 	serverConfig, configErr := configureAPI()
-	if configErr != nil{
+	if configErr != nil {
 		log.Fatalln(configErr)
 		return
 	}

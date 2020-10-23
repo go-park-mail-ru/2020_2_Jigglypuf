@@ -12,7 +12,7 @@ func CookieMiddleware(next http.Handler) http.Handler {
 		ctx := r.Context()
 		isAuth := true
 		val, ok := CookieService.CookieManager.CookieDelivery.CheckCookie(r)
-		if !ok{
+		if !ok {
 			isAuth = false
 		}
 		ctx = context.WithValue(ctx, cookie.ContextIsAuthName, isAuth)

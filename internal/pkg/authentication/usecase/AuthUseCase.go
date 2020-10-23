@@ -75,14 +75,13 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 	hashPassword := createHashPassword(password, t.salt)
 	cookieValue := createUserCookie()
 
-
 	user := models.User{
 		Username: username,
 		Password: hashPassword,
 	}
 
 	err := t.memConn.CreateUser(&user)
-	cookieErr := t.cookieDBConn.SetCookie(&cookieValue,user.ID)
+	cookieErr := t.cookieDBConn.SetCookie(&cookieValue, user.ID)
 	if cookieErr != nil {
 		return &http.Cookie{}, cookieErr
 	}
