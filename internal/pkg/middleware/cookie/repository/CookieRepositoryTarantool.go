@@ -56,7 +56,7 @@ func (t *CookieTarantoolRepository) SetCookie(cookie *http.Cookie, userID uint64
 	resp, err := t.connectionDB.Eval("return create_session(...)", []interface{}{cookie.Value, string(stringCookie), userID})
 
 	if err != nil{
-		return errors.New("incorrect create_session() args in database")
+		return err
 	}
 	log.Println(resp)
 
