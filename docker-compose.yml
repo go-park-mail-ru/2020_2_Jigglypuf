@@ -1,12 +1,5 @@
 version: "3.7"
 services:
- app:
-  image: felixgreen/cinema_interfaceservice_image
-  ports:
-   - 8080:8080
-  volumes:
-   - ./:/app
-   - ../media:/media
  nginx:
   image: felixgreen/cinema-interface-nginx-docker
   ports:
@@ -22,3 +15,10 @@ services:
    - 3301:3301
   volumes:
    - /data/tarantool:/var/lib/tarantool
+ app:
+  image: felixgreen/cinema_interfaceservice_image
+  ports:
+   - 8080:8080
+  volumes:
+   - ./:/app
+   - ../media:/media
