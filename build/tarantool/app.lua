@@ -18,6 +18,7 @@ box.once('init', function()
     box.schema.user.grant('Backend_cinema_interface', 'read,write,execute', 'space', 'sessions')
     box.schema.user.grant('Backend_cinema_interface', 'read,write,execute', 'function', 'create_session')
     box.schema.user.grant('Backend_cinema_interface', 'read,write,execute', 'function', 'check_session')
+    box.schema.user.grant('Backend_cinema_interface', 'read,write,execute', 'universe')
 
 
     print("tarantool initialized")
