@@ -16,3 +16,9 @@ services:
   - ../media:/media
   - ../static:/static
   - /etc/letsencrypt:/etc/letsencrypt
+ tarantool:
+  image: felixgreen/teamproject_tarantool_image
+  ports:
+   - 3301:3301
+  volumes:
+   - /data/tarantool:/var/lib/tarantool
