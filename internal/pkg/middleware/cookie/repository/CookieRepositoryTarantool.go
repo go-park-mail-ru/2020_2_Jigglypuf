@@ -13,18 +13,9 @@ type CookieTarantoolRepository struct {
 	connectionDB *tarantool.Connection
 }
 
-func NewCookieTarantoolRepository() (*CookieTarantoolRepository, error) {
-	connection, DBConnectionErr := tarantool.Connect(tarantoolConfig.Host+tarantoolConfig.Port, tarantool.Opts{
-		User: tarantoolConfig.User,
-		Pass: tarantoolConfig.Password,
-	})
-
-	if DBConnectionErr != nil {
-		return &CookieTarantoolRepository{}, DBConnectionErr
-	}
-
+func NewCookieTarantoolRepository(conn *tarantool.Connection) (*CookieTarantoolRepository, error) {
 	return &CookieTarantoolRepository{
-		connectionDB: connection,
+		connectionDB: conn,
 	}, nil
 }
 

@@ -87,4 +87,10 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	defer func() {
+		if serverConfig.cookieService.DBConnection != nil {
+			_ = serverConfig.cookieService.DBConnection.Close()
+		}
+	}()
 }
