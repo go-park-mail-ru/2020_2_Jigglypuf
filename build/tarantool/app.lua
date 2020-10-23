@@ -8,15 +8,14 @@ box.once('init', function()
     s = box.schema.space.create('sessions')
     s:format({
         {name = 'session_value', type = 'string'},
-        {name = 'user_id', type = 'unsigned'},
-        {name = 'cookie_data', type = 'string'}
+        {name = 'user_id', type = 'unsigned'}
     })
 
     s:create_index('primary', {type = 'HASH', parts = {'session_value'}})
     s:create_index('secondary', {type = 'TREE', parts = {'user_id'}})
 
     box.schema.user.create("Backend_cinema_interface", {password='some_password'})
-    box.schema.user.grant('Backend_cinema_interface', 'read,write,execute', 'space', 'sessions')
+    box.schema.user.grant('Backend_cinema_interface', 'read,write,execute', 'universe')
 
 
     print("tarantool initialized")
