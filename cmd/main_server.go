@@ -83,7 +83,7 @@ func main() {
 	serverConfig.httpServer = configureServer("8080", responseHandler)
 
 	err := serverConfig.httpServer.ListenAndServe()
-
+	log.Println("Starting server at port 8080")
 	if err != nil {
 		log.Fatalln(err)
 	}
