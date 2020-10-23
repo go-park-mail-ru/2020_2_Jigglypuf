@@ -63,13 +63,13 @@ func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, para
 	w.Header().Set("Content-Type", "application/json")
 
 	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
-	if isAuth == nil || !isAuth.(bool) {
+	profileUserID := r.Context().Value(cookieService.ContextUserIDName)
+	if isAuth == nil || !isAuth.(bool) || profileUserID == nil {
 		models.UnauthorizedHTTPResponse(&w)
 		return
 	}
 
-	cookieValue, _ := r.Cookie(cookieService.SessionCookieName)
-	requiredProfile, profileError := t.useCase.GetProfileViaCookie(cookieValue)
+	requiredProfile, profileError := t.useCase.GetProfileViaID(profileUserID.(uint64))
 
 	if profileError != nil {
 		models.BadBodyHTTPResponse(&w, profileError)
@@ -104,13 +104,13 @@ func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request, p
 	}
 
 	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
-	if isAuth == nil || !isAuth.(bool) {
+	profileUserID := r.Context().Value(cookieService.ContextUserIDName)
+	if isAuth == nil || !isAuth.(bool) || profileUserID == nil {
 		models.UnauthorizedHTTPResponse(&w)
 		return
 	}
-	cookieValue, _ := r.Cookie(cookieService.SessionCookieName)
 
-	profileUpdate, profileError := t.useCase.GetProfileViaCookie(cookieValue)
+	profileUpdate, profileError := t.useCase.GetProfileViaID(profileUserID.(uint64))
 
 	if profileError != nil {
 		models.BadBodyHTTPResponse(&w, profileError)

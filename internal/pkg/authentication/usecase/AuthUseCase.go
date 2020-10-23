@@ -74,18 +74,18 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 
 	hashPassword := createHashPassword(password, t.salt)
 	cookieValue := createUserCookie()
-	cookieerr := t.cookieDBConn.SetCookie(&cookieValue)
-	if cookieerr != nil {
-		return &http.Cookie{}, cookieerr
-	}
+
 
 	user := models.User{
 		Username: username,
 		Password: hashPassword,
-		Cookie:   cookieValue,
 	}
 
 	err := t.memConn.CreateUser(&user)
+	cookieErr := t.cookieDBConn.SetCookie(&cookieValue,user.ID)
+	if cookieErr != nil {
+		return &http.Cookie{}, cookieErr
+	}
 
 	return &cookieValue, err
 }
@@ -104,17 +104,13 @@ func (t *UserUseCase) SignIn(input *models.AuthInput) (*http.Cookie, error) {
 		return &http.Cookie{}, err
 	}
 
-	if time.Now().After(user.Cookie.Expires) {
-		cookieValue := createUserCookie()
-		user.Cookie = cookieValue
-		t.memConn.SetCookie(user, &cookieValue)
-		err := t.cookieDBConn.SetCookie(&cookieValue)
-		if err != nil {
-			return &http.Cookie{}, err
-		}
+	cookieValue := createUserCookie()
+	cookieErr := t.cookieDBConn.SetCookie(&cookieValue, user.ID)
+	if cookieErr != nil {
+		return &http.Cookie{}, err
 	}
 
-	return &user.Cookie, err
+	return &cookieValue, err
 }
 
 func (t *UserUseCase) SignOut(cookie *http.Cookie) (*http.Cookie, error) {

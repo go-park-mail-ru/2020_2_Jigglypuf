@@ -100,13 +100,13 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request, params 
 	w.Header().Set("Content-Type", "application/json")
 
 	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
-	if isAuth == nil || !isAuth.(bool) {
+	UserID := r.Context().Value(cookieService.ContextUserIDName)
+	if isAuth == nil || !isAuth.(bool) || UserID == nil {
 		models.UnauthorizedHTTPResponse(&w)
 		return
 	}
 
-	cookieValue, _ := r.Cookie("session_id")
-	reqUser, userError := t.userRepository.GetUserViaCookie(cookieValue)
+	reqUser, userError := t.userRepository.GetUserByID(UserID.(uint64))
 	if userError != nil {
 		models.UnauthorizedHTTPResponse(&w)
 		return
@@ -134,15 +134,14 @@ func (t *MovieHandler) GetMovieRating(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-
-	cookieValue, cookieErr := r.Cookie("session_id")
-
-	if cookieErr != nil {
+	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
+	UserID := r.Context().Value(cookieService.ContextUserIDName)
+	if isAuth == nil || !isAuth.(bool) || UserID == nil {
 		models.UnauthorizedHTTPResponse(&w)
 		return
 	}
 
-	reqUser, userError := t.userRepository.GetUserViaCookie(cookieValue)
+	reqUser, userError := t.userRepository.GetUserByID(UserID.(uint64))
 	if userError != nil {
 		models.UnauthorizedHTTPResponse(&w)
 		return

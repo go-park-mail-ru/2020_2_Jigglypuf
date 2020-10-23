@@ -27,9 +27,13 @@ type ServerStruct struct {
 	httpServer     *http.Server
 }
 
-func configureAPI() *ServerStruct {
+func configureAPI() (*ServerStruct,error) {
 	mutex := sync.RWMutex{}
-	NewCookieService := cookieService.Start(&mutex)
+	NewCookieService, cookieErr := cookieService.Start()
+	if cookieErr != nil{
+		log.Println("No Tarantool Cookie DB connection")
+		return nil, cookieErr
+	}
 	newAuthService := authService.Start(&mutex, NewCookieService.CookieRepository)
 	newCinemaService := cinemaService.Start(&mutex)
 	newMovieService := movieService.Start(&mutex, newAuthService.AuthenticationRepository)
@@ -41,7 +45,7 @@ func configureAPI() *ServerStruct {
 		movieService:   newMovieService,
 		profileService: newProfileService,
 		cookieService:  NewCookieService,
-	}
+	}, nil
 }
 
 func configureRouter(application *ServerStruct) http.Handler {
@@ -71,7 +75,10 @@ func configureServer(port string, funcHandler http.Handler) *http.Server {
 }
 
 func main() {
-	serverConfig := configureAPI()
+	serverConfig, configErr := configureAPI()
+	if configErr != nil{
+		return
+	}
 	responseHandler := configureRouter(serverConfig)
 	serverConfig.httpServer = configureServer("8080", responseHandler)
 

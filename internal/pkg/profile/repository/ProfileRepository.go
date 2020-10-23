@@ -3,7 +3,6 @@ package repository
 import (
 	"backend/internal/pkg/authentication"
 	"backend/internal/pkg/models"
-	"net/http"
 	"sync"
 )
 
@@ -87,8 +86,8 @@ func (t *ProfileRepository) GetProfile(login *string) (*models.Profile, error) {
 	return profile, nil
 }
 
-func (t *ProfileRepository) GetProfileViaCookie(cookie *http.Cookie) (*models.Profile, error) {
-	user, err := t.UserRepository.GetUserViaCookie(cookie)
+func (t *ProfileRepository) GetProfileViaID(userID uint64) (*models.Profile, error) {
+	user, err := t.UserRepository.GetUserByID(userID)
 	profile := new(models.Profile)
 	if err != nil {
 		return profile, err

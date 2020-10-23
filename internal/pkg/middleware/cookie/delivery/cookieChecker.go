@@ -15,12 +15,12 @@ func NewCookieHandler(rep cookie.Repository) *CookieHandler {
 	}
 }
 
-func (t *CookieHandler) CheckCookie(r *http.Request) bool {
+func (t *CookieHandler) CheckCookie(r *http.Request) (uint64,bool) {
 	cookieValue, err := r.Cookie("session_id")
 	if err != nil {
-		return false
+		return 0,false
 	}
 
-	cookieErr := t.dbConn.GetCookie(cookieValue)
-	return cookieErr == nil
+	value, cookieErr := t.dbConn.GetCookie(cookieValue)
+	return value,cookieErr == nil
 }
