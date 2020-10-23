@@ -19,7 +19,7 @@ func (t *CinemaUseCase) CreateCinema(cinema *models.Cinema) error {
 	return t.DBConn.CreateCinema(cinema)
 }
 
-func (t *CinemaUseCase) GetCinema(name *string) (*models.Cinema, error) {
+func (t *CinemaUseCase) GetCinema(name uint64) (*models.Cinema, error) {
 	return t.DBConn.GetCinema(name)
 }
 

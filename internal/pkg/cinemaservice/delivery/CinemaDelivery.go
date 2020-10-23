@@ -4,6 +4,7 @@ import (
 	"backend/internal/pkg/cinemaservice"
 	"backend/internal/pkg/models"
 	"encoding/json"
+	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strconv"
 )
@@ -18,7 +19,7 @@ func NewCinemaHandler(useCase cinemaservice.UseCase) *CinemaHandler {
 	}
 }
 
-func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r *http.Request) {
+func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 
 	w.Header().Set("Content-Type", "application/json")
@@ -28,14 +29,14 @@ func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	name := r.URL.Query()["name"]
-
-	if len(name) == 0 {
+	name := params.ByName(cinemaservice.CinemaIDParam)
+	integerName, castErr := strconv.Atoi(name)
+	if castErr != nil || len(name) == 0 {
 		models.BadBodyHTTPResponse(&w, models.IncorrectGetParameters{})
 		return
 	}
 
-	result, GetCinemaError := t.cinemaUseCase.GetCinema(&name[0])
+	result, GetCinemaError := t.cinemaUseCase.GetCinema(uint64(integerName))
 
 	if GetCinemaError != nil {
 		models.BadBodyHTTPResponse(&w, GetCinemaError)
@@ -51,7 +52,7 @@ func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(response)
 }
 
-func (t *CinemaHandler) GetCinemaList(w http.ResponseWriter, r *http.Request) {
+func (t *CinemaHandler) GetCinemaList(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 
 	w.Header().Set("Content-Type", "application/json")
@@ -60,6 +61,7 @@ func (t *CinemaHandler) GetCinemaList(w http.ResponseWriter, r *http.Request) {
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
+
 	Limit := r.URL.Query()["limit"]
 	Page := r.URL.Query()["page"]
 	if len(Limit) == 0 || len(Page) == 0 {

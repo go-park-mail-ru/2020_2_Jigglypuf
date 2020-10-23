@@ -127,13 +127,13 @@ func (t *MovieRepository) UpdateMovie(movie *models.Movie) error {
 	return nil
 }
 
-func (t *MovieRepository) GetMovie(name string) (*models.Movie, error) {
+func (t *MovieRepository) GetMovie(id uint64) (*models.Movie, error) {
 	resultMovie := new(models.Movie)
 	success := false
 	t.mutex.RLock()
 	{
 		for _, val := range t.Movies {
-			if val.Name == name {
+			if val.ID == id {
 				*resultMovie = val
 				success = true
 				break
@@ -174,8 +174,8 @@ func (t *MovieRepository) GetMovieList(limit, page int) (*[]models.Movie, error)
 	return &resultArray, nil
 }
 
-func (t *MovieRepository) RateMovie(user *models.User, name string, rating int64) error {
-	movie, err := t.GetMovie(name)
+func (t *MovieRepository) RateMovie(user *models.User, id uint64, rating int64) error {
+	movie, err := t.GetMovie(id)
 	if err != nil {
 		return err
 	}
@@ -206,8 +206,8 @@ func (t *MovieRepository) RateMovie(user *models.User, name string, rating int64
 	return nil
 }
 
-func (t *MovieRepository) GetRating(user *models.User, name string) (int64, error) {
-	movie, err := t.GetMovie(name)
+func (t *MovieRepository) GetRating(user *models.User, id uint64) (int64, error) {
+	movie, err := t.GetMovie(id)
 	if err != nil {
 		return 0, err
 	}

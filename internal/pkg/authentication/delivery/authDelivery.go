@@ -2,9 +2,10 @@ package delivery
 
 import (
 	"backend/internal/pkg/authentication"
-	cookieService "backend/internal/pkg/cookie"
+	cookieService "backend/internal/pkg/middleware/cookie"
 	"backend/internal/pkg/models"
 	"encoding/json"
+	"github.com/julienschmidt/httprouter"
 	"net/http"
 )
 
@@ -18,7 +19,7 @@ func NewUserHandler(useCase authentication.UserUseCase) *UserHandler {
 	}
 }
 
-func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request) {
+func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 
 	if r.Method != http.MethodPost {
@@ -45,7 +46,7 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, cookie)
 }
 
-func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
+func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 
 	if r.Method != http.MethodPost {
@@ -73,19 +74,19 @@ func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, cookie)
 }
 
-func (t *UserHandler) SignOutHandler(w http.ResponseWriter, r *http.Request) {
+func (t *UserHandler) SignOutHandler(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	if r.Method != http.MethodPost {
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
-
-	cookie, cookieError := r.Cookie(cookieService.SessionCookieName)
-	if cookieError != nil {
+	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
+	if isAuth == nil || !isAuth.(bool) {
 		models.UnauthorizedHTTPResponse(&w)
 		return
 	}
 
-	expiredCookie, useCaseError := t.useCase.SignOut(cookie)
+	cookieValue, _ := r.Cookie(cookieService.SessionCookieName)
+	expiredCookie, useCaseError := t.useCase.SignOut(cookieValue)
 	if useCaseError != nil {
 		models.UnauthorizedHTTPResponse(&w)
 		return

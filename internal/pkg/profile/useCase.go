@@ -2,7 +2,6 @@ package profile
 
 import (
 	"backend/internal/pkg/models"
-	"net/http"
 )
 
 type UseCase interface {
@@ -11,5 +10,5 @@ type UseCase interface {
 	GetProfile(login *string) (*models.Profile, error)
 	UpdateCredentials(profile *models.Profile) error
 	UpdateProfile(profile *models.Profile, name string, surname string, avatarPath string) error
-	GetProfileViaCookie(cookie *http.Cookie) (*models.Profile, error)
+	GetProfileViaID(userID uint64) (*models.Profile, error)
 }

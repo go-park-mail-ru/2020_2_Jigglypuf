@@ -1,2 +1,3 @@
-docker build -t teamproject-docker-image -f dockerfiles/main.Dockerfile ..
-docker run -v ~/projects/go-docker:/app -dp 8080:8080 teamproject-docker-image 
+sudo docker build -t main_image_docker_service -f dockerfiles/main.Dockerfile ..
+sudo docker tag main_image_docker_service felixgreen/cinema_interfaceservice_image
+sudo docker push felixgreen/cinema_interfaceservice_image

@@ -83,13 +83,13 @@ func (t *CinemaRepository) CreateCinema(cinema *models.Cinema) error {
 	return nil
 }
 
-func (t *CinemaRepository) GetCinema(name *string) (*models.Cinema, error) {
+func (t *CinemaRepository) GetCinema(id uint64) (*models.Cinema, error) {
 	resultCinema := new(models.Cinema)
 	success := false
 	t.mu.RLock()
 	{
 		for _, val := range t.Cinema {
-			if val.Name == *name {
+			if val.ID == id {
 				*resultCinema = val
 				success = true
 				break

@@ -3,7 +3,6 @@ package usecase
 import (
 	"backend/internal/pkg/models"
 	"backend/internal/pkg/profile"
-	"net/http"
 )
 
 type ProfileUseCase struct {
@@ -28,8 +27,8 @@ func (t *ProfileUseCase) GetProfile(login *string) (*models.Profile, error) {
 	return t.DBConn.GetProfile(login)
 }
 
-func (t *ProfileUseCase) GetProfileViaCookie(cookie *http.Cookie) (*models.Profile, error) {
-	return t.DBConn.GetProfileViaCookie(cookie)
+func (t *ProfileUseCase) GetProfileViaID(userID uint64) (*models.Profile, error) {
+	return t.DBConn.GetProfileViaID(userID)
 }
 
 func (t *ProfileUseCase) UpdateCredentials(profile *models.Profile) error {

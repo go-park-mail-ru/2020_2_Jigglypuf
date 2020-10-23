@@ -2,12 +2,10 @@ package authentication
 
 import (
 	"backend/internal/pkg/models"
-	"net/http"
 )
 
 type AuthRepository interface {
 	CreateUser(user *models.User) error
 	GetUser(username string, password string) (*models.User, error)
-	GetUserViaCookie(cookie *http.Cookie) (*models.User, error)
-	SetCookie(user *models.User, cookieValue *http.Cookie) bool
+	GetUserByID(userID uint64) (*models.User, error)
 }

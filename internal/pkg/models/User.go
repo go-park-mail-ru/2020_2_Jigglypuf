@@ -1,12 +1,9 @@
 package models
 
-import "net/http"
-
 type User struct {
 	ID       uint64
-	Username string
-	Password string
-	Cookie   http.Cookie `json:"-"`
+	Username string `json:"-"`
+	Password string `json:"-"`
 }
 
 type AuthInput struct {

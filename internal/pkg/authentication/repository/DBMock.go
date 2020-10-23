@@ -2,9 +2,7 @@ package repository
 
 import (
 	"backend/internal/pkg/models"
-	"net/http"
 	"sync"
-	"time"
 )
 
 type AuthRepository struct {
@@ -32,12 +30,16 @@ func (t UserAlreadyExists) Error() string {
 
 func (t *AuthRepository) CreateUser(user *models.User) error {
 	success := true
-
+	var lastID uint64 = 0
 	t.Mu.RLock()
 	{
 		for _, val := range t.Users {
 			if val.Username == user.Username {
 				success = false
+				break
+			}
+			if val.ID >= lastID {
+				lastID = val.ID + 1
 			}
 		}
 	}
@@ -47,10 +49,11 @@ func (t *AuthRepository) CreateUser(user *models.User) error {
 		return UserAlreadyExists{}
 	}
 
+	user.ID = lastID
+
 	t.Mu.Lock()
 	{
 		t.Users = append(t.Users, *user)
-		// t.Cookies[*user] = *cookieValue
 	}
 	t.Mu.Unlock()
 
@@ -77,13 +80,13 @@ func (t *AuthRepository) GetUser(username, password string) (*models.User, error
 	return user, nil
 }
 
-func (t *AuthRepository) GetUserViaCookie(cookie *http.Cookie) (*models.User, error) {
+func (t *AuthRepository) GetUserByID(userID uint64) (*models.User, error) {
 	user := new(models.User)
 	success := false
 
 	t.Mu.RLock()
 	for _, val := range t.Users {
-		if cookie != nil && cookie.Value == val.Cookie.Value && time.Now().Before(val.Cookie.Expires) {
+		if val.ID == userID {
 			*user = val
 			success = true
 		}
@@ -94,25 +97,4 @@ func (t *AuthRepository) GetUserViaCookie(cookie *http.Cookie) (*models.User, er
 	}
 
 	return user, nil
-}
-
-func (t *AuthRepository) SetCookie(user *models.User, cookieValue *http.Cookie) bool {
-	userIndex := 0
-	t.Mu.RLock()
-	{
-		for index, val := range t.Users {
-			if val.Username == user.Username {
-				userIndex = index
-			}
-		}
-	}
-	t.Mu.RUnlock()
-
-	t.Mu.RLock()
-	{
-		t.Users[userIndex].Cookie = *cookieValue
-	}
-	t.Mu.RUnlock()
-
-	return true
 }

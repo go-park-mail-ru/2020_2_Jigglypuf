@@ -1,10 +1,11 @@
 package delivery
 
 import (
-	"backend/internal/pkg/cookie"
+	cookieService "backend/internal/pkg/middleware/cookie"
 	"backend/internal/pkg/models"
 	"backend/internal/pkg/profile"
 	"encoding/json"
+	"github.com/julienschmidt/httprouter"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -51,7 +52,7 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 	return returnPath, nil
 }
 
-func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
+func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 
 	if r.Method != http.MethodGet {
@@ -61,14 +62,14 @@ func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	cookieValue, cookieErr := r.Cookie(cookie.SessionCookieName)
-
-	if cookieErr != nil {
+	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
+	profileUserID := r.Context().Value(cookieService.ContextUserIDName)
+	if isAuth == nil || !isAuth.(bool) || profileUserID == nil {
 		models.UnauthorizedHTTPResponse(&w)
 		return
 	}
 
-	requiredProfile, profileError := t.useCase.GetProfileViaCookie(cookieValue)
+	requiredProfile, profileError := t.useCase.GetProfileViaID(profileUserID.(uint64))
 
 	if profileError != nil {
 		models.BadBodyHTTPResponse(&w, profileError)
@@ -85,7 +86,7 @@ func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(responseProfile)
 }
 
-func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
+func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 
 	w.Header().Set("Content-Type", "application/json")
@@ -102,14 +103,14 @@ func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookieValue, cookieErr := r.Cookie(cookie.SessionCookieName)
-
-	if cookieErr != nil {
+	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
+	profileUserID := r.Context().Value(cookieService.ContextUserIDName)
+	if isAuth == nil || !isAuth.(bool) || profileUserID == nil {
 		models.UnauthorizedHTTPResponse(&w)
 		return
 	}
 
-	profileUpdate, profileError := t.useCase.GetProfileViaCookie(cookieValue)
+	profileUpdate, profileError := t.useCase.GetProfileViaID(profileUserID.(uint64))
 
 	if profileError != nil {
 		models.BadBodyHTTPResponse(&w, profileError)
