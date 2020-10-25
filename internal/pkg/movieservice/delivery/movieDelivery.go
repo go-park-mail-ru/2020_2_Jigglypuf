@@ -23,6 +23,16 @@ func NewMovieHandler(usecase movieservice.MovieUseCase, userRepository authentic
 	}
 }
 
+// Movie godoc
+// @Summary GetMovieList
+// @Description Get movie list
+// @ID movie-list-id
+// @Param limit query int true "limit"
+// @Param page query int true "page"
+// @Success 200 {array} models.Movie
+// @Failure 400 {object} models.ServerResponse
+// @Failure 405 {object} models.ServerResponse
+// @Router /movie/ [get]
 func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -59,6 +69,15 @@ func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request, para
 	_, _ = w.Write(response)
 }
 
+// Movie godoc
+// @Summary GetMovie
+// @Description Get movie
+// @ID movie-id
+// @Param id path int true "movie id"
+// @Success 200 {object} models.Movie
+// @Failure 400 {object} models.ServerResponse
+// @Failure 405 {object} models.ServerResponse
+// @Router /movie/{id}/ [get]
 func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -89,6 +108,17 @@ func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request, params h
 	_, _ = w.Write(response)
 }
 
+// Movie godoc
+// @Summary RateMovie
+// @Description Rate movie
+// @ID movie-rate-id
+// @Accept  json
+// @Param Login_info body models.RateMovie true "Login information"
+// @Success 200
+// @Failure 400 {object} models.ServerResponse "Bad body"
+// @Failure 401 {object} models.ServerResponse "No authorization"
+// @Failure 405 {object} models.ServerResponse "Method not allowed"
+// @Router /movie/rate/ [post]
 func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 
