@@ -77,6 +77,7 @@ func configureServer(port string, funcHandler http.Handler) *http.Server {
 	}
 }
 
+// Backend doc
 // @title CinemaScope Backend API
 // @version 0.5
 // @description This is a backend API
