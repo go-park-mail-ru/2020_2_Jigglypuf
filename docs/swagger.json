@@ -1,0 +1,12 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a backend API",
+        "title": "CinemaScope Backend API",
+        "contact": {},
+        "version": "0.5"
+    },
+    "host": "https://cinemascope.space",
+    "basePath": "/",
+    "paths": {}
+}

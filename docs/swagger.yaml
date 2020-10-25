@@ -1,0 +1,9 @@
+basePath: /
+host: https://cinemascope.space
+info:
+  contact: {}
+  description: This is a backend API
+  title: CinemaScope Backend API
+  version: "0.5"
+paths: {}
+swagger: "2.0"
