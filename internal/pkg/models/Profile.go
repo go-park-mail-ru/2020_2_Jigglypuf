@@ -7,9 +7,8 @@ type Profile struct {
 	AvatarPath string
 }
 
-
-type ProfileFormData struct{
-	Name string
+type ProfileFormData struct {
+	Name    string
 	Surname string
-	Avatar string
+	Avatar  string
 }

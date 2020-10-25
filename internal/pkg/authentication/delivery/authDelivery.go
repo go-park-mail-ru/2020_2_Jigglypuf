@@ -1,7 +1,6 @@
 package delivery
 
 import (
-	_ "backend/docs"
 	"backend/internal/pkg/authentication"
 	cookieService "backend/internal/pkg/middleware/cookie"
 	"backend/internal/pkg/models"
