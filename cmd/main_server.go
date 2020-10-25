@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "backend/docs"
 	authService "backend/internal/app/authserver"
 	cinemaService "backend/internal/app/cinemaserver"
 	cookieService "backend/internal/app/cookieserver"
@@ -12,6 +13,7 @@ import (
 	"backend/internal/pkg/middleware/cors"
 	movieConfig "backend/internal/pkg/movieservice"
 	profileConfig "backend/internal/pkg/profile"
+	"github.com/swaggo/http-swagger"
 	"log"
 	"net/http"
 	"sync"
@@ -59,6 +61,7 @@ func configureRouter(application *ServerStruct) http.Handler {
 	handler.HandleFunc("/media/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, r.RequestURI, http.StatusMovedPermanently)
 	})
+	http.HandleFunc("/docs/", httpSwagger.WrapHandler)
 	middlewareHandler := middleware.CookieMiddleware(handler)
 	middlewareHandler = cors.MiddlewareCORS(middlewareHandler)
 
@@ -74,6 +77,12 @@ func configureServer(port string, funcHandler http.Handler) *http.Server {
 	}
 }
 
+// Backend doc
+// @title CinemaScope Backend API
+// @version 0.5
+// @description This is a backend API
+// @host https://cinemascope.space
+// @BasePath /
 func main() {
 	serverConfig, configErr := configureAPI()
 	if configErr != nil {

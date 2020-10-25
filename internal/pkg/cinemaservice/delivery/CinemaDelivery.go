@@ -19,6 +19,15 @@ func NewCinemaHandler(useCase cinemaservice.UseCase) *CinemaHandler {
 	}
 }
 
+// Cinema godoc
+// @Summary GetCinema
+// @Description Get cinema
+// @ID cinema-id
+// @Param id path int true "cinema id param"
+// @Success 200 {object} models.Cinema
+// @Failure 400 {object} models.ServerResponse
+// @Failure 405 {object} models.ServerResponse
+// @Router /cinema/{id}/ [get]
 func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 
@@ -52,6 +61,16 @@ func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r *http.Request, params
 	_, _ = w.Write(response)
 }
 
+// Cinema godoc
+// @Summary GetCinemaList
+// @Description Get cinema list
+// @ID cinema-list-id
+// @Param limit query int true "limit"
+// @Param page query int true "page"
+// @Success 200 {array} models.Cinema
+// @Failure 400 {object} models.ServerResponse
+// @Failure 405 {object} models.ServerResponse
+// @Router /cinema/ [get]
 func (t *CinemaHandler) GetCinemaList(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 

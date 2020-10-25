@@ -1,0 +1,314 @@
+basePath: /
+definitions:
+  models.AuthInput:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  models.Cinema:
+    properties:
+      address:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.Movie:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      pathToAvatar:
+        type: string
+      rating:
+        type: number
+    type: object
+  models.RateMovie:
+    properties:
+      id:
+        type: integer
+      rating:
+        type: integer
+    type: object
+  models.RegistrationInput:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  models.ServerResponse:
+    properties:
+      response:
+        type: string
+      statusCode:
+        type: integer
+    type: object
+host: https://cinemascope.space
+info:
+  contact: {}
+  description: This is a backend API
+  title: CinemaScope Backend API
+  version: "0.5"
+paths:
+  /auth/login/:
+    post:
+      consumes:
+      - application/json
+      description: login user and get cookie
+      operationId: login-user-by-login-data
+      parameters:
+      - description: Login information
+        in: body
+        name: Login_info
+        required: true
+        schema:
+          $ref: '#/definitions/models.AuthInput'
+      responses:
+        "200": {}
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method Not Allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: login
+  /auth/logout/:
+    post:
+      description: SignOut user
+      operationId: SignOut-user-by-register-data
+      responses:
+        "200": {}
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method Not Allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: SignOut
+  /auth/register/:
+    post:
+      consumes:
+      - application/json
+      description: register user and get cookie
+      operationId: register-user-by-register-data
+      parameters:
+      - description: Register information
+        in: body
+        name: Register_info
+        required: true
+        schema:
+          $ref: '#/definitions/models.RegistrationInput'
+      responses:
+        "200": {}
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method Not Allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: Register
+  /cinema/:
+    get:
+      description: Get cinema list
+      operationId: cinema-list-id
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: page
+        in: query
+        name: page
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Cinema'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method Not Allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: GetCinemaList
+  /cinema/{id}/:
+    get:
+      description: Get cinema
+      operationId: cinema-id
+      parameters:
+      - description: cinema id param
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Cinema'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method Not Allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: GetCinema
+  /movie/:
+    get:
+      description: Get movie list
+      operationId: movie-list-id
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: page
+        in: query
+        name: page
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Movie'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method Not Allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: GetMovieList
+  /movie/{id}/:
+    get:
+      description: Get movie
+      operationId: movie-id
+      parameters:
+      - description: movie id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Movie'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method Not Allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: GetMovie
+  /movie/rate/:
+    post:
+      consumes:
+      - application/json
+      description: Rate movie
+      operationId: movie-rate-id
+      parameters:
+      - description: Login information
+        in: body
+        name: Login_info
+        required: true
+        schema:
+          $ref: '#/definitions/models.RateMovie'
+      responses:
+        "200": {}
+        "400":
+          description: Bad body
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "401":
+          description: No authorization
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: RateMovie
+  /profile/:
+    get:
+      description: Get Profile
+      operationId: profile-id
+      parameters:
+      - description: Cookie information
+        in: header
+        name: Cookie_info
+        required: true
+        type: string
+      responses:
+        "200": {}
+        "400":
+          description: Bad body
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "401":
+          description: No authorization
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: GetProfile
+    put:
+      description: Get Profile
+      operationId: profile-update-id
+      parameters:
+      - in: formData
+        name: avatar
+        type: string
+      - in: formData
+        name: name
+        type: string
+      - in: formData
+        name: surname
+        type: string
+      responses:
+        "200": {}
+        "400":
+          description: Bad body
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "401":
+          description: No authorization
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: GetProfile
+swagger: "2.0"

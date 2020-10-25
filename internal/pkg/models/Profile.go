@@ -6,3 +6,9 @@ type Profile struct {
 	Surname    string
 	AvatarPath string
 }
+
+type ProfileFormData struct {
+	Name    string
+	Surname string
+	Avatar  string
+}
