@@ -9,11 +9,17 @@ import (
 	profileService "backend/internal/app/profileserver"
 	authConfig "backend/internal/pkg/authentication"
 	cinemaConfig "backend/internal/pkg/cinemaservice"
+	"backend/internal/pkg/middleware/cookie"
 	"backend/internal/pkg/middleware/cookie/middleware"
 	"backend/internal/pkg/middleware/cors"
 	movieConfig "backend/internal/pkg/movieservice"
 	profileConfig "backend/internal/pkg/profile"
+	"database/sql"
+	"errors"
+	"fmt"
+	_ "github.com/lib/pq"
 	"github.com/swaggo/http-swagger"
+	"github.com/tarantool/go-tarantool"
 	"log"
 	"net/http"
 	"sync"
@@ -29,9 +35,9 @@ type ServerStruct struct {
 	httpServer     *http.Server
 }
 
-func configureAPI() (*ServerStruct, error) {
+func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sql.DB) (*ServerStruct, error) {
 	mutex := sync.RWMutex{}
-	NewCookieService, cookieErr := cookieService.Start()
+	NewCookieService, cookieErr := cookieService.Start(cookieDBConnection)
 	if cookieErr != nil {
 		log.Println("No Tarantool Cookie DB connection")
 		return nil, cookieErr
@@ -77,6 +83,26 @@ func configureServer(port string, funcHandler http.Handler) *http.Server {
 	}
 }
 
+func startDBWork()(*sql.DB,*tarantool.Connection, error){
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		authConfig.Host,authConfig.Port, authConfig.User, authConfig.Password, authConfig.DBName)
+
+	PostgreSQLConnection, DBErr := sql.Open("postgres", psqlInfo)
+	if DBErr != nil{
+		return nil,nil,errors.New("no postgresql connection")
+	}
+
+	TarantoolConnection, DBConnectionErr := tarantool.Connect(cookie.Host+cookie.Port, tarantool.Opts{
+		User: cookie.User,
+		Pass: cookie.Password,
+	})
+	if DBConnectionErr != nil {
+		return nil,nil,errors.New("no tarantool connection")
+	}
+
+	return PostgreSQLConnection, TarantoolConnection, nil
+}
+
 // Backend doc
 // @title CinemaScope Backend API
 // @version 0.5
@@ -84,11 +110,18 @@ func configureServer(port string, funcHandler http.Handler) *http.Server {
 // @host https://cinemascope.space
 // @BasePath /
 func main() {
-	serverConfig, configErr := configureAPI()
+	mainDBConnection, cookieDBConnection, DBErr := startDBWork()
+	if DBErr != nil{
+		log.Fatalln(DBErr)
+		return
+	}
+
+	serverConfig, configErr := configureAPI(cookieDBConnection, mainDBConnection)
 	if configErr != nil {
 		log.Fatalln(configErr)
 		return
 	}
+
 	responseHandler := configureRouter(serverConfig)
 	serverConfig.httpServer = configureServer("8080", responseHandler)
 	log.Println("Starting server at port 8080")
@@ -98,8 +131,11 @@ func main() {
 	}
 
 	defer func() {
-		if serverConfig.cookieService.DBConnection != nil {
-			_ = serverConfig.cookieService.DBConnection.Close()
+		if mainDBConnection != nil {
+			_ = mainDBConnection.Close()
+		}
+		if cookieDBConnection != nil{
+			_ = cookieDBConnection.Close()
 		}
 	}()
 }

@@ -16,16 +16,7 @@ type CookieService struct {
 
 var CookieManager *CookieService
 
-func Start() (*CookieService, error) {
-	connection, DBConnectionErr := tarantool.Connect(cookie.Host+cookie.Port, tarantool.Opts{
-		User: cookie.User,
-		Pass: cookie.Password,
-	})
-
-	if DBConnectionErr != nil {
-		return &CookieService{}, DBConnectionErr
-	}
-
+func Start(connection *tarantool.Connection) (*CookieService, error) {
 	cookieRep, DBErr := cookieRepository.NewCookieTarantoolRepository(connection)
 	if DBErr != nil {
 		return nil, DBErr
@@ -37,6 +28,7 @@ func Start() (*CookieService, error) {
 		cookieRep,
 		connection,
 	}
+
 	return CookieManager, nil
 }
 
