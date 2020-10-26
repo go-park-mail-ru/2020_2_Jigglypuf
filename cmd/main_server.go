@@ -22,7 +22,6 @@ import (
 	"github.com/tarantool/go-tarantool"
 	"log"
 	"net/http"
-	"sync"
 	"time"
 )
 
@@ -36,17 +35,20 @@ type ServerStruct struct {
 }
 
 func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sql.DB) (*ServerStruct, error) {
-	mutex := sync.RWMutex{}
 	NewCookieService, cookieErr := cookieService.Start(cookieDBConnection)
 	if cookieErr != nil {
 		log.Println("No Tarantool Cookie DB connection")
 		return nil, cookieErr
 	}
-	newAuthService := authService.Start(&mutex, NewCookieService.CookieRepository)
-	newCinemaService := cinemaService.Start(&mutex)
-	newMovieService := movieService.Start(&mutex, newAuthService.AuthenticationRepository)
-	newProfileService := profileService.Start(&mutex, newAuthService.AuthenticationRepository)
+	newAuthService, authErr := authService.Start(NewCookieService.CookieRepository, mainDBConnection)
+	newCinemaService, cinemaErr := cinemaService.Start(mainDBConnection)
+	newMovieService, movieErr := movieService.Start(mainDBConnection, newAuthService.AuthenticationRepository)
+	newProfileService, profileErr := profileService.Start(mainDBConnection)
 
+	if authErr != nil || cinemaErr != nil || movieErr != nil || profileErr != nil {
+		log.Println(authErr)
+		return nil, authErr
+	}
 	return &ServerStruct{
 		authService:    newAuthService,
 		cinemaService:  newCinemaService,
@@ -83,13 +85,13 @@ func configureServer(port string, funcHandler http.Handler) *http.Server {
 	}
 }
 
-func startDBWork()(*sql.DB,*tarantool.Connection, error){
+func startDBWork() (*sql.DB, *tarantool.Connection, error) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		authConfig.Host,authConfig.Port, authConfig.User, authConfig.Password, authConfig.DBName)
+		authConfig.Host, authConfig.Port, authConfig.User, authConfig.Password, authConfig.DBName)
 
 	PostgreSQLConnection, DBErr := sql.Open("postgres", psqlInfo)
-	if DBErr != nil{
-		return nil,nil,errors.New("no postgresql connection")
+	if DBErr != nil {
+		return nil, nil, errors.New("no postgresql connection")
 	}
 
 	TarantoolConnection, DBConnectionErr := tarantool.Connect(cookie.Host+cookie.Port, tarantool.Opts{
@@ -97,7 +99,7 @@ func startDBWork()(*sql.DB,*tarantool.Connection, error){
 		Pass: cookie.Password,
 	})
 	if DBConnectionErr != nil {
-		return nil,nil,errors.New("no tarantool connection")
+		return nil, nil, errors.New("no tarantool connection")
 	}
 
 	return PostgreSQLConnection, TarantoolConnection, nil
@@ -111,7 +113,7 @@ func startDBWork()(*sql.DB,*tarantool.Connection, error){
 // @BasePath /
 func main() {
 	mainDBConnection, cookieDBConnection, DBErr := startDBWork()
-	if DBErr != nil{
+	if DBErr != nil {
 		log.Fatalln(DBErr)
 		return
 	}
@@ -134,7 +136,7 @@ func main() {
 		if mainDBConnection != nil {
 			_ = mainDBConnection.Close()
 		}
-		if cookieDBConnection != nil{
+		if cookieDBConnection != nil {
 			_ = cookieDBConnection.Close()
 		}
 	}()

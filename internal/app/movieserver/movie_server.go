@@ -6,12 +6,13 @@ import (
 	movieDelivery "backend/internal/pkg/movieservice/delivery"
 	movieRepository "backend/internal/pkg/movieservice/repository"
 	movieUseCase "backend/internal/pkg/movieservice/usecase"
+	"database/sql"
+	"errors"
 	"github.com/julienschmidt/httprouter"
-	"sync"
 )
 
 type MovieService struct {
-	MovieRepository *movieRepository.MovieRepository
+	MovieRepository movieConfig.MovieRepository
 	MovieUseCase    *movieUseCase.MovieUseCase
 	MovieDelivery   *movieDelivery.MovieHandler
 	MovieRouter     *httprouter.Router
@@ -27,8 +28,11 @@ func configureMovieRouter(handler *movieDelivery.MovieHandler) *httprouter.Route
 	return movieRouter
 }
 
-func Start(mutex *sync.RWMutex, authRep authentication.AuthRepository) *MovieService {
-	movieRep := movieRepository.NewMovieRepository(mutex)
+func Start(connection *sql.DB, authRep authentication.AuthRepository) (*MovieService, error) {
+	if connection == nil {
+		return nil, errors.New("no database connection")
+	}
+	movieRep := movieRepository.NewMovieSQLRepository(connection)
 	movieUC := movieUseCase.NewMovieUseCase(movieRep)
 	movieHandler := movieDelivery.NewMovieHandler(movieUC, authRep)
 
@@ -39,5 +43,5 @@ func Start(mutex *sync.RWMutex, authRep authentication.AuthRepository) *MovieSer
 		movieUC,
 		movieHandler,
 		movieRouter,
-	}
+	}, nil
 }

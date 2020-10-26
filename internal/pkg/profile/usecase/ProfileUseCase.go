@@ -36,13 +36,13 @@ func (t *ProfileUseCase) UpdateCredentials(profile *models.Profile) error {
 }
 
 func (t *ProfileUseCase) UpdateProfile(profile *models.Profile, name, surname, avatarPath string) error {
-	if name == ""{
+	if name == "" {
 		name = profile.Name
 	}
-	if surname == ""{
+	if surname == "" {
 		surname = profile.Surname
 	}
-	if avatarPath == ""{
+	if avatarPath == "" {
 		avatarPath = profile.AvatarPath
 	}
 	return t.DBConn.UpdateProfile(profile, name, surname, avatarPath)

@@ -4,12 +4,10 @@ import (
 	"backend/internal/pkg/models"
 	"database/sql"
 	"errors"
-	_ "github.com/lib/pq"
 	"log"
 )
 
-
-type AuthSQLRepository struct{
+type AuthSQLRepository struct {
 	DBConn *sql.DB
 }
 
@@ -20,18 +18,18 @@ func NewAuthSQLRepository(connection *sql.DB) *AuthSQLRepository {
 	}
 }
 
-func (t *AuthSQLRepository) CreateUser(user *models.User) error{
-	if t.DBConn == nil{
+func (t *AuthSQLRepository) CreateUser(user *models.User) error {
+	if t.DBConn == nil {
 		return errors.New("no database connection")
 	}
 	result, DBErr := t.DBConn.Exec("INSERT INTO users (`Username`, `Password`) VALUES (?,?)", user.Username, user.Password)
-	if DBErr != nil{
+	if DBErr != nil {
 		log.Println(DBErr)
 		return DBErr
 	}
 
 	ID, IDErr := result.LastInsertId()
-	if IDErr != nil{
+	if IDErr != nil {
 		log.Println(DBErr)
 		return IDErr
 	}
@@ -40,20 +38,25 @@ func (t *AuthSQLRepository) CreateUser(user *models.User) error{
 	return nil
 }
 
-func (t *AuthSQLRepository) GetUser(username string, hashPassword string)(*models.User, error){
-	if t.DBConn == nil{
+func (t *AuthSQLRepository) GetUser(username string, hashPassword string) (*models.User, error) {
+	if t.DBConn == nil {
 		return nil, errors.New("no database connection")
 	}
 
 	requiredUser := new(models.User)
-	result, DBErr := t.DBConn.Query("SELECT ID, Username, Password FROM users WHERE Username = ? AND Password = ?",username,hashPassword)
-	if DBErr != nil{
+	result, DBErr := t.DBConn.Query("SELECT ID, Username, Password FROM users WHERE Username = ? AND Password = ?", username, hashPassword)
+	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr
 	}
+	rowsErr := result.Err()
+	if rowsErr != nil {
+		log.Println(rowsErr)
+		return nil, rowsErr
+	}
 
 	resultErr := result.Scan(&requiredUser.ID, &requiredUser.Username, &requiredUser.Password)
-	if resultErr != nil{
+	if resultErr != nil {
 		log.Println(resultErr)
 		return nil, resultErr
 	}
@@ -61,20 +64,25 @@ func (t *AuthSQLRepository) GetUser(username string, hashPassword string)(*model
 	return requiredUser, nil
 }
 
-func (t *AuthSQLRepository) GetUserByID(userID uint64)(*models.User, error){
-	if t.DBConn == nil{
+func (t *AuthSQLRepository) GetUserByID(userID uint64) (*models.User, error) {
+	if t.DBConn == nil {
 		return nil, errors.New("no database connection")
 	}
 
 	requiredUser := new(models.User)
-	result,DBErr := t.DBConn.Query("SELECT ID, Username, Password FROM users WHERE ID = ?", userID)
-	if DBErr != nil{
+	result, DBErr := t.DBConn.Query("SELECT ID, Username, Password FROM users WHERE ID = ?", userID)
+	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr
 	}
+	rowsErr := result.Err()
+	if rowsErr != nil {
+		log.Println(rowsErr)
+		return nil, rowsErr
+	}
 
 	resultErr := result.Scan(&requiredUser.ID, &requiredUser.Username, &requiredUser.Password)
-	if resultErr != nil{
+	if resultErr != nil {
 		log.Println(resultErr)
 		return nil, resultErr
 	}
