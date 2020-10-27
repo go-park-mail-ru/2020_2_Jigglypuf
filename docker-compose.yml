@@ -29,6 +29,7 @@ services:
   restart: always
   environment:
    POSTGRES_PASSWORD: some_password
+   POSTGRES_USER: cinema_backend_interface
   volumes:
    - ./init/:/docker-entrypoint-initdb.d/
    - ~/etc/postgresql:/etc/postgresql
