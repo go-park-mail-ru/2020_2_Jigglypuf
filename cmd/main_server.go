@@ -69,7 +69,7 @@ func configureRouter(application *ServerStruct) http.Handler {
 	handler.HandleFunc("/media/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, r.RequestURI, http.StatusMovedPermanently)
 	})
-	http.HandleFunc("/docs/", httpSwagger.WrapHandler)
+	handler.HandleFunc("/docs/", httpSwagger.WrapHandler)
 	middlewareHandler := middleware.CookieMiddleware(handler)
 	middlewareHandler = cors.MiddlewareCORS(middlewareHandler)
 
