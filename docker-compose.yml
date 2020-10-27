@@ -26,6 +26,9 @@ services:
   image: postgres
   ports:
   - 5432:5432
+  restart: always
+  environment:
+   POSTGRES_PASSWORD: example
   volumes:
    - ./init/:/docker-entrypoint-initdb.d/
    - ~/etc/postgresql:/etc/postgresql
