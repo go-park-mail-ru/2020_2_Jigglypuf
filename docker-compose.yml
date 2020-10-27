@@ -23,7 +23,7 @@ services:
    - ./:/app
    - ../media:/media
  postgresql:
-  image: felixgreen/cinema_postgres_image
+  image: postgres
   ports:
   - 5432:5432
   volumes:
