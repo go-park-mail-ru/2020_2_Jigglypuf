@@ -32,7 +32,13 @@ func (t *MovieUseCase) UpdateMovie(movie *models.Movie) error {
 }
 
 func (t *MovieUseCase) RateMovie(user *models.User, id uint64, rating int64) error {
-	return t.DBConn.RateMovie(user, id, rating)
+	personalRatingErr := t.DBConn.RateMovie(user, id, rating)
+	if personalRatingErr != nil{
+		return personalRatingErr
+	}
+
+	movieRatingErr := t.DBConn.UpdateMovieRating(id, rating)
+	return movieRatingErr
 }
 
 func (t *MovieUseCase) GetRating(user *models.User, id uint64) (int64, error) {

@@ -36,6 +36,7 @@ CREATE TABLE movie
     MovieName TEXT NOT NULL UNIQUE,
     Description TEXT,
     Rating FLOAT DEFAULT 0.0,
+    Rating_count INTEGER DEFAULT 0,
     PathToAvatar VARCHAR(64)
 );
 
