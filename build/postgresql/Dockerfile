@@ -9,7 +9,6 @@ RUN apt-get update -y && apt-get install -y postgresql postgresql-contrib
 USER postgres
 RUN    /etc/init.d/postgresql start &&\
     psql --command "CREATE USER cinema_backend_interface WITH SUPERUSER PASSWORD 'some_password';" &&\
-    createdb -O docker docker &&\
     /etc/init.d/postgresql stop
 
 CMD service postgresql start
