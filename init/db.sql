@@ -1,5 +1,5 @@
 
-CREATE DATABASE cinema_interface;
+CREATE DATABASE BackendCinemaInterface;
 /* users table */
 CREATE TABLE users
 (
@@ -54,11 +54,11 @@ CREATE TABLE rating_history
 
 CREATE TABLE movies_in_cinema
 (
-    Movie_id NOT NULL REFERENCES movie (ID),
-    Cinema_id NOT NULL REFERENCES cinema (ID)
+    Movie_id INTEGER NOT NULL REFERENCES movie (ID),
+    Cinema_id INTEGER NOT NULL REFERENCES cinema (ID),
     Rental_start DATE NOT NULL,
-    Rental_end DATE NOT NULL,
-)
+    Rental_end DATE NOT NULL
+);
 
 INSERT INTO cinema (CinemaName, Address)
 VALUES  ('CinemaScope1','Москва, Первая улица, д.1'),
