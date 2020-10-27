@@ -22,3 +22,11 @@ services:
   volumes:
    - ./:/app
    - ../media:/media
+ postgresql:
+  image: felixgreen/cinema_postgres_image
+  ports:
+  - 5432:5432
+  volumes:
+  - /etc/postgresql:/etc/postgresql
+  - /var/log/postgresql:/var/log/postgresql
+  - /var/lib/postgresql:/var/lib/postgresql

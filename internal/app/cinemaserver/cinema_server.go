@@ -5,12 +5,14 @@ import (
 	cinemaDelivery "backend/internal/pkg/cinemaservice/delivery"
 	cinemaRepository "backend/internal/pkg/cinemaservice/repository"
 	cinemaUseCase "backend/internal/pkg/cinemaservice/usecase"
+	"database/sql"
+	"errors"
 	"github.com/julienschmidt/httprouter"
 	"sync"
 )
 
 type CinemaService struct {
-	CinemaRepository *cinemaRepository.CinemaRepository
+	CinemaRepository cinemaConfig.Repository
 	CinemaUseCase    *cinemaUseCase.CinemaUseCase
 	CinemaDelivery   *cinemaDelivery.CinemaHandler
 	CinemaRouter     *httprouter.Router
@@ -24,7 +26,7 @@ func configureCinemaRouter(handler *cinemaDelivery.CinemaHandler) *httprouter.Ro
 	return cinemaAPIRouter
 }
 
-func Start(mutex *sync.RWMutex) *CinemaService {
+func StartMock(mutex *sync.RWMutex) *CinemaService {
 	cinemaRep := cinemaRepository.NewCinemaRepository(mutex)
 	cinemaUC := cinemaUseCase.NewCinemaUseCase(cinemaRep)
 	cinemaHandler := cinemaDelivery.NewCinemaHandler(cinemaUC)
@@ -37,4 +39,22 @@ func Start(mutex *sync.RWMutex) *CinemaService {
 		cinemaHandler,
 		cinemaRouter,
 	}
+}
+
+func Start(connection *sql.DB) (*CinemaService, error) {
+	if connection == nil {
+		return nil, errors.New("no database connection")
+	}
+	cinemaRep := cinemaRepository.NewCinemaSQLRepository(connection)
+	cinemaUC := cinemaUseCase.NewCinemaUseCase(cinemaRep)
+	cinemaHandler := cinemaDelivery.NewCinemaHandler(cinemaUC)
+
+	cinemaRouter := configureCinemaRouter(cinemaHandler)
+
+	return &CinemaService{
+		cinemaRep,
+		cinemaUC,
+		cinemaHandler,
+		cinemaRouter,
+	}, nil
 }
