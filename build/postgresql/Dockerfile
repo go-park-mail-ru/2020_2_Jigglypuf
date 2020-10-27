@@ -7,6 +7,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update -y && apt-get install -y postgresql postgresql-contrib
 
 USER postgres
+RUN pg_createcluster 9.3 main --start
 RUN    /etc/init.d/postgresql start &&\
     psql --command "CREATE USER cinema_backend_interface WITH SUPERUSER PASSWORD 'some_password';" &&\
     createdb -E UTF8 cinema_backend_interface &&\
