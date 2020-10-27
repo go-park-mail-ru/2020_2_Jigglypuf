@@ -14,7 +14,7 @@ services:
   ports:
    - 3301:3301
   volumes:
-   - /data/tarantool:/var/lib/tarantool
+   - ~/data/tarantool:/var/lib/tarantool
  app:
   image: felixgreen/cinema_interfaceservice_image
   ports:
@@ -28,6 +28,6 @@ services:
   - 5432:5432
   volumes:
    - ./init/:/docker-entrypoint-initdb.d/
-   - /etc/postgresql:/etc/postgresql
-   - /var/log/postgresql:/var/log/postgresql
-   - /var/lib/postgresql:/var/lib/postgresql
+   - ~/etc/postgresql:/etc/postgresql
+   - ~/var/log/postgresql:/var/log/postgresql
+   - ~/var/lib/postgresql:/var/lib/postgresql
