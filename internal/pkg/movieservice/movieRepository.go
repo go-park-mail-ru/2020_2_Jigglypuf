@@ -11,4 +11,5 @@ type MovieRepository interface {
 	GetMovieList(limit, page int) (*[]models.Movie, error)
 	RateMovie(user *models.User, id uint64, rating int64) error
 	GetRating(user *models.User, id uint64) (int64, error)
+	UpdateMovieRating(movieID uint64, ratingScore int64) error
 }

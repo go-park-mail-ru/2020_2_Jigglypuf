@@ -53,7 +53,7 @@ func (t *MovieSQLRepository) GetMovie(id uint64) (*models.Movie, error) {
 		return nil, errors.New("no database connection")
 	}
 
-	resultSQL, DBErr := t.DBConnection.Query("SELECT ID, MovieName, Description, Rating, PathToAvatar FROM movie WHERE ID = ?", id)
+	resultSQL, DBErr := t.DBConnection.Query("SELECT ID, MovieName, Description, Rating, Rating_count, PathToAvatar FROM movie WHERE ID = ?", id)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr
@@ -65,7 +65,7 @@ func (t *MovieSQLRepository) GetMovie(id uint64) (*models.Movie, error) {
 		return nil, rowsErr
 	}
 	resultMovie := new(models.Movie)
-	resultErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description, &resultMovie.Rating, &resultMovie.PathToAvatar)
+	resultErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description, &resultMovie.Rating, &resultMovie.RatingCount, &resultMovie.PathToAvatar)
 	if resultErr != nil {
 		log.Println(resultErr)
 		return nil, resultErr
@@ -79,7 +79,7 @@ func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.Movie, err
 		return nil, errors.New("no database connection")
 	}
 
-	resultSQL, DBErr := t.DBConnection.Query("SELECT ID, MovieName, Description, Rating, PathToAvatar FROM movie LIMIT ? OFFSET ?", limit, page*limit)
+	resultSQL, DBErr := t.DBConnection.Query("SELECT ID, MovieName, Description, Rating, Rating_count, PathToAvatar FROM movie LIMIT ? OFFSET ?", limit, page*limit)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr
@@ -92,7 +92,7 @@ func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.Movie, err
 	movieList := make([]models.Movie, 1)
 	for resultSQL.Next() {
 		movie := new(models.Movie)
-		ScanErr := resultSQL.Scan(&movie.ID, &movie.Name, &movie.Description, &movie.Rating, &movie.PathToAvatar)
+		ScanErr := resultSQL.Scan(&movie.ID, &movie.Name, &movie.Description, &movie.Rating, &movie.RatingCount, &movie.PathToAvatar)
 		if ScanErr != nil {
 			log.Println(ScanErr)
 			return nil, ScanErr
@@ -141,4 +141,30 @@ func (t *MovieSQLRepository) GetRating(user *models.User, id uint64) (int64, err
 	}
 
 	return ratingScore, nil
+}
+
+func (t *MovieSQLRepository) UpdateMovieRating(movieID uint64, ratingScore int64) error {
+	if t.DBConnection == nil {
+		return errors.New("no database connection")
+	}
+
+	resultSQL, DBErr := t.DBConnection.Query("SELECT ID,Rating,Rating_count FROM movie WHERE ID = ?", movieID)
+	if DBErr != nil || resultSQL.Err() != nil {
+		return DBErr
+	}
+	var (
+		ID          uint64  = 0
+		rating      float64 = 0
+		RatingCount         = 0
+	)
+	ScanErr := resultSQL.Scan(&ID, &rating, &RatingCount)
+	if ScanErr != nil {
+		return ScanErr
+	}
+
+	RatingCount++
+	var newRating float64 = (rating + float64(ratingScore)) / float64(RatingCount)
+	_, RatingDBErr := t.DBConnection.Exec("UPDATE movie SET Rating = ?, Rating_count = ? WHERE ID = ?",
+		newRating, RatingCount, movieID)
+	return RatingDBErr
 }

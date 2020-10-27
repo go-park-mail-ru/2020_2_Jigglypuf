@@ -5,6 +5,7 @@ type Movie struct {
 	Name         string
 	Description  string
 	Rating       float64
+	RatingCount  int
 	PathToAvatar string
 }
 
