@@ -27,9 +27,8 @@ services:
   ports:
   - 5432:5432
   restart: always
-  environment:
-   - POSTGRES_USER=cinema_backend_interface
-   - POSTGRES_PASSWORD=some_password
+  env_file:
+   - ./init/database.env
   volumes:
    - ./init/:/docker-entrypoint-initdb.d/
    - ~/etc/postgresql:/etc/postgresql
