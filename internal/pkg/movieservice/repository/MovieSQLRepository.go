@@ -143,27 +143,27 @@ func (t *MovieSQLRepository) GetRating(user *models.User, id uint64) (int64, err
 	return ratingScore, nil
 }
 
-func (t *MovieSQLRepository) UpdateMovieRating(movieID uint64, ratingScore int64) error{
-	if t.DBConnection == nil{
+func (t *MovieSQLRepository) UpdateMovieRating(movieID uint64, ratingScore int64) error {
+	if t.DBConnection == nil {
 		return errors.New("no database connection")
 	}
 
 	resultSQL, DBErr := t.DBConnection.Query("SELECT ID,Rating,Rating_count FROM movie WHERE ID = ?", movieID)
-	if DBErr != nil || resultSQL.Err() != nil{
+	if DBErr != nil || resultSQL.Err() != nil {
 		return DBErr
 	}
-	var(
-		ID uint64 = 0
-		rating float64 = 0
-		RatingCount = 0
+	var (
+		ID          uint64  = 0
+		rating      float64 = 0
+		RatingCount         = 0
 	)
 	ScanErr := resultSQL.Scan(&ID, &rating, &RatingCount)
-	if ScanErr != nil{
+	if ScanErr != nil {
 		return ScanErr
 	}
 
-	RatingCount +=1
-	var newRating float64 = (rating + float64(ratingScore))/float64(RatingCount)
+	RatingCount++
+	var newRating float64 = (rating + float64(ratingScore)) / float64(RatingCount)
 	_, RatingDBErr := t.DBConnection.Exec("UPDATE movie SET Rating = ?, Rating_count = ? WHERE ID = ?",
 		newRating, RatingCount, movieID)
 	return RatingDBErr
