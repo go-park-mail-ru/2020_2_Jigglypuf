@@ -31,10 +31,11 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, erro
 		return 0, errors.New("incorrect session")
 	}
 
-	data := resp.Data
-	if data == nil{
-		return 0, errors.New("cookie not found")
-	}
+	data := resp.Data[0].([]interface{})[0].(string)
+	//fmt.Println(data)
+	//if data == nil{
+	//	return 0, errors.New("cookie not found")
+	//}
 	fmt.Println(data)
 	return 0, errors.New("cookie not found")
 }
