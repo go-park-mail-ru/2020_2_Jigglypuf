@@ -52,8 +52,7 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request, params
 		models.BadBodyHTTPResponse(&w, err)
 		return
 	}
-	w.Header().Add("Set-Cookie", cookie.String())
-	//http.SetCookie(w, cookie)
+	http.SetCookie(w, cookie)
 }
 
 // Register godoc

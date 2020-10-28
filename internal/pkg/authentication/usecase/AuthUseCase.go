@@ -111,10 +111,10 @@ func (t *UserUseCase) SignIn(input *models.AuthInput) (*http.Cookie, error) {
 	cookieValue := createUserCookie()
 	cookieErr := t.cookieDBConn.SetCookie(&cookieValue, user.ID)
 	if cookieErr != nil {
-		return &http.Cookie{}, err
+		return &http.Cookie{}, cookieErr
 	}
 	log.Println(cookieValue)
-	return &cookieValue, err
+	return &cookieValue, cookieErr
 }
 
 func (t *UserUseCase) SignOut(cookie *http.Cookie) (*http.Cookie, error) {
