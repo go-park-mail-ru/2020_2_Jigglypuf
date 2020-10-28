@@ -81,12 +81,16 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 	}
 
 	err := t.memConn.CreateUser(&user)
-	cookieErr := t.cookieDBConn.SetCookie(&cookieValue, user.ID)
-	if cookieErr != nil {
-		return &http.Cookie{}, cookieErr
+	if err != nil{
+		return nil, err
 	}
 
-	return &cookieValue, err
+	cookieErr := t.cookieDBConn.SetCookie(&cookieValue, user.ID)
+	if cookieErr != nil {
+		return nil, cookieErr
+	}
+
+	return nil, err
 }
 
 func (t *UserUseCase) SignIn(input *models.AuthInput) (*http.Cookie, error) {
