@@ -9,6 +9,7 @@ import (
 	"github.com/tarantool/go-tarantool"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type CookieTarantoolRepository struct {
@@ -29,7 +30,6 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, erro
 	if resp == nil {
 		return 0, errors.New("incorrect session")
 	}
-
 	data := resp.Data[0].([]interface{})
 	tarantoolRes := new(models.TarantoolResponse)
 	if data != nil{
@@ -37,7 +37,12 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, erro
 			tarantoolRes.CookieValue = data[0].(string)
 		}
 		if len(data) > 1{
-			tarantoolRes.UserID = data[0].(uint64)
+			rawUserID := data[0].(string)
+			userIDInt, translationErr := strconv.Atoi(rawUserID)
+			if translationErr != nil{
+				return 0, errors.New("bad cookie ")
+			}
+			tarantoolRes.UserID = uint64(userIDInt)
 		}
 		if len(data) > 2{
 			rawCookie := data[0].(string)
