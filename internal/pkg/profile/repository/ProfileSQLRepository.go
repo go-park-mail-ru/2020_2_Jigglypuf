@@ -77,6 +77,7 @@ func (t *ProfileSQLRepository) GetProfileViaID(userID uint64) (*models.Profile, 
 	}
 
 	reqProfile := new(models.Profile)
+	reqProfile.Login = new(models.User)
 	ScanErr := resultSQL.Scan(&reqProfile.Name, &reqProfile.Surname, &reqProfile.AvatarPath, &reqProfile.Login.ID)
 	if ScanErr != nil {
 		log.Println(ScanErr)

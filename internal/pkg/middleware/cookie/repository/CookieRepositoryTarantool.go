@@ -47,7 +47,6 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, erro
 		log.Println(tarantoolRes)
 		return tarantoolRes.UserID, nil
 	}
-	log.Println(tarantoolRes)
 	return 0, errors.New("cookie not found")
 }
 
