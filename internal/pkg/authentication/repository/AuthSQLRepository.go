@@ -22,19 +22,11 @@ func (t *AuthSQLRepository) CreateUser(user *models.User) error {
 	if t.DBConn == nil {
 		return errors.New("no database connection")
 	}
-	result, DBErr := t.DBConn.Exec("INSERT INTO users (username, password) VALUES ($1,$2)", user.Username, user.Password)
-	if DBErr != nil {
-		log.Println(DBErr)
-		return DBErr
+	ScanErr := t.DBConn.QueryRow("INSERT INTO users (username, password) VALUES ($1,$2) RETURNING ID", user.Username, user.Password).Scan(&user.ID)
+	if ScanErr != nil{
+		log.Println(ScanErr)
+		return errors.New("service not available")
 	}
-
-	ID, IDErr := result.LastInsertId()
-	if IDErr != nil {
-		log.Println(DBErr)
-		return IDErr
-	}
-
-	user.ID = uint64(ID)
 	return nil
 }
 

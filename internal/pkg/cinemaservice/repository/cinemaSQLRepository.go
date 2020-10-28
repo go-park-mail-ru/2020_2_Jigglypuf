@@ -22,19 +22,11 @@ func (t *CinemaSQLRepository) CreateCinema(cinema *models.Cinema) error {
 		return errors.New("no database connection")
 	}
 
-	result, DBErr := t.DBConnection.Exec("INSERT INTO cinema (CinemaName, Address) VALUES($1,$2)", cinema.Name, cinema.Address)
-	if DBErr != nil {
-		log.Println(DBErr)
-		return DBErr
+	ScanErr := t.DBConnection.QueryRow("INSERT INTO cinema (CinemaName, Address) VALUES($1,$2) RETURNING ID", cinema.Name, cinema.Address).Scan(&cinema.ID)
+	if ScanErr != nil {
+		log.Println(ScanErr)
+		return errors.New("service not available")
 	}
-
-	cinemaID, resultErr := result.LastInsertId()
-	if resultErr != nil {
-		log.Println(resultErr)
-		return resultErr
-	}
-
-	cinema.ID = uint64(cinemaID)
 	return nil
 }
 

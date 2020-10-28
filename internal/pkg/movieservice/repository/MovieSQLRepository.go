@@ -18,18 +18,12 @@ func NewMovieSQLRepository(connection *sql.DB) *MovieSQLRepository {
 }
 
 func (t *MovieSQLRepository) CreateMovie(movie *models.Movie) error {
-	resultSQL, DBErr := t.DBConnection.Exec("INSERT INTO movie (`MovieName`,`Description`,`Rating`,`PathToAvatar`)",
-		movie.Name, movie.Description, movie.Rating, movie.PathToAvatar)
-	if DBErr != nil {
-		log.Println(DBErr)
-		return DBErr
+	ScanErr := t.DBConnection.QueryRow("INSERT INTO movie (MovieName,Description,Rating,PathToAvatar) VALUES ($1,$2,$3,$4) RETURNING ID",
+		movie.Name, movie.Description, movie.Rating, movie.PathToAvatar).Scan(&movie.ID)
+	if ScanErr != nil {
+		log.Println(ScanErr)
+		return ScanErr
 	}
-
-	movieID, IDErr := resultSQL.LastInsertId()
-	if IDErr != nil {
-		return IDErr
-	}
-	movie.ID = uint64(movieID)
 	return nil
 }
 
