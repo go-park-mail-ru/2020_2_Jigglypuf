@@ -12,7 +12,7 @@ box.once('init', function()
     })
 
     s:create_index('primary', {type = 'HASH', parts = {'session_value'}})
-    s:create_index('secondary', {type = 'TREE', parts = {'user_id'}})
+    s:create_index('secondary', {type = 'HASH', parts = {'user_id'}})
 
     box.schema.func.create('create_session', {setuid= true})
     box.schema.func.create('check_session', {setuid= true})
@@ -29,7 +29,7 @@ end)
 
 function create_session(cookie_value, cookie_info, user_id)
     print('received data', user_id, cookie_info)
-
+    box.space.sessions.user_id:delete(user_id)
     box.space.sessions:insert{cookie_value, user_id, cookie_info}
 
     return cookie_value
