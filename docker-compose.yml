@@ -36,3 +36,4 @@ services:
    - ~/etc/postgresql:/etc/postgresql
    - ~/var/log/postgresql:/var/log/postgresql
    - ~/var/lib/postgresql:/var/lib/postgresql
+   - ~/var/lib/postgresql/data:/var/lib/postgresql/data/:rw
