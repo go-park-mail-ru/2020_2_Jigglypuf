@@ -32,6 +32,9 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, erro
 	}
 
 	data := resp.Data
+	if data == nil{
+		return 0, errors.New("cookie not found")
+	}
 	tarantoolRes := new(models.TarantoolResponse)
 	tarantoolRes.ID = data[0].(uint64)
 	tarantoolRes.CookieValue = data[1].(string)
