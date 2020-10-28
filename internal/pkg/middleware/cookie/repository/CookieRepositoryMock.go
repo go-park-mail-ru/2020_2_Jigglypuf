@@ -25,7 +25,7 @@ func NewCookieRepository(mutex *sync.RWMutex) *CookieRepository {
 	}
 }
 
-func (t *CookieRepository) GetCookie(cookie *http.Cookie) (*models.TarantoolResponse, error) {
+func (t *CookieRepository) GetCookie(cookie *http.Cookie) (*models.DBResponse, error) {
 	success := false
 	var userID uint64 = 0
 	t.mu.RLock()

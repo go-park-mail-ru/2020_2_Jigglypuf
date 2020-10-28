@@ -20,7 +20,7 @@ func NewCookieTarantoolRepository(conn *tarantool.Connection) (*CookieTarantoolR
 	}, nil
 }
 
-func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (*models.TarantoolResponse, error) {
+func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (*models.DBResponse, error) {
 	resp, DBErr := t.connectionDB.Eval("return check_session(...)", []interface{}{cookie.Value})
 	if DBErr != nil {
 		return nil, DBErr
@@ -33,7 +33,7 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (*models.Tara
 	}
 
 	data := resp.Data[0].([]interface{})
-	tarantoolRes := new(models.TarantoolResponse)
+	tarantoolRes := new(models.DBResponse)
 	if data != nil && len(data) > 2{
 		tarantoolRes.CookieValue = data[0].(string)
 		rawUserID, ok := data[1].(uint64)

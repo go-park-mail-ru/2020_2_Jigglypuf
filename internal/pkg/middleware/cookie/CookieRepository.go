@@ -6,7 +6,7 @@ import (
 )
 
 type Repository interface {
-	GetCookie(*http.Cookie) (*models.TarantoolResponse, error)
+	GetCookie(*http.Cookie) (*models.DBResponse, error)
 	SetCookie(cookie *http.Cookie, userID uint64) error
 	RemoveCookie(cookie *http.Cookie) error
 }

@@ -2,7 +2,7 @@ package models
 
 import "net/http"
 
-type TarantoolResponse struct{
+type DBResponse struct{
 	ID uint64
 	CookieValue string
 	UserID uint64
