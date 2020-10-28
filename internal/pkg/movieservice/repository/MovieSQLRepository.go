@@ -47,12 +47,7 @@ func (t *MovieSQLRepository) GetMovie(id uint64) (*models.Movie, error) {
 		return nil, errors.New("no database connection")
 	}
 
-	resultSQL, DBErr := t.DBConnection.Query("SELECT ID, MovieName, Description, Rating, Rating_count, PathToAvatar FROM movie WHERE ID = $1", id)
-	if DBErr != nil {
-		log.Println(DBErr)
-		return nil, DBErr
-	}
-
+	resultSQL := t.DBConnection.QueryRow("SELECT ID, MovieName, Description, Rating, Rating_count, PathToAvatar FROM movie WHERE ID = $1", id)
 	rowsErr := resultSQL.Err()
 	if rowsErr != nil {
 		log.Println(rowsErr)
@@ -117,10 +112,7 @@ func (t *MovieSQLRepository) GetRating(user *models.User, id uint64) (int64, err
 		return 0, errors.New("no database connection")
 	}
 
-	resultSQL, DBErr := t.DBConnection.Query("SELECT movie_rating FROM rating_history WHERE user_id = $1", user.ID)
-	if DBErr != nil {
-		return 0, DBErr
-	}
+	resultSQL := t.DBConnection.QueryRow("SELECT movie_rating FROM rating_history WHERE user_id = $1", user.ID)
 
 	rowsErr := resultSQL.Err()
 	if rowsErr != nil {
@@ -142,9 +134,9 @@ func (t *MovieSQLRepository) UpdateMovieRating(movieID uint64, ratingScore int64
 		return errors.New("no database connection")
 	}
 
-	resultSQL, DBErr := t.DBConnection.Query("SELECT ID,Rating,Rating_count FROM movie WHERE ID = $1", movieID)
-	if DBErr != nil || resultSQL.Err() != nil {
-		return DBErr
+	resultSQL := t.DBConnection.QueryRow("SELECT ID,Rating,Rating_count FROM movie WHERE ID = $1", movieID)
+	if resultSQL.Err() != nil{
+		return resultSQL.Err()
 	}
 	var (
 		ID          uint64  = 0

@@ -35,11 +35,7 @@ func (t *CinemaSQLRepository) GetCinema(id uint64) (*models.Cinema, error) {
 		return nil, errors.New("no database connection")
 	}
 
-	result, DBErr := t.DBConnection.Query("SELECT ID, CinemaName, Address FROM cinema WHERE ID = $1", id)
-	if DBErr != nil {
-		log.Println(DBErr)
-		return nil, DBErr
-	}
+	result := t.DBConnection.QueryRow("SELECT ID, CinemaName, Address FROM cinema WHERE ID = $1", id)
 	rowsErr := result.Err()
 	if rowsErr != nil {
 		log.Println(rowsErr)
