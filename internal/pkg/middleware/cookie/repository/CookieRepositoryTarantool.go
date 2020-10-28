@@ -28,6 +28,10 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, erro
 	if resp == nil {
 		return 0, errors.New("incorrect session")
 	}
+	if resp.Data[0] == nil{
+		return 0, errors.New("cookie not found")
+	}
+
 	data := resp.Data[0].([]interface{})
 	tarantoolRes := new(models.TarantoolResponse)
 	if data != nil && len(data) > 2{
