@@ -32,27 +32,23 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, erro
 	}
 	data := resp.Data[0].([]interface{})
 	tarantoolRes := new(models.TarantoolResponse)
-	if data != nil{
-		if len(data) > 0{
-			tarantoolRes.CookieValue = data[0].(string)
+	if data != nil && len(data) > 2{
+		tarantoolRes.CookieValue = data[0].(string)
+		rawUserID := data[0].(string)
+		userIDInt, castErr := strconv.Atoi(rawUserID)
+		if castErr != nil{
+			return 0, errors.New("bad cookie ")
 		}
-		if len(data) > 1{
-			rawUserID := data[0].(string)
-			userIDInt, translationErr := strconv.Atoi(rawUserID)
-			if translationErr != nil{
-				return 0, errors.New("bad cookie ")
-			}
-			tarantoolRes.UserID = uint64(userIDInt)
+		tarantoolRes.UserID = uint64(userIDInt)
+		rawCookie := data[0].(string)
+		translationErr := json.Unmarshal([]byte(rawCookie), &tarantoolRes.Cookie)
+		if translationErr != nil{
+			return 0, errors.New("bad cookie")
 		}
-		if len(data) > 2{
-			rawCookie := data[0].(string)
-			translationErr := json.Unmarshal([]byte(rawCookie), &tarantoolRes.Cookie)
-			if translationErr != nil{
-				return 0, errors.New("bad cookie")
-			}
-		}
+		fmt.Println(tarantoolRes)
+		return tarantoolRes.UserID, nil
 	}
-	fmt.Println(data)
+	fmt.Println(tarantoolRes)
 	return 0, errors.New("cookie not found")
 }
 
