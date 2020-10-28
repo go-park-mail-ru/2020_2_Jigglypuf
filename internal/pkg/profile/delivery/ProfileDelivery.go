@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -75,6 +76,7 @@ func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, para
 	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
 	profileUserID := r.Context().Value(cookieService.ContextUserIDName)
 	if isAuth == nil || !isAuth.(bool) || profileUserID == nil {
+		log.Println(isAuth, profileUserID)
 		models.UnauthorizedHTTPResponse(&w)
 		return
 	}
