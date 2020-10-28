@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"backend/internal/pkg/models"
 	"errors"
+	"fmt"
 	"net/http"
 	"sync"
 )
@@ -23,7 +25,7 @@ func NewCookieRepository(mutex *sync.RWMutex) *CookieRepository {
 	}
 }
 
-func (t *CookieRepository) GetCookie(cookie *http.Cookie) (uint64, error) {
+func (t *CookieRepository) GetCookie(cookie *http.Cookie) (*models.TarantoolResponse, error) {
 	success := false
 	var userID uint64 = 0
 	t.mu.RLock()
@@ -38,9 +40,10 @@ func (t *CookieRepository) GetCookie(cookie *http.Cookie) (uint64, error) {
 	t.mu.RUnlock()
 
 	if !success {
-		return 0, errors.New("cookie doesnt exist")
+		return nil, errors.New("cookie doesnt exist")
 	}
-	return userID, nil
+	fmt.Print(userID)
+	return nil, nil
 }
 
 func (t *CookieRepository) SetCookie(cookie *http.Cookie, userID uint64) error {
