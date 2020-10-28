@@ -8,7 +8,6 @@ import (
 	"github.com/tarantool/go-tarantool"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 type CookieTarantoolRepository struct {
@@ -33,13 +32,12 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, erro
 	tarantoolRes := new(models.TarantoolResponse)
 	if data != nil && len(data) > 2{
 		tarantoolRes.CookieValue = data[0].(string)
-		rawUserID := data[1].(string)
-		userIDInt, castErr := strconv.Atoi(rawUserID)
-		if castErr != nil{
-			log.Println("cast err", rawUserID)
+		rawUserID, ok := data[1].(uint64)
+		if !ok{
+			log.Println("cast err")
 			return 0, errors.New("bad cookie")
 		}
-		tarantoolRes.UserID = uint64(userIDInt)
+		tarantoolRes.UserID = rawUserID
 		rawCookie := data[2].(string)
 		translationErr := json.Unmarshal([]byte(rawCookie), &tarantoolRes.Cookie)
 		if translationErr != nil{
