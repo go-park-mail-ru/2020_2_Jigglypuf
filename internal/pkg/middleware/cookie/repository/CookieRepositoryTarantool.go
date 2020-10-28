@@ -2,9 +2,9 @@ package repository
 
 import (
 	tarantoolConfig "backend/internal/pkg/middleware/cookie"
-	"backend/internal/pkg/models"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/tarantool/go-tarantool"
 	"log"
 	"net/http"
@@ -35,25 +35,7 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, erro
 	if data == nil{
 		return 0, errors.New("cookie not found")
 	}
-	tarantoolRes := new(models.TarantoolResponse)
-	if data[0] != nil {
-		tarantoolRes.ID = data[0].(uint64)
-	}
-	if data[1] != nil {
-		tarantoolRes.CookieValue = data[1].(string)
-	}
-	if data[2] != nil{
-		tarantoolRes.UserID = data[2].(uint64)
-	}
-	if data[3] != nil {
-		tarantoolRes.Cookie = data[3].(string)
-	}
-	print(tarantoolRes)
-	ok := false
-	if  !ok {
-		return tarantoolRes.UserID, nil
-	}
-
+	fmt.Println(data)
 	return 0, errors.New("cookie not found")
 }
 
