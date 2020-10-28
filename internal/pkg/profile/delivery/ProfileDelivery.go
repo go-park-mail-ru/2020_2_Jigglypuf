@@ -113,7 +113,7 @@ func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request, p
 
 	w.Header().Set("Content-Type", "application/json")
 
-	if r.Method != http.MethodPost {
+	if r.Method != http.MethodPut {
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
