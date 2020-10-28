@@ -28,7 +28,14 @@ func (t *ProfileUseCase) GetProfile(login *string) (*models.Profile, error) {
 }
 
 func (t *ProfileUseCase) GetProfileViaID(userID uint64) (*models.Profile, error) {
-	return t.DBConn.GetProfileViaID(userID)
+	reqProfile, profileErr := t.DBConn.GetProfileViaID(userID)
+	if profileErr != nil{
+		reqProfile := new(models.Profile)
+		reqProfile.Login = new(models.User)
+		reqProfile.Login.ID = userID
+		profileErr = t.DBConn.CreateProfile(reqProfile)
+	}
+	return reqProfile, nil
 }
 
 func (t *ProfileUseCase) UpdateCredentials(profile *models.Profile) error {
