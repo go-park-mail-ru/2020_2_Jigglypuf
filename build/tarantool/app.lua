@@ -37,5 +37,5 @@ function check_session(cookie_value)
     local query_result = box.space.sessions:select{cookie_value}[1]
     print('session found', query_result)
 
-    return query_result[2]
+    return query_result[0]
 end
