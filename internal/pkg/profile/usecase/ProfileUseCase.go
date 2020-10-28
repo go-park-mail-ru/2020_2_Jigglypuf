@@ -33,6 +33,7 @@ func (t *ProfileUseCase) GetProfileViaID(userID uint64) (*models.Profile, error)
 		reqProfile := new(models.Profile)
 		reqProfile.Login = new(models.User)
 		reqProfile.Login.ID = userID
+		reqProfile.AvatarPath = profile.NoAvatarImage
 		profileErr = t.DBConn.CreateProfile(reqProfile)
 		return reqProfile, profileErr
 	}
