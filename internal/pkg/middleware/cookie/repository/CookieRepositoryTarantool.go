@@ -30,7 +30,8 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, erro
 		return 0, errors.New("incorrect session")
 	}
 
-	data := resp.Data[1]
+	data := resp.Data[0]
+
 	if id, ok := data.(uint64); ok {
 		return id, nil
 	}
