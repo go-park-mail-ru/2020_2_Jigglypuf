@@ -31,10 +31,15 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, erro
 		return 0, errors.New("incorrect session")
 	}
 
-	data := resp.Data[0]
-	tarantoolRes := data.(models.TarantoolResponse)
-	log.Println(tarantoolRes)
-	if tarantoolRes, ok := data.(models.TarantoolResponse); !ok {
+	data := resp.Data
+	tarantoolRes := new(models.TarantoolResponse)
+	tarantoolRes.ID = data[0].(uint64)
+	tarantoolRes.CookieValue = data[1].(string)
+	tarantoolRes.UserID = data[2].(uint64)
+	tarantoolRes.Cookie = data[3].(string)
+	print(tarantoolRes)
+	ok := false
+	if  !ok {
 		return tarantoolRes.UserID, nil
 	}
 
