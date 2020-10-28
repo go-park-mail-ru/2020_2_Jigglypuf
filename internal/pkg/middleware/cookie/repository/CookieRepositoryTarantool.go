@@ -5,7 +5,6 @@ import (
 	"backend/internal/pkg/models"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/tarantool/go-tarantool"
 	"log"
 	"net/http"
@@ -45,10 +44,10 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, erro
 		if translationErr != nil{
 			return 0, errors.New("bad cookie")
 		}
-		fmt.Println(tarantoolRes)
+		log.Println(tarantoolRes)
 		return tarantoolRes.UserID, nil
 	}
-	fmt.Println(tarantoolRes)
+	log.Println(tarantoolRes)
 	return 0, errors.New("cookie not found")
 }
 
