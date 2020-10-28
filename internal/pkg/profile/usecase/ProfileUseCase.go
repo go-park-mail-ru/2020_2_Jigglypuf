@@ -29,7 +29,7 @@ func (t *ProfileUseCase) GetProfile(login *string) (*models.Profile, error) {
 
 func (t *ProfileUseCase) GetProfileViaID(userID uint64) (*models.Profile, error) {
 	reqProfile, profileErr := t.DBConn.GetProfileViaID(userID)
-	if profileErr != nil{
+	if profileErr != nil {
 		reqProfile := new(models.Profile)
 		reqProfile.Login = new(models.User)
 		reqProfile.Login.ID = userID

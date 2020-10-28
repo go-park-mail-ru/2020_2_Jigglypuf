@@ -28,23 +28,23 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (*models.DBRe
 	if resp == nil {
 		return nil, errors.New("incorrect session")
 	}
-	if resp.Data[0] == nil{
+	if resp.Data[0] == nil {
 		return nil, errors.New("cookie not found")
 	}
 
 	data := resp.Data[0].([]interface{})
 	tarantoolRes := new(models.DBResponse)
-	if data != nil && len(data) > 2{
+	if data != nil && len(data) > 2 {
 		tarantoolRes.CookieValue = data[0].(string)
 		rawUserID, ok := data[1].(uint64)
-		if !ok{
+		if !ok {
 			log.Println("cast err")
 			return nil, errors.New("bad cookie")
 		}
 		tarantoolRes.UserID = rawUserID
 		rawCookie := data[2].(string)
 		translationErr := json.Unmarshal([]byte(rawCookie), &tarantoolRes.Cookie)
-		if translationErr != nil{
+		if translationErr != nil {
 			log.Println("translation err")
 			return nil, errors.New("bad cookie")
 		}

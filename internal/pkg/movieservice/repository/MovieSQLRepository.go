@@ -135,7 +135,7 @@ func (t *MovieSQLRepository) UpdateMovieRating(movieID uint64, ratingScore int64
 	}
 
 	resultSQL := t.DBConnection.QueryRow("SELECT ID,Rating,Rating_count FROM movie WHERE ID = $1", movieID)
-	if resultSQL.Err() != nil{
+	if resultSQL.Err() != nil {
 		return resultSQL.Err()
 	}
 	var (

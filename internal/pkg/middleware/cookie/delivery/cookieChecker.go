@@ -23,8 +23,8 @@ func (t *CookieHandler) CheckCookie(r *http.Request) (uint64, bool) {
 	}
 
 	value, cookieErr := t.dbConn.GetCookie(cookieValue)
-	if cookieErr == nil{
-		if time.Now().Before(value.Cookie.Expires){
+	if cookieErr == nil {
+		if time.Now().After(value.Cookie.Expires) {
 			return 0, false
 		}
 		return value.UserID, true
