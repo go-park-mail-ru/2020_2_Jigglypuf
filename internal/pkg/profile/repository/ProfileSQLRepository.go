@@ -22,7 +22,7 @@ func (t *ProfileSQLRepository) CreateProfile(profile *models.Profile) error {
 		return errors.New("no database connection")
 	}
 
-	_, DBErr := t.DBConnection.Exec("INSERT INTO profile(`user_id`,`ProfileName`,`ProfileSurname`,`AvatarPath`)",
+	_, DBErr := t.DBConnection.Exec("INSERT INTO profile(user_id,ProfileName,ProfileSurname,AvatarPath) VALUES ($1,$2,$3,$4)",
 		profile.Login.ID, profile.Name, profile.Surname, profile.AvatarPath)
 	if DBErr != nil {
 		log.Println(DBErr)
@@ -37,7 +37,7 @@ func (t *ProfileSQLRepository) DeleteProfile(profile *models.Profile) error {
 		return errors.New("no database connection")
 	}
 
-	_, DBErr := t.DBConnection.Exec("DELETE FROM profile WHERE `user_id` = $1", profile.Login.ID)
+	_, DBErr := t.DBConnection.Exec("DELETE FROM profile WHERE user_id = $1", profile.Login.ID)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return DBErr
@@ -51,7 +51,7 @@ func (t *ProfileSQLRepository) UpdateProfile(profile *models.Profile, name, surn
 		return errors.New("no database connection")
 	}
 
-	_, DBErr := t.DBConnection.Exec("UPDATE profile SET `ProfileName` = $1, `ProfileSurname` = $2, `AvatarPath` = $3 WHERE `user_id` = $4",
+	_, DBErr := t.DBConnection.Exec("UPDATE profile SET ProfileName = $1, ProfileSurname = $2, AvatarPath = $3 WHERE user_id = $4",
 		name, surname, avatarPath, profile.Login.ID)
 	if DBErr != nil {
 		log.Println(DBErr)
@@ -65,7 +65,7 @@ func (t *ProfileSQLRepository) GetProfileViaID(userID uint64) (*models.Profile, 
 		return nil, errors.New("no database connection")
 	}
 
-	resultSQL, DBErr := t.DBConnection.Query("SELECT `ProfileName`, `ProfileSurname`, `AvatarPath`, `user_id` FROM profile WHERE `user_id` = $1", userID)
+	resultSQL, DBErr := t.DBConnection.Query("SELECT ProfileName, ProfileSurname, AvatarPath, user_id FROM profile WHERE user_id = $1", userID)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr

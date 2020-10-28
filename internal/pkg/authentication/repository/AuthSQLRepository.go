@@ -23,7 +23,7 @@ func (t *AuthSQLRepository) CreateUser(user *models.User) error {
 		return errors.New("no database connection")
 	}
 	ScanErr := t.DBConn.QueryRow("INSERT INTO users (username, password) VALUES ($1,$2) RETURNING ID", user.Username, user.Password).Scan(&user.ID)
-	if ScanErr != nil{
+	if ScanErr != nil {
 		log.Println(ScanErr)
 		return errors.New("service not available")
 	}

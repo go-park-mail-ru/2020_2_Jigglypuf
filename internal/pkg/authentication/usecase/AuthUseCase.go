@@ -82,7 +82,7 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 	}
 
 	err := t.memConn.CreateUser(&user)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
