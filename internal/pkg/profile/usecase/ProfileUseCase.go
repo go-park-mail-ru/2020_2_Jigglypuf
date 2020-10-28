@@ -34,6 +34,7 @@ func (t *ProfileUseCase) GetProfileViaID(userID uint64) (*models.Profile, error)
 		reqProfile.Login = new(models.User)
 		reqProfile.Login.ID = userID
 		profileErr = t.DBConn.CreateProfile(reqProfile)
+		return reqProfile, profileErr
 	}
 	return reqProfile, nil
 }
