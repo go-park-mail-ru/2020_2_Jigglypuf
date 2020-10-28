@@ -22,7 +22,7 @@ func (t *CinemaSQLRepository) CreateCinema(cinema *models.Cinema) error {
 		return errors.New("no database connection")
 	}
 
-	result, DBErr := t.DBConnection.Exec("INSERT INTO cinema (`CinemaName`, `Address`) VALUES(?,?)", cinema.Name, cinema.Address)
+	result, DBErr := t.DBConnection.Exec("INSERT INTO cinema (CinemaName, Address) VALUES($1,$2)", cinema.Name, cinema.Address)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return DBErr
@@ -43,7 +43,7 @@ func (t *CinemaSQLRepository) GetCinema(id uint64) (*models.Cinema, error) {
 		return nil, errors.New("no database connection")
 	}
 
-	result, DBErr := t.DBConnection.Query("SELECT ID, CinemaName, Address FROM cinema WHERE ID = ?", id)
+	result, DBErr := t.DBConnection.Query("SELECT ID, CinemaName, Address FROM cinema WHERE ID = $1", id)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr
@@ -69,7 +69,7 @@ func (t *CinemaSQLRepository) GetCinemaList(limit, page int) (*[]models.Cinema, 
 		return nil, errors.New("no database connection")
 	}
 
-	resultList, DBErr := t.DBConnection.Query("SELECT ID,CinemaName,Address FROM cinema ORDER BY ID,CinemaName LIMIT ? OFFSET ?", limit, page*limit)
+	resultList, DBErr := t.DBConnection.Query("SELECT ID,CinemaName,Address FROM cinema ORDER BY ID,CinemaName LIMIT $1 OFFSET $2", limit, page*limit)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr
@@ -98,7 +98,7 @@ func (t *CinemaSQLRepository) UpdateCinema(cinema *models.Cinema) error {
 		return errors.New("no database connection")
 	}
 
-	_, DBErr := t.DBConnection.Exec("UPDATE cinema SET CinemaName = ?, Address = ?, WHERE ID = ?", cinema.Name, cinema.Address, cinema.ID)
+	_, DBErr := t.DBConnection.Exec("UPDATE cinema SET CinemaName = $1, Address = $2 WHERE ID = $3", cinema.Name, cinema.Address, cinema.ID)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return DBErr
@@ -112,7 +112,7 @@ func (t *CinemaSQLRepository) DeleteCinema(cinema *models.Cinema) error {
 		return errors.New("no database connection")
 	}
 
-	_, DBErr := t.DBConnection.Exec("DELETE FROM cinema WHERE ID = ?", cinema.ID)
+	_, DBErr := t.DBConnection.Exec("DELETE FROM cinema WHERE ID = $1", cinema.ID)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return DBErr

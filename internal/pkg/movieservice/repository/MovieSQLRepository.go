@@ -38,7 +38,7 @@ func (t *MovieSQLRepository) UpdateMovie(movie *models.Movie) error {
 		return errors.New("no database connection")
 	}
 
-	_, DBErr := t.DBConnection.Exec("UPDATE movie SET `MovieName` = ?, `Description` = ?, `Rating` = ?, `PathToAvatar` = ? WHERE ID = ?",
+	_, DBErr := t.DBConnection.Exec("UPDATE movie SET `MovieName` = $1, `Description` = $2, `Rating` = $3, `PathToAvatar` = $4 WHERE ID = $5",
 		movie.Name, movie.Description, movie.Rating, movie.PathToAvatar, movie.ID)
 	if DBErr != nil {
 		log.Println(DBErr)
@@ -53,7 +53,7 @@ func (t *MovieSQLRepository) GetMovie(id uint64) (*models.Movie, error) {
 		return nil, errors.New("no database connection")
 	}
 
-	resultSQL, DBErr := t.DBConnection.Query("SELECT ID, MovieName, Description, Rating, Rating_count, PathToAvatar FROM movie WHERE ID = ?", id)
+	resultSQL, DBErr := t.DBConnection.Query("SELECT ID, MovieName, Description, Rating, Rating_count, PathToAvatar FROM movie WHERE ID = $1", id)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr
@@ -79,7 +79,7 @@ func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.Movie, err
 		return nil, errors.New("no database connection")
 	}
 
-	resultSQL, DBErr := t.DBConnection.Query("SELECT ID, MovieName, Description, Rating, Rating_count, PathToAvatar FROM movie LIMIT ? OFFSET ?", limit, page*limit)
+	resultSQL, DBErr := t.DBConnection.Query("SELECT ID, MovieName, Description, Rating, Rating_count, PathToAvatar FROM movie LIMIT $1 OFFSET $2", limit, page*limit)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr
@@ -108,7 +108,7 @@ func (t *MovieSQLRepository) RateMovie(user *models.User, id uint64, rating int6
 		return errors.New("no database connection")
 	}
 
-	_, DBErr := t.DBConnection.Exec("INSERT INTO rating_history (`user_id`,`movie_id`,`movie_rating`) VALUES (?,?,?)",
+	_, DBErr := t.DBConnection.Exec("INSERT INTO rating_history (`user_id`,`movie_id`,`movie_rating`) VALUES ($1,$2,$3)",
 		user.ID, id, rating)
 	if DBErr != nil {
 		log.Println(DBErr)
@@ -123,7 +123,7 @@ func (t *MovieSQLRepository) GetRating(user *models.User, id uint64) (int64, err
 		return 0, errors.New("no database connection")
 	}
 
-	resultSQL, DBErr := t.DBConnection.Query("SELECT `movie_rating` FROM rating_history WHERE `user_id` = ?", user.ID)
+	resultSQL, DBErr := t.DBConnection.Query("SELECT `movie_rating` FROM rating_history WHERE `user_id` = $1", user.ID)
 	if DBErr != nil {
 		return 0, DBErr
 	}
@@ -148,7 +148,7 @@ func (t *MovieSQLRepository) UpdateMovieRating(movieID uint64, ratingScore int64
 		return errors.New("no database connection")
 	}
 
-	resultSQL, DBErr := t.DBConnection.Query("SELECT ID,Rating,Rating_count FROM movie WHERE ID = ?", movieID)
+	resultSQL, DBErr := t.DBConnection.Query("SELECT ID,Rating,Rating_count FROM movie WHERE ID = $1", movieID)
 	if DBErr != nil || resultSQL.Err() != nil {
 		return DBErr
 	}
@@ -164,7 +164,7 @@ func (t *MovieSQLRepository) UpdateMovieRating(movieID uint64, ratingScore int64
 
 	RatingCount++
 	var newRating float64 = (rating + float64(ratingScore)) / float64(RatingCount)
-	_, RatingDBErr := t.DBConnection.Exec("UPDATE movie SET Rating = ?, Rating_count = ? WHERE ID = ?",
+	_, RatingDBErr := t.DBConnection.Exec("UPDATE movie SET Rating = $1, Rating_count = $2 WHERE ID = $3",
 		newRating, RatingCount, movieID)
 	return RatingDBErr
 }

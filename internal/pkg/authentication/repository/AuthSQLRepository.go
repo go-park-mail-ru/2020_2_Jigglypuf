@@ -22,7 +22,7 @@ func (t *AuthSQLRepository) CreateUser(user *models.User) error {
 	if t.DBConn == nil {
 		return errors.New("no database connection")
 	}
-	result, DBErr := t.DBConn.Exec("INSERT INTO users (username, password) VALUES (?,?)", user.Username, user.Password)
+	result, DBErr := t.DBConn.Exec("INSERT INTO users (username, password) VALUES ($1,$2)", user.Username, user.Password)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return DBErr
@@ -44,7 +44,7 @@ func (t *AuthSQLRepository) GetUser(username string, hashPassword string) (*mode
 	}
 
 	requiredUser := new(models.User)
-	result := t.DBConn.QueryRow("SELECT id, username, password FROM users WHERE username = ? AND password = ?", username, hashPassword)
+	result := t.DBConn.QueryRow("SELECT id, username, password FROM users WHERE username = $1 AND password = $2", username, hashPassword)
 	rowsErr := result.Err()
 	if rowsErr != nil {
 		log.Println(rowsErr)
@@ -66,7 +66,7 @@ func (t *AuthSQLRepository) GetUserByID(userID uint64) (*models.User, error) {
 	}
 
 	requiredUser := new(models.User)
-	result := t.DBConn.QueryRow("SELECT id, username, password FROM users WHERE id = ?", userID)
+	result := t.DBConn.QueryRow("SELECT id, username, password FROM users WHERE id = $1", userID)
 
 	rowsErr := result.Err()
 	if rowsErr != nil {
