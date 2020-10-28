@@ -26,7 +26,7 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, erro
 		return 0, DBErr
 	}
 
-	if resp != nil {
+	if resp == nil {
 		return 0, nil
 	}
 
