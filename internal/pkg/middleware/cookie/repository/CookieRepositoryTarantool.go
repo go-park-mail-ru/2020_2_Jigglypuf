@@ -34,7 +34,7 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (*models.DBRe
 
 	data := resp.Data[0].([]interface{})
 	tarantoolRes := new(models.DBResponse)
-	if data != nil && len(data) > 2 {
+	if len(data) > 2 {
 		tarantoolRes.CookieValue = data[0].(string)
 		rawUserID, ok := data[1].(uint64)
 		if !ok {
