@@ -7,6 +7,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
+	"log"
 	"math/big"
 	"net/http"
 	"time"
@@ -112,7 +113,7 @@ func (t *UserUseCase) SignIn(input *models.AuthInput) (*http.Cookie, error) {
 	if cookieErr != nil {
 		return &http.Cookie{}, err
 	}
-
+	log.Println(cookieValue)
 	return &cookieValue, err
 }
 
