@@ -36,7 +36,7 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, erro
 		rawUserID := data[0].(string)
 		userIDInt, castErr := strconv.Atoi(rawUserID)
 		if castErr != nil{
-			log.Println("cast err")
+			log.Println("cast err", rawUserID)
 			return 0, errors.New("bad cookie")
 		}
 		tarantoolRes.UserID = uint64(userIDInt)
