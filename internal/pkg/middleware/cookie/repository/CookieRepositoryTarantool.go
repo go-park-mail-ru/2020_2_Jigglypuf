@@ -36,12 +36,14 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, erro
 		rawUserID := data[0].(string)
 		userIDInt, castErr := strconv.Atoi(rawUserID)
 		if castErr != nil{
-			return 0, errors.New("bad cookie ")
+			log.Println("cast err")
+			return 0, errors.New("bad cookie")
 		}
 		tarantoolRes.UserID = uint64(userIDInt)
 		rawCookie := data[0].(string)
 		translationErr := json.Unmarshal([]byte(rawCookie), &tarantoolRes.Cookie)
 		if translationErr != nil{
+			log.Println("translation err")
 			return 0, errors.New("bad cookie")
 		}
 		log.Println(tarantoolRes)
