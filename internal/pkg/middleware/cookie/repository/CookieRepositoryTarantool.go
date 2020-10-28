@@ -31,7 +31,7 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, erro
 	}
 
 	data := resp.Data[0]
-
+	log.Println(data)
 	if id, ok := data.(uint64); ok {
 		return id, nil
 	}
