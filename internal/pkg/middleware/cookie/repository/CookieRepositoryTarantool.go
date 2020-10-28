@@ -2,6 +2,7 @@ package repository
 
 import (
 	tarantoolConfig "backend/internal/pkg/middleware/cookie"
+	"backend/internal/pkg/models"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -22,20 +23,30 @@ func NewCookieTarantoolRepository(conn *tarantool.Connection) (*CookieTarantoolR
 
 func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, error) {
 	resp, DBErr := t.connectionDB.Eval("return check_session(...)", []interface{}{cookie.Value})
-
 	if DBErr != nil {
 		return 0, DBErr
 	}
-
 	if resp == nil {
 		return 0, errors.New("incorrect session")
 	}
 
-	data := resp.Data[0].([]interface{})[0].(string)
-	//fmt.Println(data)
-	//if data == nil{
-	//	return 0, errors.New("cookie not found")
-	//}
+	data := resp.Data[0].([]interface{})
+	tarantoolRes := new(models.TarantoolResponse)
+	if data != nil{
+		if len(data) > 0{
+			tarantoolRes.CookieValue = data[0].(string)
+		}
+		if len(data) > 1{
+			tarantoolRes.UserID = data[0].(uint64)
+		}
+		if len(data) > 2{
+			rawCookie := data[0].(string)
+			translationErr := json.Unmarshal([]byte(rawCookie), &tarantoolRes.Cookie)
+			if translationErr != nil{
+				return 0, errors.New("bad cookie")
+			}
+		}
+	}
 	fmt.Println(data)
 	return 0, errors.New("cookie not found")
 }
