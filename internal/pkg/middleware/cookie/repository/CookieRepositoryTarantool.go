@@ -20,16 +20,16 @@ func NewCookieTarantoolRepository(conn *tarantool.Connection) (*CookieTarantoolR
 	}, nil
 }
 
-func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, error) {
+func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (*models.TarantoolResponse, error) {
 	resp, DBErr := t.connectionDB.Eval("return check_session(...)", []interface{}{cookie.Value})
 	if DBErr != nil {
-		return 0, DBErr
+		return nil, DBErr
 	}
 	if resp == nil {
-		return 0, errors.New("incorrect session")
+		return nil, errors.New("incorrect session")
 	}
 	if resp.Data[0] == nil{
-		return 0, errors.New("cookie not found")
+		return nil, errors.New("cookie not found")
 	}
 
 	data := resp.Data[0].([]interface{})
@@ -39,19 +39,19 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (uint64, erro
 		rawUserID, ok := data[1].(uint64)
 		if !ok{
 			log.Println("cast err")
-			return 0, errors.New("bad cookie")
+			return nil, errors.New("bad cookie")
 		}
 		tarantoolRes.UserID = rawUserID
 		rawCookie := data[2].(string)
 		translationErr := json.Unmarshal([]byte(rawCookie), &tarantoolRes.Cookie)
 		if translationErr != nil{
 			log.Println("translation err")
-			return 0, errors.New("bad cookie")
+			return nil, errors.New("bad cookie")
 		}
 		log.Println(tarantoolRes)
-		return tarantoolRes.UserID, nil
+		return tarantoolRes, nil
 	}
-	return 0, errors.New("cookie not found")
+	return nil, errors.New("cookie not found")
 }
 
 func (t *CookieTarantoolRepository) SetCookie(cookie *http.Cookie, userID uint64) error {

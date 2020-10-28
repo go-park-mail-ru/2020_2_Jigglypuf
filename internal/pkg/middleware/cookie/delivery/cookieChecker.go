@@ -3,6 +3,7 @@ package delivery
 import (
 	"backend/internal/pkg/middleware/cookie"
 	"net/http"
+	"time"
 )
 
 type CookieHandler struct {
@@ -22,5 +23,11 @@ func (t *CookieHandler) CheckCookie(r *http.Request) (uint64, bool) {
 	}
 
 	value, cookieErr := t.dbConn.GetCookie(cookieValue)
-	return value, cookieErr == nil
+	if cookieErr == nil{
+		if time.Now().Before(value.Cookie.Expires){
+			return 0, false
+		}
+		return value.UserID, true
+	}
+	return 0, false
 }

@@ -23,7 +23,7 @@ func configureMovieRouter(handler *movieDelivery.MovieHandler) *httprouter.Route
 
 	movieRouter.GET(movieConfig.URLPattern+":id/", handler.GetMovie)
 	movieRouter.GET(movieConfig.URLPattern, handler.GetMovieList)
-	movieRouter.POST(movieConfig.URLPattern+":id/rate/", handler.RateMovie)
+	movieRouter.POST(movieConfig.URLPattern+"rate/", handler.RateMovie)
 
 	return movieRouter
 }

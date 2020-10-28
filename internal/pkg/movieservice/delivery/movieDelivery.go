@@ -38,6 +38,8 @@ func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request, para
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
+
 	Limit := r.URL.Query()["limit"]
 	Page := r.URL.Query()["page"]
 	if len(Limit) == 0 || len(Page) == 0 {
@@ -83,6 +85,7 @@ func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request, params h
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 
 	name := params.ByName(movieservice.GetMovieID)
 	integerName, castErr := strconv.Atoi(name)
