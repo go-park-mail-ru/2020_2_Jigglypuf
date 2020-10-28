@@ -44,11 +44,7 @@ func (t *AuthSQLRepository) GetUser(username string, hashPassword string) (*mode
 	}
 
 	requiredUser := new(models.User)
-	result, DBErr := t.DBConn.Query("SELECT id, username, password FROM users WHERE username = ? AND password = ?", username, hashPassword)
-	if DBErr != nil {
-		log.Println(DBErr)
-		return nil, DBErr
-	}
+	result := t.DBConn.QueryRow("SELECT id, username, password FROM users WHERE username = ? AND password = ?", username, hashPassword)
 	rowsErr := result.Err()
 	if rowsErr != nil {
 		log.Println(rowsErr)
@@ -70,11 +66,8 @@ func (t *AuthSQLRepository) GetUserByID(userID uint64) (*models.User, error) {
 	}
 
 	requiredUser := new(models.User)
-	result, DBErr := t.DBConn.Query("SELECT id, username, password FROM users WHERE id = ?", userID)
-	if DBErr != nil {
-		log.Println(DBErr)
-		return nil, DBErr
-	}
+	result := t.DBConn.QueryRow("SELECT id, username, password FROM users WHERE id = ?", userID)
+
 	rowsErr := result.Err()
 	if rowsErr != nil {
 		log.Println(rowsErr)
