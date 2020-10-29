@@ -21,10 +21,10 @@ type MovieService struct {
 func configureMovieRouter(handler *movieDelivery.MovieHandler) *httprouter.Router {
 	movieRouter := httprouter.New()
 
-	movieRouter.GET(movieConfig.URLPattern+"actual/", handler.GetMoviesInCinema)
-	movieRouter.GET(movieConfig.URLPattern+":id/", handler.GetMovie)
 	movieRouter.GET(movieConfig.URLPattern, handler.GetMovieList)
 	movieRouter.POST(movieConfig.URLPattern+"rate/", handler.RateMovie)
+	movieRouter.GET(movieConfig.URLPattern+"actual/", handler.GetMoviesInCinema)
+	movieRouter.GET(movieConfig.URLPattern+":id/", handler.GetMovie)
 
 	return movieRouter
 }
