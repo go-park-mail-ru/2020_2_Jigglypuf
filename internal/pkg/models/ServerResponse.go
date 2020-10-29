@@ -18,7 +18,7 @@ type ServerResponse struct {
 
 func BadBodyHTTPResponse(w *http.ResponseWriter, err error) {
 	response, _ := json.Marshal(ServerResponse{
-		StatusCode: 401,
+		StatusCode: http.StatusBadRequest,
 		Response:   err.Error(),
 	})
 
