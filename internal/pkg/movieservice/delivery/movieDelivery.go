@@ -6,7 +6,7 @@ import (
 	"backend/internal/pkg/models"
 	"backend/internal/pkg/movieservice"
 	"encoding/json"
-	"github.com/julienschmidt/httprouter"
+	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
 )
@@ -48,7 +48,7 @@ func NewMovieHandler(usecase movieservice.MovieUseCase, userRepository authentic
 // @Failure 400 {object} models.ServerResponse
 // @Failure 405 {object} models.ServerResponse
 // @Router /movie/ [get]
-func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
@@ -86,14 +86,15 @@ func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request, para
 // @Failure 400 {object} models.ServerResponse
 // @Failure 405 {object} models.ServerResponse
 // @Router /movie/{id}/ [get]
-func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+	vars := mux.Vars(r)
 
-	name := params.ByName(movieservice.GetMovieID)
+	name := vars[movieservice.GetMovieID]
 	integerName, castErr := strconv.Atoi(name)
 	if castErr != nil || len(name) == 0 {
 		models.BadBodyHTTPResponse(&w, models.IncorrectGetParameters{})
@@ -128,7 +129,7 @@ func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request, params h
 // @Failure 401 {object} models.ServerResponse "No authorization"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
 // @Router /movie/rate/ [post]
-func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	if r.Method != http.MethodPost {
@@ -166,7 +167,7 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request, params 
 	}
 }
 
-func (t *MovieHandler) GetMovieRating(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+func (t *MovieHandler) GetMovieRating(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
@@ -220,7 +221,7 @@ func (t *MovieHandler) GetMovieRating(w http.ResponseWriter, r *http.Request, pa
 // @Failure 401 {object} models.ServerResponse "No authorization"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
 // @Router /movie/actual/ [get]
-func (t *MovieHandler) GetMoviesInCinema(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+func (t *MovieHandler) GetMoviesInCinema(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		models.BadMethodHTTPResponse(&w)
 		return
