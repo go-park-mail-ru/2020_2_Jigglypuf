@@ -43,7 +43,7 @@ func StartMock(mutex *sync.RWMutex) *CinemaService {
 
 func Start(connection *sql.DB) (*CinemaService, error) {
 	if connection == nil {
-		return nil, models.NoDataBaseConnection
+		return nil, models.ErrFooNoDBConnection
 	}
 	cinemaRep := cinemaRepository.NewCinemaSQLRepository(connection)
 	cinemaUC := cinemaUseCase.NewCinemaUseCase(cinemaRep)

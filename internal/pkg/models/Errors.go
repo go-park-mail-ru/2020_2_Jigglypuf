@@ -2,7 +2,6 @@ package models
 
 import "errors"
 
-
-var(
-	NoDataBaseConnection = errors.New("no database connection")
+var (
+	ErrFooNoDBConnection = errors.New("no database connection")
 )

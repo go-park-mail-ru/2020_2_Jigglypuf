@@ -16,6 +16,21 @@ type MovieHandler struct {
 	userRepository authentication.AuthRepository
 }
 
+func getQueryLimitPageArgs(r *http.Request) (int, int, error) {
+	Limit := r.URL.Query()[movieservice.LimitQuery]
+	Page := r.URL.Query()[movieservice.PageQuery]
+	if len(Limit) == 0 || len(Page) == 0 {
+		return 0, 0, models.IncorrectGetParameters{}
+	}
+	limit, limitErr := strconv.Atoi(Limit[0])
+	page, pageErr := strconv.Atoi(Page[0])
+
+	if limitErr != nil || pageErr != nil {
+		return 0, 0, limitErr
+	}
+	return limit, page, nil
+}
+
 func NewMovieHandler(usecase movieservice.MovieUseCase, userRepository authentication.AuthRepository) *MovieHandler {
 	return &MovieHandler{
 		movieUseCase:   usecase,
@@ -40,18 +55,9 @@ func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request, para
 	}
 	w.Header().Set("Content-Type", "application/json")
 
-	Limit := r.URL.Query()[movieservice.LimitQuery]
-	Page := r.URL.Query()[movieservice.PageQuery]
-	if len(Limit) == 0 || len(Page) == 0 {
-		models.BadBodyHTTPResponse(&w, models.IncorrectGetParameters{})
-		return
-	}
-	limit, limitErr := strconv.Atoi(Limit[0])
-	page, pageErr := strconv.Atoi(Page[0])
-
-	if limitErr != nil || pageErr != nil {
-		models.BadBodyHTTPResponse(&w, limitErr)
-		return
+	limit, page, queryErr := getQueryLimitPageArgs(r)
+	if queryErr != nil {
+		models.BadBodyHTTPResponse(&w, queryErr)
 	}
 
 	resultArray, err := t.movieUseCase.GetMovieList(limit, page)
@@ -214,30 +220,21 @@ func (t *MovieHandler) GetMovieRating(w http.ResponseWriter, r *http.Request, pa
 // @Failure 401 {object} models.ServerResponse "No authorization"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
 // @Router /movie/actual/ [get]
-func (t *MovieHandler) GetMoviesInCinema(w http.ResponseWriter, r *http.Request, params httprouter.Params){
-	if r.Method != http.MethodPost{
+func (t *MovieHandler) GetMoviesInCinema(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	if r.Method != http.MethodPost {
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
-
 	w.Header().Set("Content-Type", "application/json")
 
-	Limit := r.URL.Query()[movieservice.LimitQuery]
-	Page := r.URL.Query()[movieservice.PageQuery]
-	if len(Limit) == 0 || len(Page) == 0 {
+	limit, page, queryErr := getQueryLimitPageArgs(r)
+	if queryErr != nil {
 		models.BadBodyHTTPResponse(&w, models.IncorrectGetParameters{})
 		return
 	}
-	limit, limitErr := strconv.Atoi(Limit[0])
-	page, pageErr := strconv.Atoi(Page[0])
 
-	if limitErr != nil || pageErr != nil {
-		models.BadBodyHTTPResponse(&w, limitErr)
-		return
-	}
-
-	movieList, movieErr := t.movieUseCase.GetMoviesInCinema(limit,page)
-	if movieErr != nil{
+	movieList, movieErr := t.movieUseCase.GetMoviesInCinema(limit, page)
+	if movieErr != nil {
 		models.BadBodyHTTPResponse(&w, movieErr)
 		return
 	}

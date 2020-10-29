@@ -28,6 +28,8 @@ definitions:
         type: string
       rating:
         type: number
+      ratingCount:
+        type: integer
     type: object
   models.RateMovie:
     properties:
@@ -230,6 +232,36 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: GetMovie
+  /movie/actual/:
+    get:
+      description: Returns movie that in the cinema
+      operationId: movie-in-cinema-id
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: page
+        in: query
+        name: page
+        required: true
+        type: integer
+      responses:
+        "200": {}
+        "400":
+          description: Bad body
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "401":
+          description: No authorization
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: Get movies in cinema
   /movie/rate/:
     post:
       consumes:

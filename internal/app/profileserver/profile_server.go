@@ -45,7 +45,7 @@ func StartMock(mutex *sync.RWMutex, authRep authentication.AuthRepository) *Prof
 
 func Start(connection *sql.DB) (*ProfileService, error) {
 	if connection == nil {
-		return nil, models.NoDataBaseConnection
+		return nil, models.ErrFooNoDBConnection
 	}
 	profileRep := profileRepository.NewProfileSQLRepository(connection)
 	profileUC := profileUseCase.NewProfileUseCase(profileRep)

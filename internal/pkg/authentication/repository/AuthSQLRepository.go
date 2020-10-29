@@ -20,7 +20,7 @@ func NewAuthSQLRepository(connection *sql.DB) *AuthSQLRepository {
 
 func (t *AuthSQLRepository) CreateUser(user *models.User) error {
 	if t.DBConn == nil {
-		return models.NoDataBaseConnection
+		return models.ErrFooNoDBConnection
 	}
 	ScanErr := t.DBConn.QueryRow("INSERT INTO users (username, password) VALUES ($1,$2) RETURNING ID", user.Username, user.Password).Scan(&user.ID)
 	if ScanErr != nil {
@@ -32,7 +32,7 @@ func (t *AuthSQLRepository) CreateUser(user *models.User) error {
 
 func (t *AuthSQLRepository) GetUser(username string, hashPassword string) (*models.User, error) {
 	if t.DBConn == nil {
-		return nil, models.NoDataBaseConnection
+		return nil, models.ErrFooNoDBConnection
 	}
 
 	requiredUser := new(models.User)
@@ -54,7 +54,7 @@ func (t *AuthSQLRepository) GetUser(username string, hashPassword string) (*mode
 
 func (t *AuthSQLRepository) GetUserByID(userID uint64) (*models.User, error) {
 	if t.DBConn == nil {
-		return nil, models.NoDataBaseConnection
+		return nil, models.ErrFooNoDBConnection
 	}
 
 	requiredUser := new(models.User)

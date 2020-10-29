@@ -246,6 +246,50 @@ var doc = `{
                 }
             }
         },
+        "/movie/actual/": {
+            "get": {
+                "description": "Returns movie that in the cinema",
+                "summary": "Get movies in cinema",
+                "operationId": "movie-in-cinema-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {},
+                    "400": {
+                        "description": "Bad body",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "No authorization",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/movie/rate/": {
             "post": {
                 "description": "Rate movie",
@@ -448,6 +492,9 @@ var doc = `{
                 },
                 "rating": {
                     "type": "number"
+                },
+                "ratingCount": {
+                    "type": "integer"
                 }
             }
         },
