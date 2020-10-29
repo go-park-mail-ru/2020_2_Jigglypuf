@@ -162,7 +162,7 @@ func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int)(*[]models.Movie,
 		return nil, models.NoDataBaseConnection
 	}
 
-	DBRows, DBErr := t.DBConnection.Query("SELECT Movie_id, Cinema_id, Rental_start, Rental_end FROM movies_in_cinema WHERE rental_start < now() AND rental_end > now()")
+	DBRows, DBErr := t.DBConnection.Query("SELECT DISTINCT Movie_id,MovieName,description,rating,rating_count,pathtoavatar FROM movies_in_cinema JOIN movie on(movie_id = ID) WHERE rental_start < now() AND rental_end > now()")
 	defer func(){
 		if DBRows != nil{
 			DBRows.Close()
