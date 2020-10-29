@@ -44,3 +44,7 @@ func (t *MovieUseCase) RateMovie(user *models.User, id uint64, rating int64) err
 func (t *MovieUseCase) GetRating(user *models.User, id uint64) (int64, error) {
 	return t.DBConn.GetRating(user, id)
 }
+
+func (t *MovieUseCase) GetMoviesInCinema(limit, page int)(*[]models.Movie, error){
+	return t.DBConn.GetMoviesInCinema(limit,page)
+}

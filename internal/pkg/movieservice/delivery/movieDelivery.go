@@ -40,8 +40,8 @@ func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request, para
 	}
 	w.Header().Set("Content-Type", "application/json")
 
-	Limit := r.URL.Query()["limit"]
-	Page := r.URL.Query()["page"]
+	Limit := r.URL.Query()[movieservice.LimitQuery]
+	Page := r.URL.Query()[movieservice.PageQuery]
 	if len(Limit) == 0 || len(Page) == 0 {
 		models.BadBodyHTTPResponse(&w, models.IncorrectGetParameters{})
 		return
@@ -160,7 +160,7 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request, params 
 	}
 }
 
-func (t *MovieHandler) GetMovieRating(w http.ResponseWriter, r *http.Request) {
+func (t *MovieHandler) GetMovieRating(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
@@ -180,7 +180,7 @@ func (t *MovieHandler) GetMovieRating(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	name := r.URL.Query()["id"]
+	name := r.URL.Query()[movieservice.MovieIDQuery]
 	integerName, castErr := strconv.Atoi(name[0])
 	if castErr != nil || len(name) == 0 {
 		models.BadBodyHTTPResponse(&w, models.IncorrectGetParameters{})
@@ -195,6 +195,55 @@ func (t *MovieHandler) GetMovieRating(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	response, err := json.Marshal(result)
+	if err != nil {
+		models.BadBodyHTTPResponse(&w, err)
+		return
+	}
+
+	_, _ = w.Write(response)
+}
+
+// Movie godoc
+// @Summary Get movies in cinema
+// @Description Returns movie that in the cinema
+// @ID movie-in-cinema-id
+// @Param limit query int true "limit"
+// @Param page query int true "page"
+// @Success 200
+// @Failure 400 {object} models.ServerResponse "Bad body"
+// @Failure 401 {object} models.ServerResponse "No authorization"
+// @Failure 405 {object} models.ServerResponse "Method not allowed"
+// @Router /movie/actual/ [get]
+func (t *MovieHandler) GetMoviesInCinema(w http.ResponseWriter, r *http.Request, params httprouter.Params){
+	if r.Method != http.MethodPost{
+		models.BadMethodHTTPResponse(&w)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	Limit := r.URL.Query()[movieservice.LimitQuery]
+	Page := r.URL.Query()[movieservice.PageQuery]
+	if len(Limit) == 0 || len(Page) == 0 {
+		models.BadBodyHTTPResponse(&w, models.IncorrectGetParameters{})
+		return
+	}
+	limit, limitErr := strconv.Atoi(Limit[0])
+	page, pageErr := strconv.Atoi(Page[0])
+
+	if limitErr != nil || pageErr != nil {
+		models.BadBodyHTTPResponse(&w, limitErr)
+		return
+	}
+
+	movieList, movieErr := t.movieUseCase.GetMoviesInCinema(limit,page)
+	if movieErr != nil{
+		models.BadBodyHTTPResponse(&w, movieErr)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	response, err := json.Marshal(movieList)
 	if err != nil {
 		models.BadBodyHTTPResponse(&w, err)
 		return

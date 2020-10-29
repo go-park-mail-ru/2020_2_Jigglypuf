@@ -19,7 +19,7 @@ func NewCinemaSQLRepository(connection *sql.DB) *CinemaSQLRepository {
 
 func (t *CinemaSQLRepository) CreateCinema(cinema *models.Cinema) error {
 	if t.DBConnection == nil {
-		return errors.New("no database connection")
+		return models.NoDataBaseConnection
 	}
 
 	ScanErr := t.DBConnection.QueryRow("INSERT INTO cinema (CinemaName, Address) VALUES($1,$2) RETURNING ID", cinema.Name, cinema.Address).Scan(&cinema.ID)
@@ -32,7 +32,7 @@ func (t *CinemaSQLRepository) CreateCinema(cinema *models.Cinema) error {
 
 func (t *CinemaSQLRepository) GetCinema(id uint64) (*models.Cinema, error) {
 	if t.DBConnection == nil {
-		return nil, errors.New("no database connection")
+		return nil, models.NoDataBaseConnection
 	}
 
 	result := t.DBConnection.QueryRow("SELECT ID, CinemaName, Address FROM cinema WHERE ID = $1", id)
@@ -54,7 +54,7 @@ func (t *CinemaSQLRepository) GetCinema(id uint64) (*models.Cinema, error) {
 
 func (t *CinemaSQLRepository) GetCinemaList(limit, page int) (*[]models.Cinema, error) {
 	if t.DBConnection == nil {
-		return nil, errors.New("no database connection")
+		return nil, models.NoDataBaseConnection
 	}
 
 	resultList, DBErr := t.DBConnection.Query("SELECT ID,CinemaName,Address FROM cinema ORDER BY ID,CinemaName LIMIT $1 OFFSET $2", limit, page*limit)
@@ -85,7 +85,7 @@ func (t *CinemaSQLRepository) GetCinemaList(limit, page int) (*[]models.Cinema, 
 
 func (t *CinemaSQLRepository) UpdateCinema(cinema *models.Cinema) error {
 	if t.DBConnection == nil {
-		return errors.New("no database connection")
+		return models.NoDataBaseConnection
 	}
 
 	_, DBErr := t.DBConnection.Exec("UPDATE cinema SET CinemaName = $1, Address = $2 WHERE ID = $3", cinema.Name, cinema.Address, cinema.ID)
@@ -99,7 +99,7 @@ func (t *CinemaSQLRepository) UpdateCinema(cinema *models.Cinema) error {
 
 func (t *CinemaSQLRepository) DeleteCinema(cinema *models.Cinema) error {
 	if t.DBConnection == nil {
-		return errors.New("no database connection")
+		return models.NoDataBaseConnection
 	}
 
 	_, DBErr := t.DBConnection.Exec("DELETE FROM cinema WHERE ID = $1", cinema.ID)

@@ -232,3 +232,7 @@ func (t *MovieRepository) GetRating(user *models.User, id uint64) (int64, error)
 func (t *MovieRepository) UpdateMovieRating(movieID uint64, ratingScore int64) error {
 	return nil
 }
+
+func (t *MovieRepository) GetMoviesInCinema(limit, page int)(*[]models.Movie, error){
+	return nil, nil
+}

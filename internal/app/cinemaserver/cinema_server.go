@@ -5,8 +5,8 @@ import (
 	cinemaDelivery "backend/internal/pkg/cinemaservice/delivery"
 	cinemaRepository "backend/internal/pkg/cinemaservice/repository"
 	cinemaUseCase "backend/internal/pkg/cinemaservice/usecase"
+	"backend/internal/pkg/models"
 	"database/sql"
-	"errors"
 	"github.com/julienschmidt/httprouter"
 	"sync"
 )
@@ -43,7 +43,7 @@ func StartMock(mutex *sync.RWMutex) *CinemaService {
 
 func Start(connection *sql.DB) (*CinemaService, error) {
 	if connection == nil {
-		return nil, errors.New("no database connection")
+		return nil, models.NoDataBaseConnection
 	}
 	cinemaRep := cinemaRepository.NewCinemaSQLRepository(connection)
 	cinemaUC := cinemaUseCase.NewCinemaUseCase(cinemaRep)

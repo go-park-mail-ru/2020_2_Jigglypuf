@@ -54,6 +54,7 @@ CREATE TABLE rating_history
 
 CREATE TABLE movies_in_cinema
 (
+    ID serial NOT NULL UNIQUE PRIMARY KEY,
     Movie_id INTEGER NOT NULL REFERENCES movie (ID),
     Cinema_id INTEGER NOT NULL REFERENCES cinema (ID),
     Rental_start DATE NOT NULL,

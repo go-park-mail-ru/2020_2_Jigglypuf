@@ -6,8 +6,8 @@ import (
 	authRepository "backend/internal/pkg/authentication/repository"
 	authUseCase "backend/internal/pkg/authentication/usecase"
 	"backend/internal/pkg/middleware/cookie"
+	"backend/internal/pkg/models"
 	"database/sql"
-	"errors"
 	"github.com/julienschmidt/httprouter"
 	"sync"
 )
@@ -46,7 +46,7 @@ func StartMock(mutex *sync.RWMutex, cookieRepository cookie.Repository) *AuthSer
 
 func Start(cookieRepository cookie.Repository, connection *sql.DB) (*AuthService, error) {
 	if connection == nil {
-		return nil, errors.New("no database connection")
+		return nil, models.NoDataBaseConnection
 	}
 	authRep := authRepository.NewAuthSQLRepository(connection)
 	authCase := authUseCase.NewUserUseCase(authRep, cookieRepository, authConfig.Salt)
