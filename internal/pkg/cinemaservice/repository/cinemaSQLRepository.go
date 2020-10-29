@@ -62,6 +62,8 @@ func (t *CinemaSQLRepository) GetCinemaList(limit, page int) (*[]models.Cinema, 
 		log.Println(DBErr)
 		return nil, DBErr
 	}
+	defer resultList.Close()
+
 	rowsErr := resultList.Err()
 	if rowsErr != nil {
 		log.Println(rowsErr)

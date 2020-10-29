@@ -73,6 +73,8 @@ func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.Movie, err
 		log.Println(DBErr)
 		return nil, DBErr
 	}
+	defer resultSQL.Close()
+
 	rowsErr := resultSQL.Err()
 	if rowsErr != nil {
 		log.Println(rowsErr)
