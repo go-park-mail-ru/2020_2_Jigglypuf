@@ -222,7 +222,7 @@ func (t *MovieHandler) GetMovieRating(w http.ResponseWriter, r *http.Request) {
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
 // @Router /movie/actual/ [get]
 func (t *MovieHandler) GetMoviesInCinema(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
+	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
