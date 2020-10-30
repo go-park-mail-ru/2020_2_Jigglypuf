@@ -523,7 +523,7 @@ var doc = `{
                     "type": "integer"
                 },
                 "releaseYear": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },

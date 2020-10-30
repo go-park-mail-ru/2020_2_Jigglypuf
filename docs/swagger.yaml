@@ -45,7 +45,7 @@ definitions:
       ratingCount:
         type: integer
       releaseYear:
-        type: string
+        type: integer
     type: object
   models.Profile:
     properties:
