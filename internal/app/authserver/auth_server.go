@@ -46,7 +46,7 @@ func StartMock(mutex *sync.RWMutex, cookieRepository cookie.Repository) *AuthSer
 
 func Start(cookieRepository cookie.Repository, connection *sql.DB) (*AuthService, error) {
 	if connection == nil {
-		return nil, models.NoDataBaseConnection
+		return nil, models.ErrFooNoDBConnection
 	}
 	authRep := authRepository.NewAuthSQLRepository(connection)
 	authCase := authUseCase.NewUserUseCase(authRep, cookieRepository, authConfig.Salt)

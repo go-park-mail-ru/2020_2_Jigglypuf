@@ -19,7 +19,7 @@ func NewCinemaSQLRepository(connection *sql.DB) *CinemaSQLRepository {
 
 func (t *CinemaSQLRepository) CreateCinema(cinema *models.Cinema) error {
 	if t.DBConnection == nil {
-		return models.NoDataBaseConnection
+		return models.ErrFooNoDBConnection
 	}
 
 	ScanErr := t.DBConnection.QueryRow("INSERT INTO cinema (CinemaName, Address) VALUES($1,$2) RETURNING ID", cinema.Name, cinema.Address).Scan(&cinema.ID)
@@ -32,10 +32,10 @@ func (t *CinemaSQLRepository) CreateCinema(cinema *models.Cinema) error {
 
 func (t *CinemaSQLRepository) GetCinema(id uint64) (*models.Cinema, error) {
 	if t.DBConnection == nil {
-		return nil, models.NoDataBaseConnection
+		return nil, models.ErrFooNoDBConnection
 	}
 
-	result := t.DBConnection.QueryRow("SELECT ID, CinemaName, Address FROM cinema WHERE ID = $1", id)
+	result := t.DBConnection.QueryRow("SELECT ID, CinemaName, Address, Hall_count, Author_ID FROM cinema WHERE ID = $1", id)
 	rowsErr := result.Err()
 	if rowsErr != nil {
 		log.Println(rowsErr)
@@ -43,7 +43,7 @@ func (t *CinemaSQLRepository) GetCinema(id uint64) (*models.Cinema, error) {
 	}
 
 	resultCinema := new(models.Cinema)
-	scanErr := result.Scan(&resultCinema.ID, &resultCinema.Name, &resultCinema.Address)
+	scanErr := result.Scan(&resultCinema.ID, &resultCinema.Name, &resultCinema.Address, &resultCinema.HallCount, &resultCinema.AuthorID)
 	if scanErr != nil {
 		log.Println(scanErr)
 		return nil, scanErr
@@ -54,10 +54,10 @@ func (t *CinemaSQLRepository) GetCinema(id uint64) (*models.Cinema, error) {
 
 func (t *CinemaSQLRepository) GetCinemaList(limit, page int) (*[]models.Cinema, error) {
 	if t.DBConnection == nil {
-		return nil, models.NoDataBaseConnection
+		return nil, models.ErrFooNoDBConnection
 	}
 
-	resultList, DBErr := t.DBConnection.Query("SELECT ID,CinemaName,Address FROM cinema ORDER BY ID,CinemaName LIMIT $1 OFFSET $2", limit, page*limit)
+	resultList, DBErr := t.DBConnection.Query("SELECT ID,CinemaName,Address,Hall_count,Author_ID FROM cinema ORDER BY ID,CinemaName LIMIT $1 OFFSET $2", limit, page*limit)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr
@@ -69,10 +69,10 @@ func (t *CinemaSQLRepository) GetCinemaList(limit, page int) (*[]models.Cinema, 
 		log.Println(rowsErr)
 		return nil, rowsErr
 	}
-	cinemaList := make([]models.Cinema, 1)
+	cinemaList := make([]models.Cinema, 0)
 	for resultList.Next() {
 		cinemaItem := new(models.Cinema)
-		cinemaItemScanError := resultList.Scan(&cinemaItem.ID, &cinemaItem.Name, &cinemaItem.Address)
+		cinemaItemScanError := resultList.Scan(&cinemaItem.ID, &cinemaItem.Name, &cinemaItem.Address, &cinemaItem.HallCount, &cinemaItem.AuthorID)
 		if cinemaItemScanError != nil {
 			log.Println(cinemaItemScanError)
 			return nil, cinemaItemScanError
@@ -85,7 +85,7 @@ func (t *CinemaSQLRepository) GetCinemaList(limit, page int) (*[]models.Cinema, 
 
 func (t *CinemaSQLRepository) UpdateCinema(cinema *models.Cinema) error {
 	if t.DBConnection == nil {
-		return models.NoDataBaseConnection
+		return models.ErrFooNoDBConnection
 	}
 
 	_, DBErr := t.DBConnection.Exec("UPDATE cinema SET CinemaName = $1, Address = $2 WHERE ID = $3", cinema.Name, cinema.Address, cinema.ID)
@@ -99,7 +99,7 @@ func (t *CinemaSQLRepository) UpdateCinema(cinema *models.Cinema) error {
 
 func (t *CinemaSQLRepository) DeleteCinema(cinema *models.Cinema) error {
 	if t.DBConnection == nil {
-		return models.NoDataBaseConnection
+		return models.ErrFooNoDBConnection
 	}
 
 	_, DBErr := t.DBConnection.Exec("DELETE FROM cinema WHERE ID = $1", cinema.ID)

@@ -25,6 +25,7 @@ CREATE TABLE cinema
     ID serial NOT NULL PRIMARY KEY,
     CinemaName VARCHAR(32) NOT NULL,
     Address VARCHAR(64) NOT NULL,
+    Hall_count integer NOT NULL,
     Author_ID integer REFERENCES users (ID)
 );
 
@@ -32,9 +33,15 @@ CREATE TABLE cinema
 
 CREATE TABLE movie
 (
-    ID serial NOT NULL PRIMARY KEY ,
+    ID serial NOT NULL PRIMARY KEY,
     MovieName TEXT NOT NULL UNIQUE,
     Description TEXT,
+    Genre VARCHAR(64),
+    Duration integer,
+    Producer VARCHAR(64),
+    Country VARCHAR(64),
+    Release_Year integer,
+    Age_group integer,
     Rating FLOAT DEFAULT 0.0,
     Rating_count INTEGER DEFAULT 0,
     PathToAvatar VARCHAR(64)
@@ -67,22 +74,22 @@ CREATE TABLE movies_in_cinema
 
 
 
-INSERT INTO cinema (CinemaName, Address)
-VALUES  ('CinemaScope1','Москва, Первая улица, д.1'),
-        ('CinemaScope2','Москва, Первая улица, д.2'),
-        ('CinemaScope3','Москва, Первая улица, д.3'),
-        ('CinemaScope4','Москва, Первая улица, д.4');
+INSERT INTO cinema (CinemaName, Address, Hall_count)
+VALUES  ('CinemaScope1','Москва, Первая улица, д.1',1),
+        ('CinemaScope2','Москва, Первая улица, д.2',2),
+        ('CinemaScope3','Москва, Первая улица, д.3',3),
+        ('CinemaScope4','Москва, Первая улица, д.4',4);
 
-INSERT INTO movie (MovieName,Description,PathToAvatar)
-VALUES  ('Гренландия','Greenland description','/media/greenland.jpg'),
-        ('Антибеллум','Антибеллум description','/media/antibellum.jpg'),
-        ('Довод','Довод description','/media/dovod.jpg'),
-        ('Гнездо','Гнездо description','/media/gnezdo.jpg'),
-        ('Сделано в Италии','Италиан description','/media/italian.jpg'),
-        ('Мулан','Мулан description','/media/mulan.jpg'),
-        ('Никогда всегда всегда никогда','Никогда description','/media/nikogda.jpg'),
-        ('После','После description','/media/posle.jpg'),
-        ('Стрельцов','Стрельцов description','/media/strelcov.jpg');
+INSERT INTO movie (MovieName,Description,Genre,Duration,Producer,Country,Release_Year,Age_group,PathToAvatar)
+VALUES  ('Гренландия','Greenland description','Tragedy',112,'Tarantino','America',2016,16,'/media/greenland.jpg'),
+        ('Антибеллум','Антибеллум description','Comedy',118,'Tarantino','America',2012,12,'/media/antibellum.jpg'),
+        ('Довод','Довод description','Thriller',160,'Nolan','America',2020,18,'/media/dovod.jpg'),
+        ('Гнездо','Гнездо description','Drama',180,'No name','Canada',2006,10,'/media/gnezdo.jpg'),
+        ('Сделано в Италии','Италиан description','Comedy',100,'Zarukko','Italy',2020,12,'/media/italian.jpg'),
+        ('Мулан','Мулан description','Tragedy',132,'Zue che ke','China',2020,18,'/media/mulan.jpg'),
+        ('Никогда всегда всегда никогда','Никогда description','Fantastic',130,'Васильев','Russia',2018,18,'/media/nikogda.jpg'),
+        ('После','После description','Fantastic',180,'Rukko','Spain',2020,18,'/media/posle.jpg'),
+        ('Стрельцов','Стрельцов description','Drama',120,'Васильев','Russia',2008,18,'/media/strelcov.jpg');
 
 INSERT INTO movies_in_cinema (Movie_id, Cinema_id, Rental_start, Rental_end)
 VALUES (1,2,'2020-09-03','2020-11-21'),

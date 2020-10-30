@@ -233,6 +233,6 @@ func (t *MovieRepository) UpdateMovieRating(movieID uint64, ratingScore int64) e
 	return nil
 }
 
-func (t *MovieRepository) GetMoviesInCinema(limit, page int)(*[]models.Movie, error){
+func (t *MovieRepository) GetMoviesInCinema(limit, page int) (*[]models.Movie, error) {
 	return nil, nil
 }
