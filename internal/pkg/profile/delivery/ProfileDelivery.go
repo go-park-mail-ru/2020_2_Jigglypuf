@@ -58,7 +58,7 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 // @Description Get Profile
 // @ID profile-id
 // @Param Cookie_info header string true "Cookie information"
-// @Success 200 {object}
+// @Success 200 {object} models.Profile
 // @Failure 400 {object} models.ServerResponse "Bad body"
 // @Failure 401 {object} models.ServerResponse "No authorization"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
