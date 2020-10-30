@@ -383,7 +383,12 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {},
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Profile"
+                        }
+                    },
                     "400": {
                         "description": "Bad body",
                         "schema": {
@@ -467,6 +472,12 @@ var doc = `{
                 "address": {
                     "type": "string"
                 },
+                "authorID": {
+                    "type": "integer"
+                },
+                "hallCount": {
+                    "type": "integer"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -478,7 +489,19 @@ var doc = `{
         "models.Movie": {
             "type": "object",
             "properties": {
+                "ageGroup": {
+                    "type": "integer"
+                },
+                "country": {
+                    "type": "string"
+                },
                 "description": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "genre": {
                     "type": "string"
                 },
                 "id": {
@@ -490,11 +513,31 @@ var doc = `{
                 "pathToAvatar": {
                     "type": "string"
                 },
+                "producer": {
+                    "type": "string"
+                },
                 "rating": {
                     "type": "number"
                 },
                 "ratingCount": {
                     "type": "integer"
+                },
+                "releaseYear": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Profile": {
+            "type": "object",
+            "properties": {
+                "avatarPath": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "surname": {
+                    "type": "string"
                 }
             }
         },

@@ -11,6 +11,10 @@ definitions:
     properties:
       address:
         type: string
+      authorID:
+        type: integer
+      hallCount:
+        type: integer
       id:
         type: integer
       name:
@@ -18,7 +22,15 @@ definitions:
     type: object
   models.Movie:
     properties:
+      ageGroup:
+        type: integer
+      country:
+        type: string
       description:
+        type: string
+      duration:
+        type: integer
+      genre:
         type: string
       id:
         type: integer
@@ -26,10 +38,23 @@ definitions:
         type: string
       pathToAvatar:
         type: string
+      producer:
+        type: string
       rating:
         type: number
       ratingCount:
         type: integer
+      releaseYear:
+        type: string
+    type: object
+  models.Profile:
+    properties:
+      avatarPath:
+        type: string
+      name:
+        type: string
+      surname:
+        type: string
     type: object
   models.RateMovie:
     properties:
@@ -301,7 +326,10 @@ paths:
         required: true
         type: string
       responses:
-        "200": {}
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Profile'
         "400":
           description: Bad body
           schema:
