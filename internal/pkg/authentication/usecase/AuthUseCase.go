@@ -62,6 +62,7 @@ func createUserCookie() http.Cookie {
 		Path:     "/",
 		SameSite: http.SameSiteNoneMode,
 		Secure:   true,
+		HttpOnly: true,
 	}
 }
 

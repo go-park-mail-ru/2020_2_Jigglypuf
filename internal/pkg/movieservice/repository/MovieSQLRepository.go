@@ -28,7 +28,7 @@ func (t *MovieSQLRepository) CreateMovie(movie *models.Movie) error {
 
 func (t *MovieSQLRepository) UpdateMovie(movie *models.Movie) error {
 	if t.DBConnection == nil {
-		return models.NoDataBaseConnection
+		return models.ErrFooNoDBConnection
 	}
 
 	_, DBErr := t.DBConnection.Exec("UPDATE movie SET MovieName = $1, Description = $2, Rating = $3, PathToAvatar = $4 WHERE ID = $5",
@@ -43,17 +43,17 @@ func (t *MovieSQLRepository) UpdateMovie(movie *models.Movie) error {
 
 func (t *MovieSQLRepository) GetMovie(id uint64) (*models.Movie, error) {
 	if t.DBConnection == nil {
-		return nil, models.NoDataBaseConnection
+		return nil, models.ErrFooNoDBConnection
 	}
 
-	resultSQL := t.DBConnection.QueryRow("SELECT ID, MovieName, Description, Rating, Rating_count, PathToAvatar FROM movie WHERE ID = $1", id)
+	resultSQL := t.DBConnection.QueryRow("SELECT ID, MovieName, Description,Genre,Duration,Producer,Country,Release_Year,Age_group, Rating, Rating_count, PathToAvatar FROM movie WHERE ID = $1", id)
 	rowsErr := resultSQL.Err()
 	if rowsErr != nil {
 		log.Println(rowsErr)
 		return nil, rowsErr
 	}
 	resultMovie := new(models.Movie)
-	resultErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description, &resultMovie.Rating, &resultMovie.RatingCount, &resultMovie.PathToAvatar)
+	resultErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description, &resultMovie.Genre, &resultMovie.Duration, &resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear, &resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount, &resultMovie.PathToAvatar)
 	if resultErr != nil {
 		log.Println(resultErr)
 		return nil, resultErr
@@ -64,10 +64,10 @@ func (t *MovieSQLRepository) GetMovie(id uint64) (*models.Movie, error) {
 
 func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.Movie, error) {
 	if t.DBConnection == nil {
-		return nil, models.NoDataBaseConnection
+		return nil, models.ErrFooNoDBConnection
 	}
 
-	resultSQL, DBErr := t.DBConnection.Query("SELECT ID, MovieName, Description, Rating, Rating_count, PathToAvatar FROM movie LIMIT $1 OFFSET $2", limit, page*limit)
+	resultSQL, DBErr := t.DBConnection.Query("SELECT ID, MovieName, Description,Genre,Duration,Producer,Country,Release_Year,Age_group, Rating, Rating_count, PathToAvatar FROM movie LIMIT $1 OFFSET $2", limit, page*limit)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr
@@ -79,15 +79,19 @@ func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.Movie, err
 		log.Println(rowsErr)
 		return nil, rowsErr
 	}
-	movieList := make([]models.Movie, 1)
+	movieList := make([]models.Movie, 0)
 	for resultSQL.Next() {
-		movie := new(models.Movie)
-		ScanErr := resultSQL.Scan(&movie.ID, &movie.Name, &movie.Description, &movie.Rating, &movie.RatingCount, &movie.PathToAvatar)
+		resultMovie := new(models.Movie)
+		ScanErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description,
+			&resultMovie.Genre, &resultMovie.Duration,
+			&resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear,
+			&resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount,
+			&resultMovie.PathToAvatar)
 		if ScanErr != nil {
 			log.Println(ScanErr)
 			return nil, ScanErr
 		}
-		movieList = append(movieList, *movie)
+		movieList = append(movieList, *resultMovie)
 	}
 
 	return &movieList, nil
@@ -95,7 +99,7 @@ func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.Movie, err
 
 func (t *MovieSQLRepository) RateMovie(user *models.User, id uint64, rating int64) error {
 	if t.DBConnection == nil {
-		return models.NoDataBaseConnection
+		return models.ErrFooNoDBConnection
 	}
 
 	_, DBErr := t.DBConnection.Exec("INSERT INTO rating_history (user_id,movie_id,movie_rating) VALUES ($1,$2,$3)",
@@ -110,7 +114,7 @@ func (t *MovieSQLRepository) RateMovie(user *models.User, id uint64, rating int6
 
 func (t *MovieSQLRepository) GetRating(user *models.User, id uint64) (int64, error) {
 	if t.DBConnection == nil {
-		return 0, models.NoDataBaseConnection
+		return 0, models.ErrFooNoDBConnection
 	}
 
 	resultSQL := t.DBConnection.QueryRow("SELECT movie_rating FROM rating_history WHERE user_id = $1", user.ID)
@@ -132,7 +136,7 @@ func (t *MovieSQLRepository) GetRating(user *models.User, id uint64) (int64, err
 
 func (t *MovieSQLRepository) UpdateMovieRating(movieID uint64, ratingScore int64) error {
 	if t.DBConnection == nil {
-		return models.NoDataBaseConnection
+		return models.ErrFooNoDBConnection
 	}
 
 	resultSQL := t.DBConnection.QueryRow("SELECT ID,Rating,Rating_count FROM movie WHERE ID = $1", movieID)
@@ -156,25 +160,29 @@ func (t *MovieSQLRepository) UpdateMovieRating(movieID uint64, ratingScore int64
 	return RatingDBErr
 }
 
-
-func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int)(*[]models.Movie, error) {
-	if t.DBConnection == nil{
-		return nil, models.NoDataBaseConnection
+func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int) (*[]models.Movie, error) {
+	if t.DBConnection == nil {
+		return nil, models.ErrFooNoDBConnection
 	}
 
-	DBRows, DBErr := t.DBConnection.Query("SELECT Movie_id, Cinema_id, Rental_start, Rental_end FROM movies_in_cinema WHERE rental_start < now() AND rental_end > now()")
-	defer func(){
-		if DBRows != nil{
+	DBRows, DBErr := t.DBConnection.Query("SELECT DISTINCT v1.Movie_id,v2.MovieName,v2.description,v2.rating,v2.rating_count,v2.pathtoavatar FROM movies_in_cinema v1 JOIN movie v2 on(v1.movie_id = v2.id) WHERE rental_start < now() AND rental_end > now()")
+	if DBErr != nil {
+		log.Println(DBErr)
+		return nil, DBErr
+	}
+	rowsErr := DBRows.Err()
+	if rowsErr != nil {
+		log.Println(rowsErr)
+		return nil, rowsErr
+	}
+
+	defer func() {
+		if DBRows != nil {
 			DBRows.Close()
 		}
 	}()
 
-	if DBErr != nil{
-		log.Println(DBErr)
-		return nil, DBErr
-	}
-
-	movieList := make([]models.Movie, 1)
+	movieList := make([]models.Movie, 0)
 	for DBRows.Next() {
 		movie := new(models.Movie)
 		ScanErr := DBRows.Scan(&movie.ID, &movie.Name, &movie.Description, &movie.Rating, &movie.RatingCount, &movie.PathToAvatar)

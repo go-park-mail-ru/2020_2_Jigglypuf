@@ -1,9 +1,15 @@
 package models
 
 type Movie struct {
-	ID           uint64
+	ID           uint64 `repository:"ID"`
 	Name         string
 	Description  string
+	Genre        string
+	Duration     int
+	Producer     string
+	Country      string
+	ReleaseYear  string
+	AgeGroup     int
 	Rating       float64
 	RatingCount  int
 	PathToAvatar string
