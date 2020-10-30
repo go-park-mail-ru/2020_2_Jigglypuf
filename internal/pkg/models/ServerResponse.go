@@ -44,3 +44,11 @@ func UnauthorizedHTTPResponse(w *http.ResponseWriter) {
 	(*w).WriteHeader(http.StatusUnauthorized)
 	_, _ = (*w).Write(response)
 }
+func InteralErrorHttpResponse(w *http.ResponseWriter) {
+	response, _ := json.Marshal(ServerResponse{
+		StatusCode: http.StatusInternalServerError,
+		Response:   "Internal server error",
+	})
+	(*w).WriteHeader(http.StatusInternalServerError)
+	_, _ = (*w).Write(response)
+}

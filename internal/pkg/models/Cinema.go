@@ -16,3 +16,7 @@ type GetCinemaList struct {
 	Limit int
 	Page  int
 }
+
+type CinemaHall struct{
+
+}

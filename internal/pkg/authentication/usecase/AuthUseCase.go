@@ -4,18 +4,13 @@ import (
 	"backend/internal/pkg/authentication"
 	"backend/internal/pkg/middleware/cookie"
 	"backend/internal/pkg/models"
-	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
 	"log"
-	"math/big"
 	"net/http"
 	"time"
 )
 
-var (
-	letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-)
 
 type IncorrectInputError struct{}
 
@@ -37,14 +32,6 @@ func NewUserUseCase(dbConn authentication.AuthRepository, cookieConn cookie.Repo
 	}
 }
 
-func randStringRunes(n int) string {
-	b := make([]rune, n)
-	for i := range b {
-		randInt, _ := rand.Int(rand.Reader, big.NewInt(int64(len(letterRunes))))
-		b[i] = letterRunes[randInt.Int64()]
-	}
-	return string(b)
-}
 
 func createHashPassword(password, salt string) string {
 	reqString := password + salt
@@ -57,7 +44,7 @@ func createHashPassword(password, salt string) string {
 func createUserCookie() http.Cookie {
 	return http.Cookie{
 		Name:     cookie.SessionCookieName,
-		Value:    randStringRunes(32),
+		Value:    models.RandStringRunes(32),
 		Expires:  time.Now().Add(96 * time.Hour),
 		Path:     "/",
 		SameSite: http.SameSiteNoneMode,

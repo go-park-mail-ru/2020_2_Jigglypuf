@@ -11,7 +11,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
-	"time"
 )
 
 type ProfileHandler struct {
@@ -37,7 +36,8 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 	}
 
 	defer image.Close()
-	fileName := handler.Filename + time.Now().String()
+	uniqueName := models.RandStringRunes(32)
+	fileName := uniqueName
 	f, saveErr := os.OpenFile(profile.SavingPath+fileName, os.O_WRONLY|os.O_CREATE, 0666)
 	if saveErr != nil {
 		return "", SavingError{}

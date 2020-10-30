@@ -1,4 +1,4 @@
-
+SET timezone ='+3';
 CREATE DATABASE BackendCinemaInterface;
 /* users table */
 CREATE TABLE users
@@ -67,12 +67,33 @@ CREATE TABLE movies_in_cinema
     Rental_start DATE NOT NULL,
     Rental_end DATE NOT NULL
 );
-/* TODO cinema halls structure */
+/* cinema halls structure */
+CREATE TABLE cinema_hall
+(
+    ID serial NOT NULL UNIQUE PRIMARY KEY,
+    Hall_params jsonb not null
+);
 
+/* tickets */
+CREATE TABLE ticket
+(
+    ID serial not null unique primary key,
+    user_id integer not null references users (ID),
+    schedule_id integer not null references schedule (ID),
+    transaction_date timestamp default now()
+);
 
-/* profile ticket purchases */
+/* schedule table */
 
-
+CREATE TABLE schedule
+(
+    ID serial NOT NULL UNIQUE PRIMARY KEY,
+    Movie_ID INTEGER NOT NULL REFERENCES movie (ID),
+    Cinema_ID INTEGER NOT NULL REFERENCES cinema (ID),
+    Hall_ID INTEGER NOT NULL REFERENCES cinema_hall (ID),
+    Premiere_time timestamp NOT NULL,
+    UNIQUE(Movie_ID,Cinema_ID,Hall_ID,Premiere_time)
+);
 
 INSERT INTO cinema (CinemaName, Address, Hall_count)
 VALUES  ('CinemaScope1','Москва, Первая улица, д.1',1),
@@ -105,4 +126,25 @@ VALUES (1,2,'2020-09-03','2020-11-21'),
        (3,1,'2020-09-03','2020-11-28'),
        (2,1,'2020-09-03','2020-12-29'),
        (6,1,'2020-05-11','2020-06-07'),
-       (7,1,'2020-09-03','2020-11-29')
+       (7,1,'2020-09-03','2020-11-29');
+INSERT INTO cinema_hall (Hall_params)
+VALUES ('{"1":55}'),
+       ('{"4":55}'),
+       ('{"3":55}'),
+       ('{"2":55}'),
+       ('{"5":55}');
+INSERT INTO schedule(Movie_ID, Cinema_ID, Hall_ID, Premiere_time)
+VALUES (1,2,3,now()),
+       (1,3,1,now()),
+       (1,4,1,now()),
+       (1,1,3,now()),
+       (2,2,1,now()),
+       (4,3,1,now()),
+       (3,4,1,now()),
+       (5,1,5,now()),
+       (8,2,1,now()),
+       (7,3,1,now()),
+       (3,1,1,now()),
+       (2,1,4,now()),
+       (6,1,3,now()),
+       (7,1,2,now());

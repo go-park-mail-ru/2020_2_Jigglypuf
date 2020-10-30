@@ -7,6 +7,7 @@ import (
 	cookieService "backend/internal/app/cookieserver"
 	movieService "backend/internal/app/movieserver"
 	profileService "backend/internal/app/profileserver"
+	scheduleService "backend/internal/app/scheduleserver"
 	authConfig "backend/internal/pkg/authentication"
 	cinemaConfig "backend/internal/pkg/cinemaservice"
 	"backend/internal/pkg/middleware/cookie"
@@ -14,6 +15,7 @@ import (
 	"backend/internal/pkg/middleware/cors"
 	movieConfig "backend/internal/pkg/movieservice"
 	profileConfig "backend/internal/pkg/profile"
+	scheduleConfig"backend/internal/pkg/schedule"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -31,6 +33,7 @@ type ServerStruct struct {
 	movieService   *movieService.MovieService
 	profileService *profileService.ProfileService
 	cookieService  *cookieService.CookieService
+	scheduleService *scheduleService.ScheduleService
 	httpServer     *http.Server
 }
 
@@ -41,13 +44,18 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 		return nil, cookieErr
 	}
 	newAuthService, authErr := authService.Start(NewCookieService.CookieRepository, mainDBConnection)
+	if authErr != nil{
+		log.Println(authErr)
+		return nil, authErr
+	}
 	newCinemaService, cinemaErr := cinemaService.Start(mainDBConnection)
 	newMovieService, movieErr := movieService.Start(mainDBConnection, newAuthService.AuthenticationRepository)
 	newProfileService, profileErr := profileService.Start(mainDBConnection)
+	newScheduleService, scheduleErr := scheduleService.Start(mainDBConnection)
 
-	if authErr != nil || cinemaErr != nil || movieErr != nil || profileErr != nil {
-		log.Println(authErr)
-		return nil, authErr
+	if cinemaErr != nil || movieErr != nil || profileErr != nil || scheduleErr != nil {
+		log.Println(cinemaErr)
+		return nil, cinemaErr
 	}
 	return &ServerStruct{
 		authService:    newAuthService,
@@ -55,6 +63,7 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 		movieService:   newMovieService,
 		profileService: newProfileService,
 		cookieService:  NewCookieService,
+		scheduleService: newScheduleService,
 	}, nil
 }
 
@@ -65,6 +74,7 @@ func configureRouter(application *ServerStruct) http.Handler {
 	handler.Handle(cinemaConfig.URLPattern, application.cinemaService.CinemaRouter)
 	handler.Handle(authConfig.URLPattern, application.authService.AuthRouter)
 	handler.Handle(profileConfig.URLPattern, application.profileService.ProfileRouter)
+	handler.Handle(scheduleConfig.URLPattern, application.scheduleService.Router)
 
 	handler.HandleFunc("/media/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, r.RequestURI, http.StatusMovedPermanently)

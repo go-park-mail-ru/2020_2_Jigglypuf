@@ -25,6 +25,7 @@ require (
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/lib/pq v1.8.0
 	github.com/mailru/easyjson v0.7.6 // indirect
+	github.com/microcosm-cc/bluemonday v1.0.4 // indirect
 	github.com/stretchr/testify v1.6.1
 	github.com/swaggo/http-swagger v0.0.0-20200308142732-58ac5e232fba
 	github.com/swaggo/swag v1.6.9
