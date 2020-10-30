@@ -7,8 +7,8 @@ import (
 	movieDelivery "backend/internal/pkg/movieservice/delivery"
 	movieRepository "backend/internal/pkg/movieservice/repository"
 	movieUseCase "backend/internal/pkg/movieservice/usecase"
-	"github.com/gorilla/mux"
 	"database/sql"
+	"github.com/gorilla/mux"
 )
 
 type MovieService struct {

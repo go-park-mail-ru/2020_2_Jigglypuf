@@ -53,7 +53,7 @@ func (t *MovieSQLRepository) GetMovie(id uint64) (*models.Movie, error) {
 		return nil, rowsErr
 	}
 	resultMovie := new(models.Movie)
-	resultErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description,&resultMovie.Genre,&resultMovie.Duration,&resultMovie.Producer,&resultMovie.Country,&resultMovie.ReleaseYear,&resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount, &resultMovie.PathToAvatar)
+	resultErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description, &resultMovie.Genre, &resultMovie.Duration, &resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear, &resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount, &resultMovie.PathToAvatar)
 	if resultErr != nil {
 		log.Println(resultErr)
 		return nil, resultErr
@@ -83,8 +83,8 @@ func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.Movie, err
 	for resultSQL.Next() {
 		resultMovie := new(models.Movie)
 		ScanErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description,
-			&resultMovie.Genre,&resultMovie.Duration,
-			&resultMovie.Producer,&resultMovie.Country,&resultMovie.ReleaseYear,
+			&resultMovie.Genre, &resultMovie.Duration,
+			&resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear,
 			&resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount,
 			&resultMovie.PathToAvatar)
 		if ScanErr != nil {
