@@ -60,6 +60,12 @@ CREATE TABLE movies_in_cinema
     Rental_start DATE NOT NULL,
     Rental_end DATE NOT NULL
 );
+/* TODO cinema halls structure */
+
+
+/* profile ticket purchases */
+
+
 
 INSERT INTO cinema (CinemaName, Address)
 VALUES  ('CinemaScope1','Москва, Первая улица, д.1'),
