@@ -79,7 +79,7 @@ CREATE TABLE cinema_hall
 CREATE TABLE ticket
 (
     ID serial not null unique primary key,
-    User_login integer not null references users (Username),
+    User_login VARCHAR(32) not null references users (Username),
     schedule_id integer not null references schedule (ID),
     transaction_date timestamp default now(),
     row integer not null,
