@@ -2,19 +2,6 @@ module backend
 
 go 1.15
 
-replace authentication => ./internal/pkg/authentication
-
-replace cinemaService => ./internal/pkg/cinemaservice
-
-replace cookie => ./internal/pkg/middleware/cookie
-
-replace models => ./models
-
-replace movieService => ./internal/pkg/movieservice
-
-replace profile => ./internal/pkg/profile
-
-replace server => ./server
 
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
