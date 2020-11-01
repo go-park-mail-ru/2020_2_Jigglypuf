@@ -73,7 +73,7 @@ CREATE TABLE schedule
     Movie_ID INTEGER NOT NULL REFERENCES movie (ID),
     Cinema_ID INTEGER NOT NULL REFERENCES cinema (ID),
     Hall_ID INTEGER NOT NULL REFERENCES cinema_hall (ID),
-    Premiere_time timestamp NOT NULL,
+    Premiere_time timestamptz NOT NULL,
     UNIQUE(Cinema_ID,Hall_ID,Premiere_time)
 );
 
