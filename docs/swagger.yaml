@@ -6,6 +6,8 @@ definitions:
         type: string
       password:
         type: string
+    required:
+    - login
     type: object
   models.Cinema:
     properties:
@@ -20,7 +22,45 @@ definitions:
       name:
         type: string
     type: object
+  models.CinemaHall:
+    properties:
+      id:
+        type: integer
+      placeAmount:
+        type: integer
+      placeConfig:
+        type: string
+    type: object
   models.Movie:
+    properties:
+      ageGroup:
+        type: integer
+      country:
+        type: string
+      description:
+        type: string
+      duration:
+        type: integer
+      genre:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      pathToAvatar:
+        type: string
+      personalRating:
+        type: integer
+      producer:
+        type: string
+      rating:
+        type: number
+      ratingCount:
+        type: integer
+      releaseYear:
+        type: integer
+    type: object
+  models.MovieList:
     properties:
       ageGroup:
         type: integer
@@ -69,12 +109,62 @@ definitions:
         type: string
       password:
         type: string
+    required:
+    - login
+    type: object
+  models.Schedule:
+    properties:
+      cinemaID:
+        type: integer
+      hallID:
+        type: integer
+      id:
+        type: integer
+      movieID:
+        type: integer
+      premierTime:
+        type: string
     type: object
   models.ServerResponse:
     properties:
       response:
         type: string
       statusCode:
+        type: integer
+    type: object
+  models.Ticket:
+    properties:
+      id:
+        type: integer
+      placeField:
+        $ref: '#/definitions/models.TicketPlace'
+      schedule:
+        $ref: '#/definitions/models.Schedule'
+      transactionDate:
+        type: string
+      username:
+        type: string
+    required:
+    - username
+    type: object
+  models.TicketInput:
+    properties:
+      hallID:
+        type: integer
+      placeField:
+        $ref: '#/definitions/models.TicketPlace'
+      scheduleID:
+        type: integer
+      username:
+        type: string
+    required:
+    - username
+    type: object
+  models.TicketPlace:
+    properties:
+      place:
+        type: integer
+      row:
         type: integer
     type: object
 host: https://cinemascope.space
@@ -202,6 +292,34 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: GetCinema
+  /hall/{id}/:
+    get:
+      description: Get cinema hall placement structure
+      operationId: hall-id
+      parameters:
+      - description: hall id param
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CinemaHall'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method Not Allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: Get hall structure
   /movie/:
     get:
       description: Get movie list
@@ -222,7 +340,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.Movie'
+              $ref: '#/definitions/models.MovieList'
             type: array
         "400":
           description: Bad Request
@@ -273,7 +391,12 @@ paths:
         required: true
         type: integer
       responses:
-        "200": {}
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.MovieList'
+            type: array
         "400":
           description: Bad body
           schema:
@@ -371,4 +494,158 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: GetProfile
+  /schedule/:
+    get:
+      description: Returns movie schedule by getting movie id, cinema id and day(date) in format schedule.TimeStandard
+      operationId: movie-schedule-id
+      parameters:
+      - description: schedule.MovieIDQueryParamName
+        in: query
+        name: schedule.MovieIDQueryParamName
+        required: true
+        type: integer
+      - description: schedule.CinemaIDQueryParamName
+        in: query
+        name: schedule.CinemaIDQueryParamName
+        required: true
+        type: integer
+      - description: schedule.DateQueryParamName
+        in: query
+        name: schedule.DateQueryParamName
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Schedule'
+            type: array
+        "400":
+          description: Bad body
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "500":
+          description: internal error
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: Get movie schedule
+  /ticket/:
+    get:
+      description: Get user ticket list
+      operationId: get-ticket-list-id
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Ticket'
+            type: array
+        "400":
+          description: Bad body
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "401":
+          description: No auth
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "500":
+          description: Internal err
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: Get user ticket list
+  /ticket/{id}/:
+    get:
+      description: Get user ticket by id
+      operationId: get-ticket-id
+      parameters:
+      - description: ticket id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Ticket'
+        "400":
+          description: Bad body
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "401":
+          description: No auth
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "500":
+          description: Internal err
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: Get user ticket
+  /ticket/buy/:
+    post:
+      consumes:
+      - application/json
+      description: Buys ticket by schedule ID and place to authenticated user or by e-mail
+      operationId: buy-ticket-id
+      parameters:
+      - description: Ticket info
+        in: body
+        name: Ticket_info
+        required: true
+        schema:
+          $ref: '#/definitions/models.TicketInput'
+      responses:
+        "200": {}
+        "400":
+          description: Bad body
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: Buy ticket
+  /ticket/schedule/{id}/:
+    get:
+      description: Get schedule hall ticket list by id
+      operationId: get-schedule-ticket-list-id
+      parameters:
+      - description: ticketService.ScheduleIDName
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.TicketPlace'
+            type: array
+        "400":
+          description: Bad body
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "500":
+          description: Internal err
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: Get schedule hall ticket list
 swagger: "2.0"

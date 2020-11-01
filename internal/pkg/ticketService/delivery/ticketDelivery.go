@@ -19,7 +19,16 @@ func NewTicketDelivery(useCase ticketService.UseCase) *TicketDelivery{
 	}
 }
 
-
+// Ticket godoc
+// @Summary Buy ticket
+// @Description Buys ticket by schedule ID and place to authenticated user or by e-mail
+// @ID buy-ticket-id
+// @Accept  json
+// @Param Ticket_info body models.TicketInput true "Ticket info"
+// @Success 200
+// @Failure 400 {object} models.ServerResponse "Bad body"
+// @Failure 405 {object} models.ServerResponse "Method not allowed"
+// @Router /ticket/buy/ [post]
 func (t *TicketDelivery) BuyTicket(w http.ResponseWriter, r *http.Request){
 	if r.Method != http.MethodPost{
 		models.BadMethodHTTPResponse(&w)
@@ -27,7 +36,7 @@ func (t *TicketDelivery) BuyTicket(w http.ResponseWriter, r *http.Request){
 	}
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
-	ticketItem := new(models.Ticket)
+	ticketItem := new(models.TicketInput)
 	decodeErr:=decoder.Decode(ticketItem)
 	if decodeErr != nil{
 		models.BadBodyHTTPResponse(&w,decodeErr)
@@ -50,6 +59,16 @@ func (t *TicketDelivery) BuyTicket(w http.ResponseWriter, r *http.Request){
 	}
 }
 
+// Ticket godoc
+// @Summary Get user ticket list
+// @Description Get user ticket list
+// @ID get-ticket-list-id
+// @Success 200 {array} models.Ticket
+// @Failure 400 {object} models.ServerResponse "Bad body"
+// @Failure 401 {object} models.ServerResponse "No auth"
+// @Failure 405 {object} models.ServerResponse "Method not allowed"
+// @Failure 500 {object} models.ServerResponse "Internal err"
+// @Router /ticket/ [get]
 func (t *TicketDelivery) GetUserTickets(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -76,6 +95,17 @@ func (t *TicketDelivery) GetUserTickets(w http.ResponseWriter, r *http.Request) 
 	_,_ = w.Write(outputBuf)
 }
 
+// Ticket godoc
+// @Summary Get user ticket
+// @Description Get user ticket by id
+// @ID get-ticket-id
+// @Param id path int true "ticket id"
+// @Success 200 {object} models.Ticket
+// @Failure 400 {object} models.ServerResponse "Bad body"
+// @Failure 401 {object} models.ServerResponse "No auth"
+// @Failure 405 {object} models.ServerResponse "Method not allowed"
+// @Failure 500 {object} models.ServerResponse "Internal err"
+// @Router /ticket/{id}/ [get]
 func (t *TicketDelivery) GetUsersSimpleTicket(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -107,6 +137,16 @@ func (t *TicketDelivery) GetUsersSimpleTicket(w http.ResponseWriter, r *http.Req
 	_,_ = w.Write(outputBuf)
 }
 
+// Ticket godoc
+// @Summary Get schedule hall ticket list
+// @Description Get schedule hall ticket list by id
+// @ID get-schedule-ticket-list-id
+// @Param id path int true "ticketService.ScheduleIDName"
+// @Success 200 {array} models.TicketPlace
+// @Failure 400 {object} models.ServerResponse "Bad body"
+// @Failure 405 {object} models.ServerResponse "Method not allowed"
+// @Failure 500 {object} models.ServerResponse "Internal err"
+// @Router /ticket/schedule/{id}/ [get]
 func (t *TicketDelivery) GetHallScheduleTickets(w http.ResponseWriter, r *http.Request){
 	if r.Method != http.MethodGet{
 		models.BadMethodHTTPResponse(&w)

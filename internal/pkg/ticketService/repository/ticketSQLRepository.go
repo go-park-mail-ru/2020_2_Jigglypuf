@@ -84,13 +84,13 @@ func (t *SQLRepository) GetHallTickets(scheduleID uint64)(*[]models.TicketPlace,
 }
 
 
-func (t *SQLRepository) CreateTicket(ticket *models.Ticket) error{
+func (t *SQLRepository) CreateTicket(ticket *models.TicketInput) error{
 	if t.DBConnection == nil{
 		return models.ErrFooNoDBConnection
 	}
-
+	var ID uint64 = 0
 	ScanErr := t.DBConnection.QueryRow("INSERT INTO ticket (User_login,schedule_id,row,place) VALUES($1,$2,$3,$4) RETURNING ID",
-		ticket.Username, ticket.Schedule.ID, ticket.PlaceField.Row, ticket.PlaceField.Place).Scan(&ticket.ID)
+		ticket.Username, ticket.ScheduleID, ticket.PlaceField.Row, ticket.PlaceField.Place).Scan(&ID)
 	if ScanErr != nil{
 		return models.ErrFooIncorrectSQLQuery
 	}

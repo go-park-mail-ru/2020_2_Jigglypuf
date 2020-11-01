@@ -12,6 +12,22 @@ type Movie struct {
 	AgeGroup     int
 	Rating       float64
 	RatingCount  int
+	PersonalRating int64
+	PathToAvatar string
+}
+
+type MovieList struct {
+	ID           uint64 `repository:"ID"`
+	Name         string
+	Description  string
+	Genre        string
+	Duration     int
+	Producer     string
+	Country      string
+	ReleaseYear  int
+	AgeGroup     int
+	Rating       float64
+	RatingCount  int
 	PathToAvatar string
 }
 

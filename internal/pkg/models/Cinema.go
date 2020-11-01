@@ -33,6 +33,13 @@ type Ticket struct{
 	PlaceField TicketPlace
 }
 
+type TicketInput struct{
+	Username string `validate:"required,email"`
+	ScheduleID uint64
+	HallID uint64
+	PlaceField TicketPlace
+}
+
 type TicketPlace struct{
 	Row int
 	Place int

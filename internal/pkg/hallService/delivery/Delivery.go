@@ -17,7 +17,16 @@ func NewHallDelivery(useCase hallService.UseCase)*HallDelivery{
 		UseCase: useCase,
 	}
 }
-
+// Hall godoc
+// @Summary Get hall structure
+// @Description Get cinema hall placement structure
+// @ID hall-id
+// @Param id path int true "hall id param"
+// @Success 200 {object} models.CinemaHall
+// @Failure 400 {object} models.ServerResponse
+// @Failure 405 {object} models.ServerResponse
+// @Failure 500 {object} models.ServerResponse
+// @Router /hall/{id}/ [get]
 func (t *HallDelivery) GetHallStructure(w http.ResponseWriter, r *http.Request){
 	if r.Method != http.MethodGet{
 		models.BadMethodHTTPResponse(&w)

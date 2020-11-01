@@ -17,6 +17,18 @@ func NewScheduleDelivery(useCase schedule.TimeTableUseCase) *ScheduleDelivery{
 	}
 }
 
+// Schedule godoc
+// @Summary Get movie schedule
+// @Description Returns movie schedule by getting movie id, cinema id and day(date) in format schedule.TimeStandard
+// @ID movie-schedule-id
+// @Param schedule.MovieIDQueryParamName query int true "schedule.MovieIDQueryParamName"
+// @Param schedule.CinemaIDQueryParamName query int true "schedule.CinemaIDQueryParamName"
+// @Param schedule.DateQueryParamName query string true "schedule.DateQueryParamName"
+// @Success 200 {array} models.Schedule
+// @Failure 400 {object} models.ServerResponse "Bad body"
+// @Failure 405 {object} models.ServerResponse "Method not allowed"
+// @Failure 500 {object} models.ServerResponse "internal error"
+// @Router /schedule/ [get]
 func (t *ScheduleDelivery) GetMovieSchedule(w http.ResponseWriter, r *http.Request){
 	if r.Method != http.MethodGet{
 		models.BadMethodHTTPResponse(&w)

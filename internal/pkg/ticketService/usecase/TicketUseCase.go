@@ -56,7 +56,7 @@ func (t *TicketUseCase) GetHallScheduleTickets(scheduleID string)(*[]models.Tick
 	return t.repository.GetHallTickets(uint64(castedScheduleID))
 }
 
-func (t *TicketUseCase) BuyTicket(ticket *models.Ticket, userID uint64) error{
+func (t *TicketUseCase) BuyTicket(ticket *models.TicketInput, userID uint64) error{
 	// TODO check if place available in hall
 	if ticket.Username == ""{
 		user, getUserErr := t.userRepository.GetUserByID(userID)
@@ -65,7 +65,7 @@ func (t *TicketUseCase) BuyTicket(ticket *models.Ticket, userID uint64) error{
 		}
 		ticket.Username = user.Username
 	}
-	availability, avErr := t.hallRepository.CheckAvailability(ticket.Schedule.HallID, &ticket.PlaceField)
+	availability, avErr := t.hallRepository.CheckAvailability(ticket.HallID, &ticket.PlaceField)
 	if avErr != nil || !availability{
 		return models.ErrFooPlaceAlreadyBusy
 	}

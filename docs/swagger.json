@@ -185,6 +185,48 @@
                 }
             }
         },
+        "/hall/{id}/": {
+            "get": {
+                "description": "Get cinema hall placement structure",
+                "summary": "Get hall structure",
+                "operationId": "hall-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "hall id param",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CinemaHall"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "405": {
+                        "description": "Method Not Allowed",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/movie/": {
             "get": {
                 "description": "Get movie list",
@@ -212,7 +254,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Movie"
+                                "$ref": "#/definitions/models.MovieList"
                             }
                         }
                     },
@@ -253,7 +295,15 @@
                     }
                 ],
                 "responses": {
-                    "200": {},
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.MovieList"
+                            }
+                        }
+                    },
                     "400": {
                         "description": "Bad body",
                         "schema": {
@@ -437,11 +487,244 @@
                     }
                 }
             }
+        },
+        "/schedule/": {
+            "get": {
+                "description": "Returns movie schedule by getting movie id, cinema id and day(date) in format schedule.TimeStandard",
+                "summary": "Get movie schedule",
+                "operationId": "movie-schedule-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "schedule.MovieIDQueryParamName",
+                        "name": "schedule.MovieIDQueryParamName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "schedule.CinemaIDQueryParamName",
+                        "name": "schedule.CinemaIDQueryParamName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "schedule.DateQueryParamName",
+                        "name": "schedule.DateQueryParamName",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Schedule"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad body",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "internal error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ticket/": {
+            "get": {
+                "description": "Get user ticket list",
+                "summary": "Get user ticket list",
+                "operationId": "get-ticket-list-id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Ticket"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad body",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "No auth",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal err",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ticket/buy/": {
+            "post": {
+                "description": "Buys ticket by schedule ID and place to authenticated user or by e-mail",
+                "consumes": [
+                    "application/json"
+                ],
+                "summary": "Buy ticket",
+                "operationId": "buy-ticket-id",
+                "parameters": [
+                    {
+                        "description": "Ticket info",
+                        "name": "Ticket_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.TicketInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {},
+                    "400": {
+                        "description": "Bad body",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ticket/schedule/{id}/": {
+            "get": {
+                "description": "Get schedule hall ticket list by id",
+                "summary": "Get schedule hall ticket list",
+                "operationId": "get-schedule-ticket-list-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ticketService.ScheduleIDName",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.TicketPlace"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad body",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal err",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ticket/{id}/": {
+            "get": {
+                "description": "Get user ticket by id",
+                "summary": "Get user ticket",
+                "operationId": "get-ticket-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ticket id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Ticket"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad body",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "No auth",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal err",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
         "models.AuthInput": {
             "type": "object",
+            "required": [
+                "login"
+            ],
             "properties": {
                 "login": {
                     "type": "string"
@@ -471,7 +754,65 @@
                 }
             }
         },
+        "models.CinemaHall": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "placeAmount": {
+                    "type": "integer"
+                },
+                "placeConfig": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Movie": {
+            "type": "object",
+            "properties": {
+                "ageGroup": {
+                    "type": "integer"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "genre": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pathToAvatar": {
+                    "type": "string"
+                },
+                "personalRating": {
+                    "type": "integer"
+                },
+                "producer": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "number"
+                },
+                "ratingCount": {
+                    "type": "integer"
+                },
+                "releaseYear": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.MovieList": {
             "type": "object",
             "properties": {
                 "ageGroup": {
@@ -539,11 +880,34 @@
         },
         "models.RegistrationInput": {
             "type": "object",
+            "required": [
+                "login"
+            ],
             "properties": {
                 "login": {
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Schedule": {
+            "type": "object",
+            "properties": {
+                "cinemaID": {
+                    "type": "integer"
+                },
+                "hallID": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "movieID": {
+                    "type": "integer"
+                },
+                "premierTime": {
                     "type": "string"
                 }
             }
@@ -555,6 +919,60 @@
                     "type": "string"
                 },
                 "statusCode": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Ticket": {
+            "type": "object",
+            "required": [
+                "username"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "placeField": {
+                    "$ref": "#/definitions/models.TicketPlace"
+                },
+                "schedule": {
+                    "$ref": "#/definitions/models.Schedule"
+                },
+                "transactionDate": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.TicketInput": {
+            "type": "object",
+            "required": [
+                "username"
+            ],
+            "properties": {
+                "hallID": {
+                    "type": "integer"
+                },
+                "placeField": {
+                    "$ref": "#/definitions/models.TicketPlace"
+                },
+                "scheduleID": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.TicketPlace": {
+            "type": "object",
+            "properties": {
+                "place": {
+                    "type": "integer"
+                },
+                "row": {
                     "type": "integer"
                 }
             }

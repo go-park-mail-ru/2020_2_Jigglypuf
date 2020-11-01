@@ -45,7 +45,7 @@ func NewMovieHandler(usecase movieservice.MovieUseCase, userRepository authentic
 // @ID movie-list-id
 // @Param limit query int true "limit"
 // @Param page query int true "page"
-// @Success 200 {array} models.Movie
+// @Success 200 {array} models.MovieList
 // @Failure 400 {object} models.ServerResponse
 // @Failure 405 {object} models.ServerResponse
 // @Router /movie/ [get]
@@ -101,8 +101,10 @@ func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 		models.BadBodyHTTPResponse(&w, models.IncorrectGetParameters{})
 		return
 	}
+	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
+	UserID := r.Context().Value(cookieService.ContextUserIDName)
 
-	result, err := t.movieUseCase.GetMovie(uint64(integerName))
+	result, err := t.movieUseCase.GetMovie(uint64(integerName),isAuth.(bool), UserID.(uint64))
 
 	if err != nil {
 		models.BadBodyHTTPResponse(&w, err)
@@ -167,56 +169,13 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (t *MovieHandler) GetMovieRating(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		models.BadMethodHTTPResponse(&w)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
-	UserID := r.Context().Value(cookieService.ContextUserIDName)
-	if isAuth == nil || !isAuth.(bool) || UserID == nil {
-		models.UnauthorizedHTTPResponse(&w)
-		return
-	}
-
-	reqUser, userError := t.userRepository.GetUserByID(UserID.(uint64))
-	if userError != nil {
-		models.UnauthorizedHTTPResponse(&w)
-		return
-	}
-
-	name := r.URL.Query()[movieservice.MovieIDQuery]
-	integerName, castErr := strconv.Atoi(name[0])
-	if castErr != nil || len(name) == 0 {
-		models.BadBodyHTTPResponse(&w, models.IncorrectGetParameters{})
-		return
-	}
-
-	result, RatingErr := t.movieUseCase.GetRating(reqUser, uint64(integerName))
-	if RatingErr != nil {
-		models.BadBodyHTTPResponse(&w, RatingErr)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	response, err := json.Marshal(result)
-	if err != nil {
-		models.BadBodyHTTPResponse(&w, err)
-		return
-	}
-
-	_, _ = w.Write(response)
-}
-
 // Movie godoc
 // @Summary Get movies in cinema
 // @Description Returns movie that in the cinema
 // @ID movie-in-cinema-id
 // @Param limit query int true "limit"
 // @Param page query int true "page"
-// @Success 200
+// @Success 200 {array} models.MovieList
 // @Failure 400 {object} models.ServerResponse "Bad body"
 // @Failure 401 {object} models.ServerResponse "No authorization"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"

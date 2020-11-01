@@ -24,7 +24,7 @@ type TicketService struct{
 func configureAPI(handler *delivery.TicketDelivery) *mux.Router{
 	router := mux.NewRouter()
 
-	router.HandleFunc(ticketService.URLPattern, handler.BuyTicket).Methods("POST")
+	router.HandleFunc(ticketService.URLPattern + "buy/", handler.BuyTicket).Methods("POST")
 	router.HandleFunc(ticketService.URLPattern, handler.GetUserTickets).Methods("GET")
 	router.HandleFunc(ticketService.URLPattern + fmt.Sprintf("{%s:[0-9]+}/", ticketService.TicketIDQuery),
 		handler.GetUsersSimpleTicket).Methods("GET")

@@ -15,11 +15,21 @@ func NewMovieUseCase(rep movieservice.MovieRepository) *MovieUseCase {
 	}
 }
 
-func (t *MovieUseCase) GetMovie(id uint64) (*models.Movie, error) {
-	return t.DBConn.GetMovie(id)
+func (t *MovieUseCase) GetMovie(id uint64, isAuth bool, userID uint64) (*models.Movie, error) {
+	movie, err := t.DBConn.GetMovie(id)
+	if err != nil{
+		return nil,err
+	}
+	if isAuth{
+		rating, ratingErr := t.DBConn.GetRating(userID, id)
+		if ratingErr == nil{
+			movie.PersonalRating = rating
+		}
+	}
+	return movie,nil
 }
 
-func (t *MovieUseCase) GetMovieList(limit, page int) (*[]models.Movie, error) {
+func (t *MovieUseCase) GetMovieList(limit, page int) (*[]models.MovieList, error) {
 	return t.DBConn.GetMovieList(limit, page)
 }
 
@@ -42,9 +52,9 @@ func (t *MovieUseCase) RateMovie(user *models.User, id uint64, rating int64) err
 }
 
 func (t *MovieUseCase) GetRating(user *models.User, id uint64) (int64, error) {
-	return t.DBConn.GetRating(user, id)
+	return t.DBConn.GetRating(user.ID, id)
 }
 
-func (t *MovieUseCase) GetMoviesInCinema(limit, page int) (*[]models.Movie, error) {
+func (t *MovieUseCase) GetMoviesInCinema(limit, page int) (*[]models.MovieList, error) {
 	return t.DBConn.GetMoviesInCinema(limit, page)
 }
