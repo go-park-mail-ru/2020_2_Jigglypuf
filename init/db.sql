@@ -71,6 +71,7 @@ CREATE TABLE movies_in_cinema
 CREATE TABLE cinema_hall
 (
     ID serial NOT NULL UNIQUE PRIMARY KEY,
+    Place_amount integer not null,
     Hall_params jsonb not null
 );
 
@@ -78,9 +79,12 @@ CREATE TABLE cinema_hall
 CREATE TABLE ticket
 (
     ID serial not null unique primary key,
-    user_id integer not null references users (ID),
+    User_login integer not null references users (Username),
     schedule_id integer not null references schedule (ID),
-    transaction_date timestamp default now()
+    transaction_date timestamp default now(),
+    row integer not null,
+    place integer not null,
+    unique(schedule_id,row,place)
 );
 
 /* schedule table */
@@ -92,7 +96,7 @@ CREATE TABLE schedule
     Cinema_ID INTEGER NOT NULL REFERENCES cinema (ID),
     Hall_ID INTEGER NOT NULL REFERENCES cinema_hall (ID),
     Premiere_time timestamp NOT NULL,
-    UNIQUE(Movie_ID,Cinema_ID,Hall_ID,Premiere_time)
+    UNIQUE(Cinema_ID,Hall_ID,Premiere_time)
 );
 
 INSERT INTO cinema (CinemaName, Address, Hall_count)
@@ -127,12 +131,10 @@ VALUES (1,2,'2020-09-03','2020-11-21'),
        (2,1,'2020-09-03','2020-12-29'),
        (6,1,'2020-05-11','2020-06-07'),
        (7,1,'2020-09-03','2020-11-29');
-INSERT INTO cinema_hall (Hall_params)
-VALUES ('{"1":55}'),
-       ('{"4":55}'),
-       ('{"3":55}'),
-       ('{"2":55}'),
-       ('{"5":55}');
+INSERT INTO cinema_hall (Place_amount,Hall_params)
+VALUES (15,'{"levels":[{"place":1,"row":1},{"place":2,"row":1}]}'),
+       (10,'{"levels":[{"place":1,"row":2}]}');
+
 INSERT INTO schedule(Movie_ID, Cinema_ID, Hall_ID, Premiere_time)
 VALUES (1,2,3,now()),
        (1,3,1,now()),

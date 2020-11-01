@@ -5,7 +5,6 @@ import (
 	cookieDelivery "backend/internal/pkg/middleware/cookie/delivery"
 	cookieRepository "backend/internal/pkg/middleware/cookie/repository"
 	"github.com/tarantool/go-tarantool"
-	"sync"
 )
 
 type CookieService struct {
@@ -14,7 +13,7 @@ type CookieService struct {
 	DBConnection     *tarantool.Connection
 }
 
-var CookieManager *CookieService
+//var CookieManager *CookieService
 
 func Start(connection *tarantool.Connection) (*CookieService, error) {
 	cookieRep, DBErr := cookieRepository.NewCookieTarantoolRepository(connection)
@@ -23,22 +22,11 @@ func Start(connection *tarantool.Connection) (*CookieService, error) {
 	}
 	// cookieRep := cookieRepository.NewCookieRepository(mutex)
 	cookieHandler := cookieDelivery.NewCookieHandler(cookieRep)
-	CookieManager = &CookieService{
+	CookieManager := &CookieService{
 		cookieHandler,
 		cookieRep,
 		connection,
 	}
 
 	return CookieManager, nil
-}
-
-func StartMock(mutex *sync.RWMutex) *CookieService {
-	cookieRep := cookieRepository.NewCookieRepository(mutex)
-	cookieHandler := cookieDelivery.NewCookieHandler(cookieRep)
-	CookieManager = &CookieService{
-		cookieHandler,
-		cookieRep,
-		nil,
-	}
-	return CookieManager
 }

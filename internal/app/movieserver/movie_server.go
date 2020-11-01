@@ -8,6 +8,7 @@ import (
 	movieRepository "backend/internal/pkg/movieservice/repository"
 	movieUseCase "backend/internal/pkg/movieservice/usecase"
 	"database/sql"
+	"fmt"
 	"github.com/gorilla/mux"
 )
 
@@ -23,7 +24,7 @@ func configureMovieRouter(handler *movieDelivery.MovieHandler) *mux.Router {
 	movieRouter.HandleFunc(movieConfig.URLPattern, handler.GetMovieList)
 	movieRouter.HandleFunc(movieConfig.URLPattern+"rate/", handler.RateMovie)
 	movieRouter.HandleFunc(movieConfig.URLPattern+"actual/", handler.GetMoviesInCinema)
-	movieRouter.HandleFunc(movieConfig.URLPattern+"{id:[0-9]+}/", handler.GetMovie)
+	movieRouter.HandleFunc(movieConfig.URLPattern+fmt.Sprintf("{%s:[0-9]+}/",movieConfig.MovieIDQuery), handler.GetMovie)
 
 	return movieRouter
 }

@@ -11,6 +11,7 @@ import (
 	"strconv"
 )
 
+
 type MovieHandler struct {
 	movieUseCase   movieservice.MovieUseCase
 	userRepository authentication.AuthRepository
@@ -114,7 +115,6 @@ func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 		models.BadBodyHTTPResponse(&w, err)
 		return
 	}
-
 	_, _ = w.Write(response)
 }
 

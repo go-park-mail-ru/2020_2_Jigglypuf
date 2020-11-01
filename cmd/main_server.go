@@ -5,14 +5,17 @@ import (
 	authService "backend/internal/app/authserver"
 	cinemaService "backend/internal/app/cinemaserver"
 	cookieService "backend/internal/app/cookieserver"
+	hallService "backend/internal/app/hallServer"
 	movieService "backend/internal/app/movieserver"
 	profileService "backend/internal/app/profileserver"
 	scheduleService "backend/internal/app/scheduleserver"
+	"backend/internal/app/ticketService"
 	authConfig "backend/internal/pkg/authentication"
 	cinemaConfig "backend/internal/pkg/cinemaservice"
 	"backend/internal/pkg/middleware/cookie"
 	"backend/internal/pkg/middleware/cookie/middleware"
 	"backend/internal/pkg/middleware/cors"
+	"backend/internal/pkg/models"
 	movieConfig "backend/internal/pkg/movieservice"
 	profileConfig "backend/internal/pkg/profile"
 	scheduleConfig"backend/internal/pkg/schedule"
@@ -34,6 +37,8 @@ type ServerStruct struct {
 	profileService *profileService.ProfileService
 	cookieService  *cookieService.CookieService
 	scheduleService *scheduleService.ScheduleService
+	ticketService *ticketService.TicketService
+	hallService *hallService.HallService
 	httpServer     *http.Server
 }
 
@@ -48,14 +53,20 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 		log.Println(authErr)
 		return nil, authErr
 	}
+	newHallService, hallErr := hallService.Start(mainDBConnection)
+	if hallErr != nil{
+		log.Println(models.ErrFooInitFail)
+		return nil, models.ErrFooInitFail
+	}
 	newCinemaService, cinemaErr := cinemaService.Start(mainDBConnection)
 	newMovieService, movieErr := movieService.Start(mainDBConnection, newAuthService.AuthenticationRepository)
 	newProfileService, profileErr := profileService.Start(mainDBConnection)
 	newScheduleService, scheduleErr := scheduleService.Start(mainDBConnection)
+	newTicketService, ticketErr := ticketService.Start(mainDBConnection, newAuthService.AuthenticationRepository,newHallService.Repository)
 
-	if cinemaErr != nil || movieErr != nil || profileErr != nil || scheduleErr != nil {
-		log.Println(cinemaErr)
-		return nil, cinemaErr
+	if cinemaErr != nil || movieErr != nil || profileErr != nil || scheduleErr != nil || ticketErr != nil{
+		log.Println(models.ErrFooInitFail)
+		return nil, models.ErrFooInitFail
 	}
 	return &ServerStruct{
 		authService:    newAuthService,
@@ -64,6 +75,8 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 		profileService: newProfileService,
 		cookieService:  NewCookieService,
 		scheduleService: newScheduleService,
+		ticketService: newTicketService,
+		hallService: newHallService,
 	}, nil
 }
 
@@ -80,7 +93,7 @@ func configureRouter(application *ServerStruct) http.Handler {
 		http.Redirect(w, r, r.RequestURI, http.StatusMovedPermanently)
 	})
 	handler.HandleFunc("/docs/", httpSwagger.WrapHandler)
-	middlewareHandler := middleware.CookieMiddleware(handler)
+	middlewareHandler := middleware.CookieMiddleware(handler, application.cookieService)
 	middlewareHandler = cors.MiddlewareCORS(middlewareHandler)
 
 	return middlewareHandler

@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Cinema struct {
 	ID        uint64
 	Name      string
@@ -18,5 +20,20 @@ type GetCinemaList struct {
 }
 
 type CinemaHall struct{
+	ID uint64
+	PlaceAmount int
+	PlaceConfig string
+}
 
+type Ticket struct{
+	ID uint64
+	Username string `validate:"required, email"`
+	Schedule Schedule
+	TransactionDate time.Time
+	PlaceField TicketPlace
+}
+
+type TicketPlace struct{
+	Row int
+	Place int
 }
