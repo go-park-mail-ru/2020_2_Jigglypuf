@@ -26,7 +26,7 @@ func (t *TicketDelivery) BuyTicket(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	decoder := json.NewDecoder(r.Body)
-	r.Body.Close()
+	defer r.Body.Close()
 	ticketItem := new(models.Ticket)
 	decodeErr:=decoder.Decode(ticketItem)
 	if decodeErr != nil{
