@@ -75,18 +75,6 @@ CREATE TABLE cinema_hall
     Hall_params jsonb not null
 );
 
-/* tickets */
-CREATE TABLE ticket
-(
-    ID serial not null unique primary key,
-    User_login VARCHAR(32) not null references users (Username),
-    schedule_id integer not null references schedule (ID),
-    transaction_date timestamp default now(),
-    row integer not null,
-    place integer not null,
-    unique(schedule_id,row,place)
-);
-
 /* schedule table */
 
 CREATE TABLE schedule
@@ -97,6 +85,18 @@ CREATE TABLE schedule
     Hall_ID INTEGER NOT NULL REFERENCES cinema_hall (ID),
     Premiere_time timestamp NOT NULL,
     UNIQUE(Cinema_ID,Hall_ID,Premiere_time)
+);
+
+/* tickets */
+CREATE TABLE ticket
+(
+    ID serial not null unique primary key,
+    User_login VARCHAR(32) not null references users (Username),
+    schedule_id integer not null references schedule (ID),
+    transaction_date timestamp default now(),
+    row integer not null,
+    place integer not null,
+    unique(schedule_id,row,place)
 );
 
 INSERT INTO cinema (CinemaName, Address, Hall_count)
