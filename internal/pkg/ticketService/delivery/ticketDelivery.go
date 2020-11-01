@@ -21,7 +21,7 @@ func NewTicketDelivery(useCase ticketService.UseCase) *TicketDelivery{
 
 
 func (t *TicketDelivery) BuyTicket(w http.ResponseWriter, r *http.Request){
-	if r.Method != http.MethodGet{
+	if r.Method != http.MethodPost{
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
