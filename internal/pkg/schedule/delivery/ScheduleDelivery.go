@@ -22,6 +22,7 @@ func (t *ScheduleDelivery) GetMovieSchedule(w http.ResponseWriter, r *http.Reque
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 
 	movieID := r.URL.Query().Get(schedule.MovieIDQueryParamName)
 	cinemaID := r.URL.Query().Get(schedule.CinemaIDQueryParamName)

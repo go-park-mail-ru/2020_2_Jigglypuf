@@ -55,6 +55,7 @@ func (t *TicketDelivery) GetUserTickets(w http.ResponseWriter, r *http.Request) 
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
 	userID := r.Context().Value(cookieService.ContextUserIDName)
 	if isAuth == nil || !isAuth.(bool) || userID == nil {
@@ -80,6 +81,7 @@ func (t *TicketDelivery) GetUsersSimpleTicket(w http.ResponseWriter, r *http.Req
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	ticketID := vars[ticketService.TicketIDQuery]
 
@@ -110,6 +112,7 @@ func (t *TicketDelivery) GetHallScheduleTickets(w http.ResponseWriter, r *http.R
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	scheduleID := vars[ticketService.ScheduleIDName]
 	ticketList, ticketErr := t.useCase.GetHallScheduleTickets(scheduleID)

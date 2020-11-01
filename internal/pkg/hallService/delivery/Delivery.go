@@ -23,6 +23,7 @@ func (t *HallDelivery) GetHallStructure(w http.ResponseWriter, r *http.Request){
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
 	hallID := vars[hallService.HallIDPathName]
