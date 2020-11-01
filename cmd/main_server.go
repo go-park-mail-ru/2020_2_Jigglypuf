@@ -12,6 +12,7 @@ import (
 	"backend/internal/app/ticketService"
 	authConfig "backend/internal/pkg/authentication"
 	cinemaConfig "backend/internal/pkg/cinemaservice"
+	hallConfig "backend/internal/pkg/hallService"
 	"backend/internal/pkg/middleware/cookie"
 	"backend/internal/pkg/middleware/cookie/middleware"
 	"backend/internal/pkg/middleware/cors"
@@ -19,6 +20,7 @@ import (
 	movieConfig "backend/internal/pkg/movieservice"
 	profileConfig "backend/internal/pkg/profile"
 	scheduleConfig"backend/internal/pkg/schedule"
+	ticketConfig "backend/internal/pkg/ticketService"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -88,6 +90,8 @@ func configureRouter(application *ServerStruct) http.Handler {
 	handler.Handle(authConfig.URLPattern, application.authService.AuthRouter)
 	handler.Handle(profileConfig.URLPattern, application.profileService.ProfileRouter)
 	handler.Handle(scheduleConfig.URLPattern, application.scheduleService.Router)
+	handler.Handle(hallConfig.URLPattern, application.hallService.Router)
+	handler.Handle(ticketConfig.URLPattern, application.ticketService.Router)
 
 	handler.HandleFunc("/media/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, r.RequestURI, http.StatusMovedPermanently)
