@@ -26,6 +26,7 @@ func (t *ScheduleUseCase) GetMovieSchedule(MovieID, CinemaID string, date string
 		return nil,models.ErrFooCastErr
 	}
 	_, castErr = time.Parse(schedule.TimeStandard,date)
+	print(date)
 	if castErr != nil{
 		date = time.Now().String()
 	}
