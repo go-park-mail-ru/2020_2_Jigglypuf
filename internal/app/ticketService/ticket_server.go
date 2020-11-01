@@ -4,6 +4,7 @@ import (
 	"backend/internal/pkg/authentication"
 	"backend/internal/pkg/hallService"
 	"backend/internal/pkg/models"
+	"backend/internal/pkg/schedule"
 	"backend/internal/pkg/ticketService"
 	"backend/internal/pkg/ticketService/delivery"
 	"backend/internal/pkg/ticketService/repository"
@@ -27,7 +28,7 @@ func configureAPI(handler *delivery.TicketDelivery) *mux.Router{
 	router.HandleFunc(ticketService.URLPattern, handler.GetUserTickets).Methods("GET")
 	router.HandleFunc(ticketService.URLPattern + fmt.Sprintf("{%s:[0-9]+}/", ticketService.TicketIDQuery),
 		handler.GetUsersSimpleTicket).Methods("GET")
-	router.HandleFunc(ticketService.URLPattern + fmt.Sprintf("{%s:[0-9]+}/", ticketService.ScheduleIDName),
+	router.HandleFunc(schedule.URLPattern + fmt.Sprintf("{%s:[0-9]+}/", ticketService.ScheduleIDName),
 		handler.GetHallScheduleTickets).Methods("GET")
 
 	return router
