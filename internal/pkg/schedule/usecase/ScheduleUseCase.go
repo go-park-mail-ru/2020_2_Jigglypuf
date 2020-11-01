@@ -4,7 +4,6 @@ import (
 	"backend/internal/pkg/models"
 	"backend/internal/pkg/schedule"
 	"github.com/go-playground/validator/v10"
-	"log"
 	"strconv"
 	"time"
 )
@@ -27,9 +26,8 @@ func (t *ScheduleUseCase) GetMovieSchedule(MovieID, CinemaID string, date string
 		return nil,models.ErrFooCastErr
 	}
 	_, castErr = time.Parse(schedule.TimeStandard,date)
-	log.Println(date)
 	if castErr != nil{
-		date = time.Now().String()
+		date = time.Now().Format(schedule.TimeStandard)
 	}
 	castedCinemaID, castErr := strconv.Atoi(CinemaID)
 	if castErr != nil{
