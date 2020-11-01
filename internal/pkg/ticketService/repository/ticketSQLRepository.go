@@ -74,7 +74,7 @@ func (t *SQLRepository) GetHallTickets(scheduleID uint64)(*[]models.TicketPlace,
 	placeList := make([]models.TicketPlace, 0)
 	placeItem := new(models.TicketPlace)
 	for SQLResult.Next(){
-		ScanErr := SQLResult.Scan(&placeItem.Row, &placeItem.Row)
+		ScanErr := SQLResult.Scan(&placeItem.Row, &placeItem.Place)
 		if ScanErr != nil{
 			return nil,models.ErrFooInternalDBErr
 		}
