@@ -23,7 +23,7 @@ func (t *ScheduleSQLRepository) GetMovieCinemaSchedule (MovieID, CinemaID uint64
 	}
 
 	DBRows, DBErr := t.DBConnection.Query("SELECT ID,Movie_id,Cinema_ID,Hall_ID,Premiere_time FROM schedule " +
-		"WHERE Movie_ID = $1 AND Cinema_ID = $2 AND Premiere_time::date = $3::date", MovieID,CinemaID,date.String())
+		"WHERE Movie_ID = $1 AND Cinema_ID = $2 AND DATE(Premiere_time) = DATE($3)", MovieID,CinemaID,date.String())
 	if DBErr != nil || DBRows != nil && DBRows.Err() != nil{
 		log.Println(DBErr,DBRows.Err())
 		return nil,models.ErrFooInternalDBErr
@@ -48,7 +48,7 @@ func (t *ScheduleSQLRepository) GetMovieSchedule(MovieID uint64, date time.Time)
 	}
 
 	DBRows, DBErr := t.DBConnection.Query("SELECT ID,Movie_id,Cinema_ID,Hall_ID,Premiere_time FROM schedule " +
-		"WHERE Movie_ID = $1 AND Premiere_time::date = $3::date", MovieID,date.String())
+		"WHERE Movie_ID = $1 AND DATE(Premiere_time) = DATE($3)", MovieID,date.String())
 	if DBErr != nil || DBRows != nil && DBRows.Err() != nil{
 		log.Println(DBErr,DBRows.Err())
 		return nil,models.ErrFooInternalDBErr
