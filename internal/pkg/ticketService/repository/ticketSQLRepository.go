@@ -21,8 +21,7 @@ func (t *SQLRepository) GetUserTickets(username string)(*[]models.Ticket, error)
 		return nil,models.ErrFooNoDBConnection
 	}
 
-	SQLResult, SQLErr := t.DBConnection.Query("SELECT ID,User_login,schedule_id,transaction_date," +
-		"row,place WHERE User_login = $1", username)
+	SQLResult, SQLErr := t.DBConnection.Query("SELECT ID,User_login,schedule_id,transaction_date,row,place FROM ticket WHERE User_login = $1", username)
 	if SQLErr != nil || SQLResult == nil || SQLResult.Err() != nil{
 		log.Println(SQLErr)
 		return nil,models.ErrFooInternalDBErr
@@ -48,8 +47,7 @@ func (t *SQLRepository) GetSimpleTicket(ticketID uint64, username string)(*model
 		return nil,models.ErrFooNoDBConnection
 	}
 
-	SQLResult := t.DBConnection.QueryRow("SELECT ID,User_login,schedule_id,transaction_date," +
-		"row,place WHERE ID = $1 AND User_login = $2", ticketID, username)
+	SQLResult := t.DBConnection.QueryRow("SELECT ID,User_login,schedule_id,transaction_date,row,place FROM ticket WHERE ID = $1 AND User_login = $2", ticketID, username)
 	if SQLResult == nil || SQLResult.Err() != nil{
 		return nil,models.ErrFooInternalDBErr
 	}
@@ -91,7 +89,7 @@ func (t *SQLRepository) CreateTicket(ticket *models.Ticket) error{
 		return models.ErrFooNoDBConnection
 	}
 
-	ScanErr := t.DBConnection.QueryRow("INSERT INTO ticket (User_login,schedule_id,row,place) VALUES($1,$2,$3,$4)",
+	ScanErr := t.DBConnection.QueryRow("INSERT INTO ticket (User_login,schedule_id,row,place) VALUES($1,$2,$3,$4) RETURNING ID",
 		ticket.Username, ticket.Schedule.ID, ticket.PlaceField.Row, ticket.PlaceField.Place).Scan(&ticket.ID)
 	if ScanErr != nil{
 		return models.ErrFooIncorrectSQLQuery
