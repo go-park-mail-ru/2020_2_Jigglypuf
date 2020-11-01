@@ -165,7 +165,7 @@ func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int) (*[]models.Movie
 		return nil, models.ErrFooNoDBConnection
 	}
 
-	DBRows, DBErr := t.DBConnection.Query("SELECT DISTINCT v1.Movie_id,v2.MovieName,v2.description,v2.rating,v2.rating_count,v2.pathtoavatar FROM movies_in_cinema v1 JOIN movie v2 on(v1.movie_id = v2.id) WHERE rental_start < now() AND rental_end > now()")
+	DBRows, DBErr := t.DBConnection.Query("SELECT DISTINCT v1.Movie_id,v2.MovieName,v2.description,v2.rating,v2.rating_count,v2.pathtoavatar FROM schedule v1 JOIN movie v2 on(v1.movie_id = v2.id) WHERE v1.Premiere_time > now()")
 	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr
