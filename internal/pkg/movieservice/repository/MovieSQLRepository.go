@@ -183,14 +183,18 @@ func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int) (*[]models.Movie
 	}()
 
 	movieList := make([]models.Movie, 0)
+	resultMovie := new(models.Movie)
 	for DBRows.Next() {
-		movie := new(models.Movie)
-		ScanErr := DBRows.Scan(&movie.ID, &movie.Name, &movie.Description, &movie.Rating, &movie.RatingCount, &movie.PathToAvatar)
+		ScanErr := DBRows.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description,
+			&resultMovie.Genre, &resultMovie.Duration,
+			&resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear,
+			&resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount,
+			&resultMovie.PathToAvatar)
 		if ScanErr != nil {
 			log.Println(ScanErr)
 			return nil, ScanErr
 		}
-		movieList = append(movieList, *movie)
+		movieList = append(movieList, *resultMovie)
 	}
 
 	return &movieList, nil
