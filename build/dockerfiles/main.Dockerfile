@@ -12,5 +12,5 @@ RUN CGO_ENABLED=0 go build -o main_server cmd/main_server.go
 FROM alpine
 WORKDIR /app
 COPY --from=builder /app/cmd/main_server /app/
-RUN chmod +x ./main_server
-ENTRYPOINT ./main_server
+RUN chmod +x /app/main_server
+ENTRYPOINT ./app/main_server
