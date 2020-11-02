@@ -17,9 +17,6 @@ services:
    - ~/data/tarantool:/var/lib/tarantool
  app:
   image: felixgreen/cinema_interfaceservice_image
-  build:
-   context: /app/
-   target: main_server
   ports:
    - 8080:8080
   volumes:
