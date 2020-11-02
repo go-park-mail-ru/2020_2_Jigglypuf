@@ -7,10 +7,10 @@ COPY ./ /app
 #RUN go build cmd/main_server.go
 #CMD ["go run","cmd/main_server.go"]
 #ENTRYPOINT CompileDaemon --build="go build cmd/main_server.go" --command=./cmd/cmd
-RUN go install cmd/main_server.go
+RUN CGO_ENABLED=0 go build -o main_server cmd/main_server.go
 
 FROM alpine
 WORKDIR /app
-COPY --from=builder /go/bin/main_server /app/
+COPY --from=builder /app/cmd/main_server /app/
 RUN chmod +x ./main_server
 ENTRYPOINT ./main_server
