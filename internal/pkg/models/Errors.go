@@ -13,4 +13,5 @@ var (
 	ErrFooIncorrectInputInfo = errors.New("incorrect info")
 	ErrFooArgsMismatch = errors.New("args have nil")
 	ErrFooInitFail = errors.New("init fail")
+	ErrFooInternalServerError = errors.New("internal server error")
 )

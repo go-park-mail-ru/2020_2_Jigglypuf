@@ -941,7 +941,7 @@ var doc = `{
         "models.Ticket": {
             "type": "object",
             "required": [
-                "username"
+                "Login"
             ],
             "properties": {
                 "id": {
@@ -956,7 +956,7 @@ var doc = `{
                 "transactionDate": {
                     "type": "string"
                 },
-                "username": {
+                "Login": {
                     "type": "string"
                 }
             }
@@ -964,7 +964,7 @@ var doc = `{
         "models.TicketInput": {
             "type": "object",
             "required": [
-                "username"
+                "Login"
             ],
             "properties": {
                 "hallID": {
@@ -976,7 +976,7 @@ var doc = `{
                 "scheduleID": {
                     "type": "integer"
                 },
-                "username": {
+                "Login": {
                     "type": "string"
                 }
             }

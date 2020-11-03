@@ -4,7 +4,7 @@ CREATE DATABASE BackendCinemaInterface;
 CREATE TABLE users
 (
     ID serial NOT NULL PRIMARY KEY,
-    Username VARCHAR(32) NOT NULL UNIQUE ,
+    Login VARCHAR(32) NOT NULL UNIQUE ,
     Password VARCHAR(64) NOT NULL
 );
 
@@ -81,7 +81,7 @@ CREATE TABLE schedule
 CREATE TABLE ticket
 (
     ID serial not null unique primary key,
-    User_login VARCHAR(32) not null references users (Username),
+    User_login VARCHAR(32) not null references users (Login),
     schedule_id integer not null references schedule (ID),
     transaction_date timestamp default now(),
     row integer not null,

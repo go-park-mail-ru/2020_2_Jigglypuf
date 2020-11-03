@@ -4,41 +4,44 @@ import (
 	"backend/internal/pkg/authentication"
 	"backend/internal/pkg/middleware/cookie"
 	"backend/internal/pkg/models"
-	"crypto/sha256"
-	"encoding/hex"
+	"backend/internal/pkg/profile"
+	"golang.org/x/crypto/bcrypt"
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/go-playground/validator/v10"
 	"log"
 	"net/http"
 	"time"
 )
 
 
-type IncorrectInputError struct{}
-
-func (t IncorrectInputError) Error() string {
-	return "Incorrect Login or Password!"
-}
 
 type UserUseCase struct {
-	memConn      authentication.AuthRepository
-	cookieDBConn cookie.Repository
-	salt         string
+	sanitizer		  *bluemonday.Policy
+	validator		  *validator.Validate
+	repository        authentication.AuthRepository
+	cookieDBConn      cookie.Repository
+	profileRepository profile.Repository
+	salt              string
 }
 
-func NewUserUseCase(dbConn authentication.AuthRepository, cookieConn cookie.Repository, salt string) *UserUseCase {
+func NewUserUseCase(repository authentication.AuthRepository,profileRepository profile.Repository, cookieConn cookie.Repository, salt string) *UserUseCase {
 	return &UserUseCase{
-		memConn:      dbConn,
+		repository:   repository,
 		cookieDBConn: cookieConn,
+		profileRepository: profileRepository,
 		salt:         salt,
 	}
 }
 
 
-func createHashPassword(password, salt string) string {
-	reqString := password + salt
-	decoder := sha256.New()
-	decoder.Write([]byte(reqString))
-	resultString := hex.EncodeToString(decoder.Sum(nil))
-	return resultString
+func createHashPassword(password, salt string) (string, bool) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password + salt), 7)
+	return string(hashedPassword), err==nil
+}
+
+func compareHashAndPassword(password, hash, salt string) bool{
+	err := bcrypt.CompareHashAndPassword([]byte(password + salt),[]byte(hash))
+	return err == nil
 }
 
 func createUserCookie() http.Cookie {
@@ -53,27 +56,51 @@ func createUserCookie() http.Cookie {
 	}
 }
 
-func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, error) {
-	username := input.Login
-	password := input.Password
-
-	if username == "" || password == "" {
-		return new(http.Cookie), IncorrectInputError{}
+func (t *UserUseCase) sanitizeInput(arr ...*string){
+	for index,val := range arr{
+		*arr[index] = t.sanitizer.Sanitize(*val)
 	}
+}
 
-	hashPassword := createHashPassword(password, t.salt)
+func (t *UserUseCase) validateInput(input interface{})error{
+	return t.validator.Struct(input)
+}
+
+func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, error) {
+	// input validation
+	if input.Login == "" || input.Password == "" || input.Name == "" || input.Surname == "" {
+		return new(http.Cookie), models.ErrFooIncorrectInputInfo
+	}
+	t.sanitizeInput(&input.Login, &input.Password, &input.Name, &input.Surname)
+	validationErr := t.validateInput(input)
+	if validationErr != nil{
+		return nil, models.ErrFooIncorrectInputInfo
+	}
+	// creating user credentials
+	hashPassword, ok := createHashPassword(input.Password, t.salt)
+	if !ok{
+		return nil,models.ErrFooInternalServerError
+	}
 	cookieValue := createUserCookie()
-
 	user := models.User{
-		Username: username,
+		Login: input.Login,
 		Password: hashPassword,
 	}
-
-	err := t.memConn.CreateUser(&user)
+	err := t.repository.CreateUser(&user)
 	if err != nil {
 		return nil, err
 	}
 
+	// creating profile
+	prof := new(models.Profile)
+	prof.Name = input.Name
+	prof.Surname = input.Surname
+	profileErr := t.profileRepository.CreateProfile(prof)
+	if profileErr != nil{
+		return nil, profileErr
+	}
+
+	// creating cookie for user
 	cookieErr := t.cookieDBConn.SetCookie(&cookieValue, user.ID)
 	if cookieErr != nil {
 		return nil, cookieErr
@@ -83,19 +110,23 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 }
 
 func (t *UserUseCase) SignIn(input *models.AuthInput) (*http.Cookie, error) {
-	username := input.Login
-	password := input.Password
-	if username == "" || password == "" {
-		return new(http.Cookie), IncorrectInputError{}
+	if input.Login == "" || input.Password == "" {
+		return new(http.Cookie), models.ErrFooIncorrectInputInfo
+	}
+	t.sanitizeInput(&input.Login, &input.Password)
+	validationErr := t.validateInput(input)
+	if validationErr != nil{
+		return nil, models.ErrFooIncorrectInputInfo
 	}
 
-	hashPassword := createHashPassword(password, t.salt)
-
-	user, err := t.memConn.GetUser(username, hashPassword)
+	user, err := t.repository.GetUser(input.Login)
 	if err != nil {
 		return &http.Cookie{}, err
 	}
-
+	isAuth := compareHashAndPassword(input.Password,user.Password,t.salt)
+	if !isAuth{
+		return nil,models.ErrFooIncorrectInputInfo
+	}
 	cookieValue := createUserCookie()
 	cookieErr := t.cookieDBConn.SetCookie(&cookieValue, user.ID)
 	if cookieErr != nil {

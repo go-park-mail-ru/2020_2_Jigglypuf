@@ -27,14 +27,14 @@ type CinemaHall struct{
 
 type Ticket struct{
 	ID uint64
-	Username string `validate:"required,email"`
+	Login string `validate:"required,email"`
 	Schedule Schedule
 	TransactionDate time.Time
 	PlaceField TicketPlace
 }
 
 type TicketInput struct{
-	Username string `validate:"required,email"`
+	Login string `validate:"required,email"`
 	ScheduleID uint64
 	HallID uint64
 	PlaceField TicketPlace

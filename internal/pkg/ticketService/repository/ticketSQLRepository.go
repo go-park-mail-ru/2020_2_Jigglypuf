@@ -16,12 +16,12 @@ func NewTicketSQLRepository(connection *sql.DB)*SQLRepository{
 	}
 }
 
-func (t *SQLRepository) GetUserTickets(username string)(*[]models.Ticket, error){
+func (t *SQLRepository) GetUserTickets(Login string)(*[]models.Ticket, error){
 	if t.DBConnection == nil{
 		return nil,models.ErrFooNoDBConnection
 	}
 
-	SQLResult, SQLErr := t.DBConnection.Query("SELECT ID,User_login,schedule_id,transaction_date,row,place FROM ticket WHERE User_login = $1", username)
+	SQLResult, SQLErr := t.DBConnection.Query("SELECT ID,User_login,schedule_id,transaction_date,row,place FROM ticket WHERE User_login = $1", Login)
 	if SQLErr != nil || SQLResult == nil || SQLResult.Err() != nil{
 		log.Println(SQLErr)
 		return nil,models.ErrFooInternalDBErr
@@ -31,7 +31,7 @@ func (t *SQLRepository) GetUserTickets(username string)(*[]models.Ticket, error)
 	ticketList := make([]models.Ticket,0)
 	ticketItem := new(models.Ticket)
 	for SQLResult.Next(){
-		ScanErr := SQLResult.Scan(&ticketItem.ID, &ticketItem.Username, &ticketItem.Schedule.ID,
+		ScanErr := SQLResult.Scan(&ticketItem.ID, &ticketItem.Login, &ticketItem.Schedule.ID,
 			&ticketItem.TransactionDate, &ticketItem.PlaceField.Row, &ticketItem.PlaceField.Place)
 		if ScanErr != nil{
 			log.Println(ScanErr)
@@ -42,17 +42,17 @@ func (t *SQLRepository) GetUserTickets(username string)(*[]models.Ticket, error)
 	return &ticketList, nil
 }
 
-func (t *SQLRepository) GetSimpleTicket(ticketID uint64, username string)(*models.Ticket,error){
+func (t *SQLRepository) GetSimpleTicket(ticketID uint64, Login string)(*models.Ticket,error){
 	if t.DBConnection == nil{
 		return nil,models.ErrFooNoDBConnection
 	}
 
-	SQLResult := t.DBConnection.QueryRow("SELECT ID,User_login,schedule_id,transaction_date,row,place FROM ticket WHERE ID = $1 AND User_login = $2", ticketID, username)
+	SQLResult := t.DBConnection.QueryRow("SELECT ID,User_login,schedule_id,transaction_date,row,place FROM ticket WHERE ID = $1 AND User_login = $2", ticketID, Login)
 	if SQLResult == nil || SQLResult.Err() != nil{
 		return nil,models.ErrFooInternalDBErr
 	}
 	ticketItem := new(models.Ticket)
-	ScanErr := SQLResult.Scan(&ticketItem.ID, &ticketItem.Username, &ticketItem.Schedule.ID,
+	ScanErr := SQLResult.Scan(&ticketItem.ID, &ticketItem.Login, &ticketItem.Schedule.ID,
 		&ticketItem.TransactionDate, &ticketItem.PlaceField.Row, &ticketItem.PlaceField.Place)
 	if ScanErr != nil{
 		log.Println(ScanErr)
@@ -90,7 +90,7 @@ func (t *SQLRepository) CreateTicket(ticket *models.TicketInput) error{
 	}
 	var ID uint64 = 0
 	ScanErr := t.DBConnection.QueryRow("INSERT INTO ticket (User_login,schedule_id,row,place) VALUES($1,$2,$3,$4) RETURNING ID",
-		ticket.Username, ticket.ScheduleID, ticket.PlaceField.Row, ticket.PlaceField.Place).Scan(&ID)
+		ticket.Login, ticket.ScheduleID, ticket.PlaceField.Row, ticket.PlaceField.Place).Scan(&ID)
 	if ScanErr != nil{
 		return models.ErrFooIncorrectSQLQuery
 	}

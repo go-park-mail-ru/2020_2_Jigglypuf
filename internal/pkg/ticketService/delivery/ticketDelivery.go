@@ -46,7 +46,7 @@ func (t *TicketDelivery) BuyTicket(w http.ResponseWriter, r *http.Request){
 	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
 	userID := r.Context().Value(cookieService.ContextUserIDName)
 	if isAuth == nil || !isAuth.(bool) || userID == nil {
-		if ticketItem.Username == ""{
+		if ticketItem.Login == ""{
 			models.BadBodyHTTPResponse(&w,models.ErrFooNoLoginInfo)
 			return
 		}

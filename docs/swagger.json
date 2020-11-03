@@ -926,7 +926,7 @@
         "models.Ticket": {
             "type": "object",
             "required": [
-                "username"
+                "Login"
             ],
             "properties": {
                 "id": {
@@ -941,7 +941,7 @@
                 "transactionDate": {
                     "type": "string"
                 },
-                "username": {
+                "Login": {
                     "type": "string"
                 }
             }
@@ -949,7 +949,7 @@
         "models.TicketInput": {
             "type": "object",
             "required": [
-                "username"
+                "Login"
             ],
             "properties": {
                 "hallID": {
@@ -961,7 +961,7 @@
                 "scheduleID": {
                     "type": "integer"
                 },
-                "username": {
+                "Login": {
                     "type": "string"
                 }
             }

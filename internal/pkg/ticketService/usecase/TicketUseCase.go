@@ -33,7 +33,7 @@ func (t *TicketUseCase) GetUserTickets(userID uint64) (*[]models.Ticket, error){
 	if getUserErr != nil{
 		return nil,getUserErr
 	}
-	return t.repository.GetUserTickets(user.Username)
+	return t.repository.GetUserTickets(user.Login)
 }
 
 func (t *TicketUseCase) GetSimpleTicket(userID uint64, ticketID string)(*models.Ticket, error){
@@ -45,7 +45,7 @@ func (t *TicketUseCase) GetSimpleTicket(userID uint64, ticketID string)(*models.
 	if getUserErr != nil{
 		return nil, getUserErr
 	}
-	return t.repository.GetSimpleTicket(uint64(castedTicketID),user.Username)
+	return t.repository.GetSimpleTicket(uint64(castedTicketID),user.Login)
 }
 
 func (t *TicketUseCase) GetHallScheduleTickets(scheduleID string)(*[]models.TicketPlace,error){
@@ -58,12 +58,12 @@ func (t *TicketUseCase) GetHallScheduleTickets(scheduleID string)(*[]models.Tick
 
 func (t *TicketUseCase) BuyTicket(ticket *models.TicketInput, userID uint64) error{
 	// TODO check if place available in hall
-	if ticket.Username == ""{
+	if ticket.Login == ""{
 		user, getUserErr := t.userRepository.GetUserByID(userID)
 		if getUserErr != nil{
 			return models.ErrFooNoAuthorization
 		}
-		ticket.Username = user.Username
+		ticket.Login = user.Login
 	}
 	availability, avErr := t.hallRepository.CheckAvailability(ticket.HallID, &ticket.PlaceField)
 	if avErr != nil || !availability{
@@ -75,6 +75,6 @@ func (t *TicketUseCase) BuyTicket(ticket *models.TicketInput, userID uint64) err
 		return validationError
 	}
 
-	ticket.Username = t.sanitizer.Sanitize(ticket.Username)
+	ticket.Login = t.sanitizer.Sanitize(ticket.Login)
 	return t.repository.CreateTicket(ticket)
 }

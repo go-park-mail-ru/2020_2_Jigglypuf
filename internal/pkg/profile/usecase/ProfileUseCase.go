@@ -15,8 +15,14 @@ func NewProfileUseCase(dbConn profile.Repository) *ProfileUseCase {
 	}
 }
 
-func (t *ProfileUseCase) CreateProfile(profile *models.Profile) error {
-	return t.DBConn.CreateProfile(profile)
+func (t *ProfileUseCase) CreateProfile(reqProfile *models.Profile) error {
+	if reqProfile.Surname == "" || reqProfile.Name == ""{
+		return models.ErrFooIncorrectInputInfo
+	}
+	if reqProfile.AvatarPath == ""{
+		reqProfile.AvatarPath = profile.NoAvatarImage
+	}
+	return t.DBConn.CreateProfile(reqProfile)
 }
 
 func (t *ProfileUseCase) DeleteProfile(profile *models.Profile) error {
@@ -28,16 +34,7 @@ func (t *ProfileUseCase) GetProfile(login *string) (*models.Profile, error) {
 }
 
 func (t *ProfileUseCase) GetProfileViaID(userID uint64) (*models.Profile, error) {
-	reqProfile, profileErr := t.DBConn.GetProfileViaID(userID)
-	if profileErr != nil {
-		reqProfile := new(models.Profile)
-		reqProfile.Login = new(models.User)
-		reqProfile.Login.ID = userID
-		reqProfile.AvatarPath = profile.NoAvatarImage
-		profileErr = t.DBConn.CreateProfile(reqProfile)
-		return reqProfile, profileErr
-	}
-	return reqProfile, nil
+	return t.DBConn.GetProfileViaID(userID)
 }
 
 func (t *ProfileUseCase) UpdateCredentials(profile *models.Profile) error {
@@ -45,6 +42,10 @@ func (t *ProfileUseCase) UpdateCredentials(profile *models.Profile) error {
 }
 
 func (t *ProfileUseCase) UpdateProfile(profile *models.Profile, name, surname, avatarPath string) error {
+	if name == "" && surname == "" && avatarPath == ""{
+		return models.ErrFooIncorrectInputInfo
+	}
+
 	if name == "" {
 		name = profile.Name
 	}

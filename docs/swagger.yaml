@@ -142,10 +142,10 @@ definitions:
         $ref: '#/definitions/models.Schedule'
       transactionDate:
         type: string
-      username:
+      Login:
         type: string
     required:
-    - username
+    - Login
     type: object
   models.TicketInput:
     properties:
@@ -155,10 +155,10 @@ definitions:
         $ref: '#/definitions/models.TicketPlace'
       scheduleID:
         type: integer
-      username:
+      Login:
         type: string
     required:
-    - username
+    - Login
     type: object
   models.TicketPlace:
     properties:
