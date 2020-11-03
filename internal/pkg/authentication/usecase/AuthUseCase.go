@@ -26,6 +26,8 @@ type UserUseCase struct {
 
 func NewUserUseCase(repository authentication.AuthRepository,profileRepository profile.Repository, cookieConn cookie.Repository, salt string) *UserUseCase {
 	return &UserUseCase{
+		sanitizer: bluemonday.UGCPolicy(),
+		validator: validator.New(),
 		repository:   repository,
 		cookieDBConn: cookieConn,
 		profileRepository: profileRepository,
@@ -72,18 +74,15 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 		return new(http.Cookie), models.ErrFooIncorrectInputInfo
 	}
 	t.sanitizeInput(&input.Login, &input.Password, &input.Name, &input.Surname)
-	log.Println("after sanitize")
 	validationErr := t.validateInput(input)
 	if validationErr != nil{
 		return nil, models.ErrFooIncorrectInputInfo
 	}
-	log.Println("after validation")
 	// creating user credentials
 	hashPassword, ok := createHashPassword(input.Password, t.salt)
 	if !ok{
 		return nil,models.ErrFooInternalServerError
 	}
-	log.Println("after bcrypt")
 	cookieValue := createUserCookie()
 	user := models.User{
 		Login: input.Login,
@@ -93,7 +92,6 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 	if err != nil {
 		return nil, err
 	}
-	log.Println("after create user")
 	// creating profile
 	prof := new(models.Profile)
 	prof.Name = input.Name
@@ -102,14 +100,12 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 	if profileErr != nil{
 		return nil, profileErr
 	}
-	log.Println("after create profile")
 
 	// creating cookie for user
 	cookieErr := t.cookieDBConn.SetCookie(&cookieValue, user.ID)
 	if cookieErr != nil {
 		return nil, cookieErr
 	}
-	log.Println("after set cookie")
 	return nil, err
 }
 
