@@ -902,7 +902,13 @@ var doc = `{
                 "login": {
                     "type": "string"
                 },
+                "name": {
+                    "type": "string"
+                },
                 "password": {
+                    "type": "string"
+                },
+                "surname": {
                     "type": "string"
                 }
             }
@@ -941,11 +947,14 @@ var doc = `{
         "models.Ticket": {
             "type": "object",
             "required": [
-                "Login"
+                "login"
             ],
             "properties": {
                 "id": {
                     "type": "integer"
+                },
+                "login": {
+                    "type": "string"
                 },
                 "placeField": {
                     "$ref": "#/definitions/models.TicketPlace"
@@ -955,29 +964,26 @@ var doc = `{
                 },
                 "transactionDate": {
                     "type": "string"
-                },
-                "Login": {
-                    "type": "string"
                 }
             }
         },
         "models.TicketInput": {
             "type": "object",
             "required": [
-                "Login"
+                "login"
             ],
             "properties": {
                 "hallID": {
                     "type": "integer"
+                },
+                "login": {
+                    "type": "string"
                 },
                 "placeField": {
                     "$ref": "#/definitions/models.TicketPlace"
                 },
                 "scheduleID": {
                     "type": "integer"
-                },
-                "Login": {
-                    "type": "string"
                 }
             }
         },

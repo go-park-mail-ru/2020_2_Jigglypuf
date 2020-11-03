@@ -97,6 +97,7 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 	prof.Name = input.Name
 	prof.Surname = input.Surname
 	prof.Login = &user
+	prof.AvatarPath = profile.NoAvatarImage
 	profileErr := t.profileRepository.CreateProfile(prof)
 	if profileErr != nil{
 		return nil, profileErr

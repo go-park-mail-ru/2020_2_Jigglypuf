@@ -107,7 +107,11 @@ definitions:
     properties:
       login:
         type: string
+      name:
+        type: string
       password:
+        type: string
+      surname:
         type: string
     required:
     - login
@@ -136,29 +140,29 @@ definitions:
     properties:
       id:
         type: integer
+      login:
+        type: string
       placeField:
         $ref: '#/definitions/models.TicketPlace'
       schedule:
         $ref: '#/definitions/models.Schedule'
       transactionDate:
         type: string
-      Login:
-        type: string
     required:
-    - Login
+    - login
     type: object
   models.TicketInput:
     properties:
       hallID:
         type: integer
+      login:
+        type: string
       placeField:
         $ref: '#/definitions/models.TicketPlace'
       scheduleID:
         type: integer
-      Login:
-        type: string
     required:
-    - Login
+    - login
     type: object
   models.TicketPlace:
     properties:
