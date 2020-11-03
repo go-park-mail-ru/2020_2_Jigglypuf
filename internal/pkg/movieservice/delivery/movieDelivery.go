@@ -122,7 +122,7 @@ func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 // @Description Rate movie
 // @ID movie-rate-id
 // @Accept  json
-// @Param Login_info body models.RateMovie true "UserModel information"
+// @Param Login_info body models.RateMovie true "Login information"
 // @Success 200
 // @Failure 400 {object} models.ServerResponse "Bad body"
 // @Failure 401 {object} models.ServerResponse "No authorization"

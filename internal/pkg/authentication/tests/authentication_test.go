@@ -23,8 +23,8 @@ package tests
 //	authUseCase := usecase.NewUserUseCase(authrep, salt)
 //	authHandler := delivery.NewUserHandler(authUseCase)
 //
-//	// authenticationBody := "{\"UserModel\": \"Aydar\", \"Password\": \"aydar\"}"
-//	authenticationBody := "{\"UserModel\": \"Pro100\", \"Password\": \"1234\"}"
+//	// authenticationBody := "{\"Login\": \"Aydar\", \"Password\": \"aydar\"}"
+//	authenticationBody := "{\"Login\": \"Pro100\", \"Password\": \"1234\"}"
 //
 //	var testCases = []struct {
 //		TestName           string
@@ -68,8 +68,8 @@ package tests
 //	authHandler := delivery.NewUserHandler(authUseCase)
 //
 //	incorrectAuthenticationBody := "{ \"inasd\": \"Aydar\",\"oainsd\":\"aydar\""
-//	authenticationBody := "{ \"UserModel\": \"Aydar\", \"Password\": \"aydar\" }"
-//	fakeAuthenticationBody := "{ \"UserModel\": \"Bulat\",\"Password\":\"aydar\"}"
+//	authenticationBody := "{ \"Login\": \"Aydar\", \"Password\": \"aydar\" }"
+//	fakeAuthenticationBody := "{ \"Login\": \"Bulat\",\"Password\":\"aydar\"}"
 //
 //	// создадим пользователя, чтобы убедиться что нельзя повторно создать пользователя
 //	authHandler.RegisterHandler(httptest.NewRecorder(), httptest.NewRequest("POST", "/signup", strings.NewReader(authenticationBody)))

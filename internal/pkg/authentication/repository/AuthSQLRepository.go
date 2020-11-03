@@ -21,7 +21,7 @@ func (t *AuthSQLRepository) CreateUser(user *models.User) error {
 	if t.DBConn == nil {
 		return models.ErrFooNoDBConnection
 	}
-	ScanErr := t.DBConn.QueryRow("INSERT INTO users (UserModel, password) VALUES ($1,$2) RETURNING ID", user.Login, user.Password).Scan(&user.ID)
+	ScanErr := t.DBConn.QueryRow("INSERT INTO users (Login, password) VALUES ($1,$2) RETURNING ID", user.Login, user.Password).Scan(&user.ID)
 	if ScanErr != nil {
 		log.Println(ScanErr)
 		return models.ErrFooInternalDBErr
@@ -35,7 +35,7 @@ func (t *AuthSQLRepository) GetUser(Login string) (*models.User, error) {
 	}
 
 	requiredUser := new(models.User)
-	result := t.DBConn.QueryRow("SELECT id, UserModel, password FROM users WHERE UserModel = $1", Login)
+	result := t.DBConn.QueryRow("SELECT id, Login, password FROM users WHERE Login = $1", Login)
 	rowsErr := result.Err()
 	if rowsErr != nil {
 		log.Println(rowsErr)
@@ -57,7 +57,7 @@ func (t *AuthSQLRepository) GetUserByID(userID uint64) (*models.User, error) {
 	}
 
 	requiredUser := new(models.User)
-	result := t.DBConn.QueryRow("SELECT id, UserModel, password FROM users WHERE id = $1", userID)
+	result := t.DBConn.QueryRow("SELECT id, Login, password FROM users WHERE id = $1", userID)
 
 	rowsErr := result.Err()
 	if rowsErr != nil {
