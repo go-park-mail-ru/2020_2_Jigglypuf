@@ -13,4 +13,4 @@ FROM alpine
 WORKDIR /app
 COPY --from=builder /app/main_server /app/
 RUN chmod +x /app/main_server
-ENTRYPOINT ./app/main_server
+ENTRYPOINT /app/main_server
