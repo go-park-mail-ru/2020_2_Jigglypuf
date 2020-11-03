@@ -50,7 +50,11 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 		log.Println("No Tarantool Cookie DB connection")
 		return nil, cookieErr
 	}
-	newAuthService, authErr := authService.Start(NewCookieService.CookieRepository, mainDBConnection)
+	newProfileService, profileErr := profileService.Start(mainDBConnection)
+	if profileErr != nil{
+		return nil, profileErr
+	}
+	newAuthService, authErr := authService.Start(NewCookieService.CookieRepository,newProfileService.ProfileRepository, mainDBConnection)
 	if authErr != nil{
 		log.Println(authErr)
 		return nil, authErr
@@ -62,11 +66,10 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 	}
 	newCinemaService, cinemaErr := cinemaService.Start(mainDBConnection)
 	newMovieService, movieErr := movieService.Start(mainDBConnection, newAuthService.AuthenticationRepository)
-	newProfileService, profileErr := profileService.Start(mainDBConnection)
 	newScheduleService, scheduleErr := scheduleService.Start(mainDBConnection)
 	newTicketService, ticketErr := ticketService.Start(mainDBConnection, newAuthService.AuthenticationRepository,newHallService.Repository)
 
-	if cinemaErr != nil || movieErr != nil || profileErr != nil || scheduleErr != nil || ticketErr != nil{
+	if cinemaErr != nil || movieErr != nil || scheduleErr != nil || ticketErr != nil{
 		log.Println(models.ErrFooInitFail)
 		return nil, models.ErrFooInitFail
 	}
