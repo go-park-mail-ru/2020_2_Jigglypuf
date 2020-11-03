@@ -27,7 +27,7 @@ package tests
 // }
 //
 // var bodiesRequest = map[string]string{
-//	"authorized":   `{"Login": "Pro100", "Password": "1234"}`,
+//	"authorized":   `{"UserModel": "Pro100", "Password": "1234"}`,
 //	"unauthorized": "",
 // }
 //

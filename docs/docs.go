@@ -34,7 +34,7 @@ var doc = `{
                 "operationId": "login-user-by-login-data",
                 "parameters": [
                     {
-                        "description": "Login information",
+                        "description": "UserModel information",
                         "name": "Login_info",
                         "in": "body",
                         "required": true,
@@ -350,7 +350,7 @@ var doc = `{
                 "operationId": "movie-rate-id",
                 "parameters": [
                     {
-                        "description": "Login information",
+                        "description": "UserModel information",
                         "name": "Login_info",
                         "in": "body",
                         "required": true,
@@ -941,7 +941,7 @@ var doc = `{
         "models.Ticket": {
             "type": "object",
             "required": [
-                "Login"
+                "UserModel"
             ],
             "properties": {
                 "id": {
@@ -956,7 +956,7 @@ var doc = `{
                 "transactionDate": {
                     "type": "string"
                 },
-                "Login": {
+                "UserModel": {
                     "type": "string"
                 }
             }
@@ -964,7 +964,7 @@ var doc = `{
         "models.TicketInput": {
             "type": "object",
             "required": [
-                "Login"
+                "UserModel"
             ],
             "properties": {
                 "hallID": {
@@ -976,7 +976,7 @@ var doc = `{
                 "scheduleID": {
                     "type": "integer"
                 },
-                "Login": {
+                "UserModel": {
                     "type": "string"
                 }
             }

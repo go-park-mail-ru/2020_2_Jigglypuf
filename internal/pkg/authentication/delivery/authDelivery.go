@@ -19,12 +19,12 @@ func NewUserHandler(useCase authentication.UserUseCase) *UserHandler {
 	}
 }
 
-// Login godoc
+// UserModel godoc
 // @Summary login
 // @Description login user and get cookie
 // @ID login-user-by-login-data
 // @Accept  json
-// @Param Login_info body models.AuthInput true "Login information"
+// @Param Login_info body models.AuthInput true "UserModel information"
 // @Success 200
 // @Failure 400 {object} models.ServerResponse
 // @Failure 405 {object} models.ServerResponse
