@@ -42,7 +42,7 @@ func createHashPassword(password, salt string) (string, bool) {
 }
 
 func compareHashAndPassword(password, hash, salt string) bool{
-	err := bcrypt.CompareHashAndPassword([]byte(password + salt),[]byte(hash))
+	err := bcrypt.CompareHashAndPassword([]byte(hash),[]byte(password + salt))
 	return err == nil
 }
 
