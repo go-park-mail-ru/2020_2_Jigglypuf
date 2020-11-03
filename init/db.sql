@@ -25,8 +25,7 @@ CREATE TABLE cinema
     ID serial NOT NULL PRIMARY KEY,
     CinemaName VARCHAR(32) NOT NULL,
     Address VARCHAR(64) NOT NULL,
-    Hall_count integer NOT NULL,
-    Author_ID integer REFERENCES users (ID)
+    Hall_count integer NOT NULL
 );
 
 /* movie table */

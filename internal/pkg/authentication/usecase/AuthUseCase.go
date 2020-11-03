@@ -83,7 +83,6 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 	if !ok{
 		return nil,models.ErrFooInternalServerError
 	}
-	cookieValue := createUserCookie()
 	user := models.User{
 		Login: input.Login,
 		Password: hashPassword,
@@ -104,11 +103,12 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 	}
 
 	// creating cookie for user
+	cookieValue := createUserCookie()
 	cookieErr := t.cookieDBConn.SetCookie(&cookieValue, user.ID)
 	if cookieErr != nil {
 		return nil, cookieErr
 	}
-	return nil, err
+	return &cookieValue, nil
 }
 
 func (t *UserUseCase) SignIn(input *models.AuthInput) (*http.Cookie, error) {
@@ -138,7 +138,7 @@ func (t *UserUseCase) SignIn(input *models.AuthInput) (*http.Cookie, error) {
 	}
 
 	log.Println(cookieValue)
-	return &cookieValue, cookieErr
+	return &cookieValue, nil
 }
 
 func (t *UserUseCase) SignOut(cookie *http.Cookie) (*http.Cookie, error) {
