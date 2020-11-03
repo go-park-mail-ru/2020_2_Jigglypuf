@@ -34,8 +34,8 @@ func Start(connection *sql.DB, authRep authentication.AuthRepository) (*MovieSer
 		return nil, models.ErrFooNoDBConnection
 	}
 	movieRep := movieRepository.NewMovieSQLRepository(connection)
-	movieUC := movieUseCase.NewMovieUseCase(movieRep)
-	movieHandler := movieDelivery.NewMovieHandler(movieUC, authRep)
+	movieUC := movieUseCase.NewMovieUseCase(movieRep, authRep)
+	movieHandler := movieDelivery.NewMovieHandler(movieUC)
 
 	movieRouter := configureMovieRouter(movieHandler)
 

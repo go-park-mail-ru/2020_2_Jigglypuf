@@ -1,17 +1,20 @@
 package usecase
 
 import (
+	"backend/internal/pkg/authentication"
 	"backend/internal/pkg/models"
 	"backend/internal/pkg/movieservice"
 )
 
 type MovieUseCase struct {
 	DBConn movieservice.MovieRepository
+	UserRepository authentication.AuthRepository
 }
 
-func NewMovieUseCase(rep movieservice.MovieRepository) *MovieUseCase {
+func NewMovieUseCase(rep movieservice.MovieRepository, userRepository authentication.AuthRepository) *MovieUseCase {
 	return &MovieUseCase{
 		DBConn: rep,
+		UserRepository: userRepository,
 	}
 }
 
@@ -41,8 +44,12 @@ func (t *MovieUseCase) UpdateMovie(movie *models.Movie) error {
 	return t.DBConn.UpdateMovie(movie)
 }
 
-func (t *MovieUseCase) RateMovie(user *models.User, id uint64, rating int64) error {
-	personalRatingErr := t.DBConn.RateMovie(user, id, rating)
+func (t *MovieUseCase) RateMovie(userID uint64, id uint64, rating int64) error {
+	reqUser, userErr := t.UserRepository.GetUserByID(userID)
+	if userErr != nil{
+		return models.ErrFooNoAuthorization
+	}
+	personalRatingErr := t.DBConn.RateMovie(reqUser, id, rating)
 	if personalRatingErr != nil {
 		return personalRatingErr
 	}

@@ -7,7 +7,7 @@ type MovieUseCase interface {
 	GetMovieList(limit, page int) (*[]models.MovieList, error)
 	CreateMovie(movie *models.Movie) error
 	UpdateMovie(movie *models.Movie) error
-	RateMovie(user *models.User, id uint64, rating int64) error
+	RateMovie(userID uint64, id uint64, rating int64) error
 	GetRating(user *models.User, id uint64) (int64, error)
 	GetMoviesInCinema(limit, page int) (*[]models.MovieList, error)
 }

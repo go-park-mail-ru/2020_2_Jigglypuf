@@ -1,7 +1,6 @@
 package delivery
 
 import (
-	"backend/internal/pkg/authentication"
 	cookieService "backend/internal/pkg/middleware/cookie"
 	"backend/internal/pkg/models"
 	"backend/internal/pkg/movieservice"
@@ -14,7 +13,6 @@ import (
 
 type MovieHandler struct {
 	movieUseCase   movieservice.MovieUseCase
-	userRepository authentication.AuthRepository
 }
 
 func getQueryLimitPageArgs(r *http.Request) (int, int, error) {
@@ -32,10 +30,9 @@ func getQueryLimitPageArgs(r *http.Request) (int, int, error) {
 	return limit, page, nil
 }
 
-func NewMovieHandler(usecase movieservice.MovieUseCase, userRepository authentication.AuthRepository) *MovieHandler {
+func NewMovieHandler(usecase movieservice.MovieUseCase) *MovieHandler {
 	return &MovieHandler{
 		movieUseCase:   usecase,
-		userRepository: userRepository,
 	}
 }
 
@@ -148,12 +145,6 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reqUser, userError := t.userRepository.GetUserByID(UserID.(uint64))
-	if userError != nil {
-		models.UnauthorizedHTTPResponse(&w)
-		return
-	}
-
 	decoder := json.NewDecoder(r.Body)
 	movie := new(models.RateMovie)
 	translationError := decoder.Decode(movie)
@@ -162,7 +153,7 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	RateErr := t.movieUseCase.RateMovie(reqUser, movie.ID, movie.Rating)
+	RateErr := t.movieUseCase.RateMovie(UserID.(uint64), movie.ID, movie.Rating)
 	if RateErr != nil {
 		models.BadBodyHTTPResponse(&w, RateErr)
 		return

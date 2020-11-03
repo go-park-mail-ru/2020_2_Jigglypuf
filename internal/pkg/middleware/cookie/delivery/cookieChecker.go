@@ -3,16 +3,15 @@ package delivery
 import (
 	"backend/internal/pkg/middleware/cookie"
 	"net/http"
-	"time"
 )
 
 type CookieHandler struct {
-	dbConn cookie.Repository
+	useCase cookie.UseCase
 }
 
-func NewCookieHandler(rep cookie.Repository) *CookieHandler {
+func NewCookieHandler(uc cookie.UseCase) *CookieHandler {
 	return &CookieHandler{
-		dbConn: rep,
+		useCase: uc,
 	}
 }
 
@@ -22,12 +21,5 @@ func (t *CookieHandler) CheckCookie(r *http.Request) (uint64, bool) {
 		return 0, false
 	}
 
-	value, cookieErr := t.dbConn.GetCookie(cookieValue)
-	if cookieErr == nil {
-		if time.Now().After(value.Cookie.Expires) {
-			return 0, false
-		}
-		return value.UserID, true
-	}
-	return 0, false
+	return t.useCase.CheckCookie(cookieValue)
 }

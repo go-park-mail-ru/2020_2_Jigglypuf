@@ -4,11 +4,13 @@ import (
 	"backend/internal/pkg/middleware/cookie"
 	cookieDelivery "backend/internal/pkg/middleware/cookie/delivery"
 	cookieRepository "backend/internal/pkg/middleware/cookie/repository"
+	cookieUseCase "backend/internal/pkg/middleware/cookie/usecase"
 	"github.com/tarantool/go-tarantool"
 )
 
 type CookieService struct {
 	CookieDelivery   *cookieDelivery.CookieHandler
+	CookieUseCase    cookie.UseCase
 	CookieRepository cookie.Repository
 	DBConnection     *tarantool.Connection
 }
@@ -20,10 +22,12 @@ func Start(connection *tarantool.Connection) (*CookieService, error) {
 	if DBErr != nil {
 		return nil, DBErr
 	}
+	cookieUC := cookieUseCase.NewCookieUseCase(cookieRep)
 	// cookieRep := cookieRepository.NewCookieRepository(mutex)
-	cookieHandler := cookieDelivery.NewCookieHandler(cookieRep)
+	cookieHandler := cookieDelivery.NewCookieHandler(cookieUC)
 	CookieManager := &CookieService{
 		cookieHandler,
+		cookieUC,
 		cookieRep,
 		connection,
 	}
