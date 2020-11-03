@@ -5,9 +5,9 @@ import (
 	"backend/internal/pkg/middleware/cookie"
 	"backend/internal/pkg/models"
 	"backend/internal/pkg/profile"
-	"golang.org/x/crypto/bcrypt"
-	"github.com/microcosm-cc/bluemonday"
 	"github.com/go-playground/validator/v10"
+	"github.com/microcosm-cc/bluemonday"
+	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"time"
@@ -72,15 +72,18 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 		return new(http.Cookie), models.ErrFooIncorrectInputInfo
 	}
 	t.sanitizeInput(&input.Login, &input.Password, &input.Name, &input.Surname)
+	log.Println("after sanitize")
 	validationErr := t.validateInput(input)
 	if validationErr != nil{
 		return nil, models.ErrFooIncorrectInputInfo
 	}
+	log.Println("after validation")
 	// creating user credentials
 	hashPassword, ok := createHashPassword(input.Password, t.salt)
 	if !ok{
 		return nil,models.ErrFooInternalServerError
 	}
+	log.Println("after bcrypt")
 	cookieValue := createUserCookie()
 	user := models.User{
 		Login: input.Login,
@@ -90,7 +93,7 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 	if err != nil {
 		return nil, err
 	}
-
+	log.Println("after create user")
 	// creating profile
 	prof := new(models.Profile)
 	prof.Name = input.Name
@@ -99,19 +102,20 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 	if profileErr != nil{
 		return nil, profileErr
 	}
+	log.Println("after create profile")
 
 	// creating cookie for user
 	cookieErr := t.cookieDBConn.SetCookie(&cookieValue, user.ID)
 	if cookieErr != nil {
 		return nil, cookieErr
 	}
-
+	log.Println("after set cookie")
 	return nil, err
 }
 
 func (t *UserUseCase) SignIn(input *models.AuthInput) (*http.Cookie, error) {
 	if input.Login == "" || input.Password == "" {
-		return new(http.Cookie), models.ErrFooIncorrectInputInfo
+		return nil, models.ErrFooIncorrectInputInfo
 	}
 	t.sanitizeInput(&input.Login, &input.Password)
 	validationErr := t.validateInput(input)
@@ -121,17 +125,20 @@ func (t *UserUseCase) SignIn(input *models.AuthInput) (*http.Cookie, error) {
 
 	user, err := t.repository.GetUser(input.Login)
 	if err != nil {
-		return &http.Cookie{}, err
+		return nil, err
 	}
+
 	isAuth := compareHashAndPassword(input.Password,user.Password,t.salt)
 	if !isAuth{
 		return nil,models.ErrFooIncorrectInputInfo
 	}
+
 	cookieValue := createUserCookie()
 	cookieErr := t.cookieDBConn.SetCookie(&cookieValue, user.ID)
 	if cookieErr != nil {
-		return &http.Cookie{}, cookieErr
+		return nil, cookieErr
 	}
+
 	log.Println(cookieValue)
 	return &cookieValue, cookieErr
 }
