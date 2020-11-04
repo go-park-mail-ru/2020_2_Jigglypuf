@@ -627,7 +627,7 @@ paths:
       description: Get schedule hall ticket list by id
       operationId: get-schedule-ticket-list-id
       parameters:
-      - description: ticketService.ScheduleIDName
+      - description: ticketservice.ScheduleIDName
         in: path
         name: id
         required: true

@@ -7,11 +7,11 @@ import (
 	"net/http"
 )
 
-func CookieMiddleware(next http.Handler, CookieManager *CookieService.CookieService) http.Handler {
+func CookieMiddleware(next http.Handler, cookieManager *CookieService.CookieService) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		isAuth := true
-		val, ok := CookieManager.CookieDelivery.CheckCookie(r)
+		val, ok := cookieManager.CookieDelivery.CheckCookie(r)
 		if !ok {
 			isAuth = false
 		}

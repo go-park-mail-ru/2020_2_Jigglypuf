@@ -29,13 +29,13 @@ func (t *AuthSQLRepository) CreateUser(user *models.User) error {
 	return nil
 }
 
-func (t *AuthSQLRepository) GetUser(Login string) (*models.User, error) {
+func (t *AuthSQLRepository) GetUser(login string) (*models.User, error) {
 	if t.DBConn == nil {
 		return nil, models.ErrFooNoDBConnection
 	}
 
 	requiredUser := new(models.User)
-	result := t.DBConn.QueryRow("SELECT id, Login, password FROM users WHERE Login = $1", Login)
+	result := t.DBConn.QueryRow("SELECT id, Login, password FROM users WHERE Login = $1", login)
 	rowsErr := result.Err()
 	if rowsErr != nil {
 		log.Println(rowsErr)

@@ -15,7 +15,7 @@ type CookieService struct {
 	DBConnection     *tarantool.Connection
 }
 
-//var CookieManager *CookieService
+// var CookieManager *CookieService
 
 func Start(connection *tarantool.Connection) (*CookieService, error) {
 	cookieRep, DBErr := cookieRepository.NewCookieTarantoolRepository(connection)

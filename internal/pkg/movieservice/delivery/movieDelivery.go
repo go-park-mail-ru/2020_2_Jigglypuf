@@ -10,9 +10,8 @@ import (
 	"strconv"
 )
 
-
 type MovieHandler struct {
-	movieUseCase   movieservice.MovieUseCase
+	movieUseCase movieservice.MovieUseCase
 }
 
 func getQueryLimitPageArgs(r *http.Request) (int, int, error) {
@@ -32,7 +31,7 @@ func getQueryLimitPageArgs(r *http.Request) (int, int, error) {
 
 func NewMovieHandler(usecase movieservice.MovieUseCase) *MovieHandler {
 	return &MovieHandler{
-		movieUseCase:   usecase,
+		movieUseCase: usecase,
 	}
 }
 
@@ -101,7 +100,7 @@ func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
 	UserID := r.Context().Value(cookieService.ContextUserIDName)
 
-	result, err := t.movieUseCase.GetMovie(uint64(integerName),isAuth.(bool), UserID.(uint64))
+	result, err := t.movieUseCase.GetMovie(uint64(integerName), isAuth.(bool), UserID.(uint64))
 
 	if err != nil {
 		models.BadBodyHTTPResponse(&w, err)

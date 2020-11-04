@@ -5,22 +5,22 @@ import (
 	authService "backend/internal/app/authserver"
 	cinemaService "backend/internal/app/cinemaserver"
 	cookieService "backend/internal/app/cookieserver"
-	hallService "backend/internal/app/hallServer"
+	hallService "backend/internal/app/hallserver"
 	movieService "backend/internal/app/movieserver"
 	profileService "backend/internal/app/profileserver"
 	scheduleService "backend/internal/app/scheduleserver"
-	"backend/internal/app/ticketService"
+	"backend/internal/app/ticketservice"
 	authConfig "backend/internal/pkg/authentication"
 	cinemaConfig "backend/internal/pkg/cinemaservice"
-	hallConfig "backend/internal/pkg/hallService"
+	hallConfig "backend/internal/pkg/hallservice"
 	"backend/internal/pkg/middleware/cookie"
 	"backend/internal/pkg/middleware/cookie/middleware"
 	"backend/internal/pkg/middleware/cors"
 	"backend/internal/pkg/models"
 	movieConfig "backend/internal/pkg/movieservice"
 	profileConfig "backend/internal/pkg/profile"
-	scheduleConfig"backend/internal/pkg/schedule"
-	ticketConfig "backend/internal/pkg/ticketService"
+	scheduleConfig "backend/internal/pkg/schedule"
+	ticketConfig "backend/internal/pkg/ticketservice"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -33,15 +33,15 @@ import (
 )
 
 type ServerStruct struct {
-	authService    *authService.AuthService
-	cinemaService  *cinemaService.CinemaService
-	movieService   *movieService.MovieService
-	profileService *profileService.ProfileService
-	cookieService  *cookieService.CookieService
+	authService     *authService.AuthService
+	cinemaService   *cinemaService.CinemaService
+	movieService    *movieService.MovieService
+	profileService  *profileService.ProfileService
+	cookieService   *cookieService.CookieService
 	scheduleService *scheduleService.ScheduleService
-	ticketService *ticketService.TicketService
-	hallService *hallService.HallService
-	httpServer     *http.Server
+	ticketService   *ticketservice.TicketService
+	hallService     *hallService.HallService
+	httpServer      *http.Server
 }
 
 func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sql.DB) (*ServerStruct, error) {
@@ -51,37 +51,37 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 		return nil, cookieErr
 	}
 	newProfileService, profileErr := profileService.Start(mainDBConnection)
-	if profileErr != nil{
+	if profileErr != nil {
 		return nil, profileErr
 	}
-	newAuthService, authErr := authService.Start(NewCookieService.CookieRepository,newProfileService.ProfileRepository, mainDBConnection)
-	if authErr != nil{
+	newAuthService, authErr := authService.Start(NewCookieService.CookieRepository, newProfileService.ProfileRepository, mainDBConnection)
+	if authErr != nil {
 		log.Println(authErr)
 		return nil, authErr
 	}
 	newHallService, hallErr := hallService.Start(mainDBConnection)
-	if hallErr != nil{
+	if hallErr != nil {
 		log.Println(models.ErrFooInitFail)
 		return nil, models.ErrFooInitFail
 	}
 	newCinemaService, cinemaErr := cinemaService.Start(mainDBConnection)
 	newMovieService, movieErr := movieService.Start(mainDBConnection, newAuthService.AuthenticationRepository)
 	newScheduleService, scheduleErr := scheduleService.Start(mainDBConnection)
-	newTicketService, ticketErr := ticketService.Start(mainDBConnection, newAuthService.AuthenticationRepository,newHallService.Repository)
+	newTicketService, ticketErr := ticketservice.Start(mainDBConnection, newAuthService.AuthenticationRepository, newHallService.Repository)
 
-	if cinemaErr != nil || movieErr != nil || scheduleErr != nil || ticketErr != nil{
+	if cinemaErr != nil || movieErr != nil || scheduleErr != nil || ticketErr != nil {
 		log.Println(models.ErrFooInitFail)
 		return nil, models.ErrFooInitFail
 	}
 	return &ServerStruct{
-		authService:    newAuthService,
-		cinemaService:  newCinemaService,
-		movieService:   newMovieService,
-		profileService: newProfileService,
-		cookieService:  NewCookieService,
+		authService:     newAuthService,
+		cinemaService:   newCinemaService,
+		movieService:    newMovieService,
+		profileService:  newProfileService,
+		cookieService:   NewCookieService,
 		scheduleService: newScheduleService,
-		ticketService: newTicketService,
-		hallService: newHallService,
+		ticketService:   newTicketService,
+		hallService:     newHallService,
 	}, nil
 }
 

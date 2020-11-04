@@ -19,28 +19,28 @@ type GetCinemaList struct {
 	Page  int
 }
 
-type CinemaHall struct{
-	ID uint64
+type CinemaHall struct {
+	ID          uint64
 	PlaceAmount int
 	PlaceConfig string
 }
 
-type Ticket struct{
-	ID uint64
-	Login string `validate:"required,email"`
-	Schedule Schedule
+type Ticket struct {
+	ID              uint64
+	Login           string `validate:"required,email"`
+	Schedule        Schedule
 	TransactionDate time.Time
-	PlaceField TicketPlace
+	PlaceField      TicketPlace
 }
 
-type TicketInput struct{
-	Login string `validate:"required,email"`
+type TicketInput struct {
+	Login      string `validate:"required,email"`
 	ScheduleID uint64
-	HallID uint64
+	HallID     uint64
 	PlaceField TicketPlace
 }
 
-type TicketPlace struct{
-	Row int
+type TicketPlace struct {
+	Row   int
 	Place int
 }

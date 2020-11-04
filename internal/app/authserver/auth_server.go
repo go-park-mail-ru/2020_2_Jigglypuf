@@ -29,9 +29,7 @@ func configureAuthRouter(authHandler *authDelivery.UserHandler) *httprouter.Rout
 	return authAPIHandler
 }
 
-
-
-func Start(cookieRepository cookie.Repository,profileRepository profile.Repository, connection *sql.DB) (*AuthService, error) {
+func Start(cookieRepository cookie.Repository, profileRepository profile.Repository, connection *sql.DB) (*AuthService, error) {
 	if connection == nil {
 		return nil, models.ErrFooNoDBConnection
 	}

@@ -648,7 +648,7 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ticketService.ScheduleIDName",
+                        "description": "ticketservice.ScheduleIDName",
                         "name": "id",
                         "in": "path",
                         "required": true

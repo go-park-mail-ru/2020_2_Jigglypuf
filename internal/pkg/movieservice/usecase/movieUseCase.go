@@ -7,29 +7,29 @@ import (
 )
 
 type MovieUseCase struct {
-	DBConn movieservice.MovieRepository
+	DBConn         movieservice.MovieRepository
 	UserRepository authentication.AuthRepository
 }
 
 func NewMovieUseCase(rep movieservice.MovieRepository, userRepository authentication.AuthRepository) *MovieUseCase {
 	return &MovieUseCase{
-		DBConn: rep,
+		DBConn:         rep,
 		UserRepository: userRepository,
 	}
 }
 
 func (t *MovieUseCase) GetMovie(id uint64, isAuth bool, userID uint64) (*models.Movie, error) {
 	movie, err := t.DBConn.GetMovie(id)
-	if err != nil{
-		return nil,err
+	if err != nil {
+		return nil, err
 	}
-	if isAuth{
+	if isAuth {
 		rating, ratingErr := t.DBConn.GetRating(userID, id)
-		if ratingErr == nil{
+		if ratingErr == nil {
 			movie.PersonalRating = rating
 		}
 	}
-	return movie,nil
+	return movie, nil
 }
 
 func (t *MovieUseCase) GetMovieList(limit, page int) (*[]models.MovieList, error) {
@@ -46,7 +46,7 @@ func (t *MovieUseCase) UpdateMovie(movie *models.Movie) error {
 
 func (t *MovieUseCase) RateMovie(userID uint64, id uint64, rating int64) error {
 	reqUser, userErr := t.UserRepository.GetUserByID(userID)
-	if userErr != nil{
+	if userErr != nil {
 		return models.ErrFooNoAuthorization
 	}
 	personalRatingErr := t.DBConn.RateMovie(reqUser, id, rating)
