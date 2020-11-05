@@ -859,6 +859,9 @@
                 "avatarPath": {
                     "type": "string"
                 },
+                "login": {
+                    "$ref": "#/definitions/models.User"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -980,6 +983,20 @@
                 },
                 "row": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "required": [
+                "login"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "login": {
+                    "type": "string"
                 }
             }
         }

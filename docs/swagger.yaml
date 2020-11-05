@@ -91,6 +91,8 @@ definitions:
     properties:
       avatarPath:
         type: string
+      login:
+        $ref: '#/definitions/models.User'
       name:
         type: string
       surname:
@@ -170,6 +172,15 @@ definitions:
         type: integer
       row:
         type: integer
+    type: object
+  models.User:
+    properties:
+      id:
+        type: integer
+      login:
+        type: string
+    required:
+    - login
     type: object
 host: https://cinemascope.space
 info:
