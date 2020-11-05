@@ -2,16 +2,18 @@ package models
 
 type User struct {
 	ID       uint64
-	Username string `json:"-"`
+	Login    string `json:"-" validate:"required,email"`
 	Password string `json:"-"`
 }
 
 type AuthInput struct {
-	Login    string
+	Login    string `validate:"required,email"`
 	Password string
 }
 
 type RegistrationInput struct {
-	Login    string
+	Login    string `validate:"required,email"`
 	Password string
+	Name     string
+	Surname  string
 }

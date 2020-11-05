@@ -3,7 +3,6 @@ package repository
 import (
 	"backend/internal/pkg/models"
 	"database/sql"
-	"errors"
 	"log"
 )
 
@@ -22,28 +21,28 @@ func (t *AuthSQLRepository) CreateUser(user *models.User) error {
 	if t.DBConn == nil {
 		return models.ErrFooNoDBConnection
 	}
-	ScanErr := t.DBConn.QueryRow("INSERT INTO users (username, password) VALUES ($1,$2) RETURNING ID", user.Username, user.Password).Scan(&user.ID)
+	ScanErr := t.DBConn.QueryRow("INSERT INTO users (Login, password) VALUES ($1,$2) RETURNING ID", user.Login, user.Password).Scan(&user.ID)
 	if ScanErr != nil {
 		log.Println(ScanErr)
-		return errors.New("service not available")
+		return models.ErrFooInternalDBErr
 	}
 	return nil
 }
 
-func (t *AuthSQLRepository) GetUser(username string, hashPassword string) (*models.User, error) {
+func (t *AuthSQLRepository) GetUser(login string) (*models.User, error) {
 	if t.DBConn == nil {
 		return nil, models.ErrFooNoDBConnection
 	}
 
 	requiredUser := new(models.User)
-	result := t.DBConn.QueryRow("SELECT id, username, password FROM users WHERE username = $1 AND password = $2", username, hashPassword)
+	result := t.DBConn.QueryRow("SELECT id, Login, password FROM users WHERE Login = $1", login)
 	rowsErr := result.Err()
 	if rowsErr != nil {
 		log.Println(rowsErr)
 		return nil, rowsErr
 	}
 
-	resultErr := result.Scan(&requiredUser.ID, &requiredUser.Username, &requiredUser.Password)
+	resultErr := result.Scan(&requiredUser.ID, &requiredUser.Login, &requiredUser.Password)
 	if resultErr != nil {
 		log.Println(resultErr)
 		return nil, resultErr
@@ -58,7 +57,7 @@ func (t *AuthSQLRepository) GetUserByID(userID uint64) (*models.User, error) {
 	}
 
 	requiredUser := new(models.User)
-	result := t.DBConn.QueryRow("SELECT id, username, password FROM users WHERE id = $1", userID)
+	result := t.DBConn.QueryRow("SELECT id, Login, password FROM users WHERE id = $1", userID)
 
 	rowsErr := result.Err()
 	if rowsErr != nil {
@@ -66,7 +65,7 @@ func (t *AuthSQLRepository) GetUserByID(userID uint64) (*models.User, error) {
 		return nil, rowsErr
 	}
 
-	resultErr := result.Scan(&requiredUser.ID, &requiredUser.Username, &requiredUser.Password)
+	resultErr := result.Scan(&requiredUser.ID, &requiredUser.Login, &requiredUser.Password)
 	if resultErr != nil {
 		log.Println(resultErr)
 		return nil, resultErr

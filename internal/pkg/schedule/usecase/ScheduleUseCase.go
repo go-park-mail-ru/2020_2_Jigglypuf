@@ -1,0 +1,37 @@
+package usecase
+
+import (
+	"backend/internal/pkg/models"
+	"backend/internal/pkg/schedule"
+	"github.com/go-playground/validator/v10"
+	"strconv"
+	"time"
+)
+
+type ScheduleUseCase struct {
+	validator          *validator.Validate
+	ScheduleRepository schedule.TimeTableRepository
+}
+
+func NewTimeTableUseCase(repository schedule.TimeTableRepository) *ScheduleUseCase {
+	return &ScheduleUseCase{
+		validator.New(),
+		repository,
+	}
+}
+
+func (t *ScheduleUseCase) GetMovieSchedule(movieID, cinemaID string, date string) (*[]models.Schedule, error) {
+	castedMovieID, castErr := strconv.Atoi(movieID)
+	if castErr != nil {
+		return nil, models.ErrFooCastErr
+	}
+	_, castErr = time.Parse(schedule.TimeStandard, date)
+	if castErr != nil {
+		date = time.Now().Format(schedule.TimeStandard)
+	}
+	castedCinemaID, castErr := strconv.Atoi(cinemaID)
+	if castErr != nil {
+		return t.ScheduleRepository.GetMovieSchedule(uint64(castedMovieID), date)
+	}
+	return t.ScheduleRepository.GetMovieCinemaSchedule(uint64(castedMovieID), uint64(castedCinemaID), date)
+}

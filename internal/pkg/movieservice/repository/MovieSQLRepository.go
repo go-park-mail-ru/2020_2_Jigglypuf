@@ -62,7 +62,7 @@ func (t *MovieSQLRepository) GetMovie(id uint64) (*models.Movie, error) {
 	return resultMovie, nil
 }
 
-func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.Movie, error) {
+func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.MovieList, error) {
 	if t.DBConnection == nil {
 		return nil, models.ErrFooNoDBConnection
 	}
@@ -79,9 +79,9 @@ func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.Movie, err
 		log.Println(rowsErr)
 		return nil, rowsErr
 	}
-	movieList := make([]models.Movie, 0)
+	movieList := make([]models.MovieList, 0)
 	for resultSQL.Next() {
-		resultMovie := new(models.Movie)
+		resultMovie := new(models.MovieList)
 		ScanErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description,
 			&resultMovie.Genre, &resultMovie.Duration,
 			&resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear,
@@ -112,12 +112,12 @@ func (t *MovieSQLRepository) RateMovie(user *models.User, id uint64, rating int6
 	return nil
 }
 
-func (t *MovieSQLRepository) GetRating(user *models.User, id uint64) (int64, error) {
+func (t *MovieSQLRepository) GetRating(userID uint64, movieID uint64) (int64, error) {
 	if t.DBConnection == nil {
 		return 0, models.ErrFooNoDBConnection
 	}
 
-	resultSQL := t.DBConnection.QueryRow("SELECT movie_rating FROM rating_history WHERE user_id = $1", user.ID)
+	resultSQL := t.DBConnection.QueryRow("SELECT movie_rating FROM rating_history WHERE user_id = $1 AND movie_id = $2", userID, movieID)
 
 	rowsErr := resultSQL.Err()
 	if rowsErr != nil {
@@ -160,12 +160,12 @@ func (t *MovieSQLRepository) UpdateMovieRating(movieID uint64, ratingScore int64
 	return RatingDBErr
 }
 
-func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int) (*[]models.Movie, error) {
+func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int) (*[]models.MovieList, error) {
 	if t.DBConnection == nil {
 		return nil, models.ErrFooNoDBConnection
 	}
 
-	DBRows, DBErr := t.DBConnection.Query("SELECT DISTINCT v1.Movie_id,v2.MovieName,v2.description,v2.rating,v2.rating_count,v2.pathtoavatar FROM movies_in_cinema v1 JOIN movie v2 on(v1.movie_id = v2.id) WHERE rental_start < now() AND rental_end > now()")
+	DBRows, DBErr := t.DBConnection.Query("SELECT DISTINCT v1.Movie_id,v2.MovieName, v2.Description,v2.Genre,v2.Duration,v2.Producer,v2.Country,v2.Release_Year,v2.Age_group, v2.Rating, v2.Rating_count, v2.PathToAvatar FROM schedule v1 JOIN movie v2 on(v1.movie_id = v2.id) WHERE v1.Premiere_time > now()")
 	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr
@@ -182,15 +182,19 @@ func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int) (*[]models.Movie
 		}
 	}()
 
-	movieList := make([]models.Movie, 0)
+	movieList := make([]models.MovieList, 0)
+	resultMovie := new(models.MovieList)
 	for DBRows.Next() {
-		movie := new(models.Movie)
-		ScanErr := DBRows.Scan(&movie.ID, &movie.Name, &movie.Description, &movie.Rating, &movie.RatingCount, &movie.PathToAvatar)
+		ScanErr := DBRows.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description,
+			&resultMovie.Genre, &resultMovie.Duration,
+			&resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear,
+			&resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount,
+			&resultMovie.PathToAvatar)
 		if ScanErr != nil {
 			log.Println(ScanErr)
 			return nil, ScanErr
 		}
-		movieList = append(movieList, *movie)
+		movieList = append(movieList, *resultMovie)
 	}
 
 	return &movieList, nil

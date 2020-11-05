@@ -7,9 +7,9 @@ import (
 	authUseCase "backend/internal/pkg/authentication/usecase"
 	"backend/internal/pkg/middleware/cookie"
 	"backend/internal/pkg/models"
+	"backend/internal/pkg/profile"
 	"database/sql"
 	"github.com/julienschmidt/httprouter"
-	"sync"
 )
 
 type AuthService struct {
@@ -29,27 +29,12 @@ func configureAuthRouter(authHandler *authDelivery.UserHandler) *httprouter.Rout
 	return authAPIHandler
 }
 
-func StartMock(mutex *sync.RWMutex, cookieRepository cookie.Repository) *AuthService {
-	authrep := authRepository.NewUserRepository(mutex)
-	authCase := authUseCase.NewUserUseCase(authrep, cookieRepository, authConfig.Salt)
-	authHandler := authDelivery.NewUserHandler(authCase)
-
-	router := configureAuthRouter(authHandler)
-
-	return &AuthService{
-		authHandler,
-		authCase,
-		authrep,
-		router,
-	}
-}
-
-func Start(cookieRepository cookie.Repository, connection *sql.DB) (*AuthService, error) {
+func Start(cookieRepository cookie.Repository, profileRepository profile.Repository, connection *sql.DB) (*AuthService, error) {
 	if connection == nil {
 		return nil, models.ErrFooNoDBConnection
 	}
 	authRep := authRepository.NewAuthSQLRepository(connection)
-	authCase := authUseCase.NewUserUseCase(authRep, cookieRepository, authConfig.Salt)
+	authCase := authUseCase.NewUserUseCase(authRep, profileRepository, cookieRepository, authConfig.Salt)
 	authHandler := authDelivery.NewUserHandler(authCase)
 
 	router := configureAuthRouter(authHandler)

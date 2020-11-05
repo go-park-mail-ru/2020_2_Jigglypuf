@@ -11,7 +11,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
-	"time"
 )
 
 type ProfileHandler struct {
@@ -37,7 +36,8 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 	}
 
 	defer image.Close()
-	fileName := handler.Filename + time.Now().String()
+	uniqueName := models.RandStringRunes(32)
+	fileName := uniqueName
 	f, saveErr := os.OpenFile(profile.SavingPath+fileName, os.O_WRONLY|os.O_CREATE, 0666)
 	if saveErr != nil {
 		return "", SavingError{}
@@ -132,19 +132,12 @@ func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request, p
 		return
 	}
 
-	profileUpdate, profileError := t.useCase.GetProfileViaID(profileUserID.(uint64))
-
-	if profileError != nil {
-		models.BadBodyHTTPResponse(&w, profileError)
-		return
-	}
-
 	avatarPath, savingErr := SaveAvatarImage(r.FormFile(profile.AvatarFormName))
 	if savingErr != nil {
 		avatarPath = ""
 	}
 
-	err := t.useCase.UpdateProfile(profileUpdate, r.FormValue(profile.NameFormName), r.FormValue(profile.SurnameFormName), avatarPath)
+	err := t.useCase.UpdateProfile(profileUserID.(uint64), r.FormValue(profile.NameFormName), r.FormValue(profile.SurnameFormName), avatarPath)
 
 	if err != nil {
 		models.BadBodyHTTPResponse(&w, err)

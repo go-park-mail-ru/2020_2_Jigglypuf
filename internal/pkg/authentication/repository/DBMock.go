@@ -34,7 +34,7 @@ func (t *AuthRepository) CreateUser(user *models.User) error {
 	t.Mu.RLock()
 	{
 		for _, val := range t.Users {
-			if val.Username == user.Username {
+			if val.Login == user.Login {
 				success = false
 				break
 			}
@@ -60,13 +60,13 @@ func (t *AuthRepository) CreateUser(user *models.User) error {
 	return nil
 }
 
-func (t *AuthRepository) GetUser(username, password string) (*models.User, error) {
+func (t *AuthRepository) GetUser(login, password string) (*models.User, error) {
 	user := new(models.User)
 	success := false
 
 	t.Mu.RLock()
 	for _, val := range t.Users {
-		if val.Username == username && val.Password == password {
+		if val.Login == login && val.Password == password {
 			*user = val
 			success = true
 			break

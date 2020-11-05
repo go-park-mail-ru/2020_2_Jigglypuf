@@ -17,10 +17,10 @@ services:
    - ~/data/tarantool:/var/lib/tarantool
  app:
   image: felixgreen/cinema_interfaceservice_image
+  restart: on-failure
   ports:
    - 8080:8080
   volumes:
-   - ./:/app
    - ../media:/media
  postgresql:
   image: postgres

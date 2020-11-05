@@ -182,7 +182,7 @@ func (t *MovieRepository) RateMovie(user *models.User, id uint64, rating int64) 
 	success := true
 	t.mutex.RLock()
 	{
-		for _, val := range t.Ratings[user.Username] {
+		for _, val := range t.Ratings[user.Login] {
 			if val.MovieRating.Name == movie.Name {
 				success = false
 			}
@@ -196,7 +196,7 @@ func (t *MovieRepository) RateMovie(user *models.User, id uint64, rating int64) 
 
 	t.mutex.Lock()
 	{
-		t.Ratings[user.Username] = append(t.Ratings[user.Username], models.RatingSet{
+		t.Ratings[user.Login] = append(t.Ratings[user.Login], models.RatingSet{
 			MovieRating: movie,
 			Rating:      rating,
 		})
@@ -215,7 +215,7 @@ func (t *MovieRepository) GetRating(user *models.User, id uint64) (int64, error)
 	var result int64
 	t.mutex.RLock()
 	{
-		for _, val := range t.Ratings[user.Username] {
+		for _, val := range t.Ratings[user.Login] {
 			if val.MovieRating.Name == movie.Name {
 				success = true
 				result = val.Rating

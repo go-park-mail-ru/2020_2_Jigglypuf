@@ -1,10 +1,10 @@
-
+SET timezone ='+3';
 CREATE DATABASE BackendCinemaInterface;
 /* users table */
 CREATE TABLE users
 (
     ID serial NOT NULL PRIMARY KEY,
-    Username VARCHAR(32) NOT NULL UNIQUE ,
+    Login VARCHAR(32) NOT NULL UNIQUE ,
     Password VARCHAR(64) NOT NULL
 );
 
@@ -25,8 +25,7 @@ CREATE TABLE cinema
     ID serial NOT NULL PRIMARY KEY,
     CinemaName VARCHAR(32) NOT NULL,
     Address VARCHAR(64) NOT NULL,
-    Hall_count integer NOT NULL,
-    Author_ID integer REFERENCES users (ID)
+    Hall_count integer NOT NULL
 );
 
 /* movie table */
@@ -57,22 +56,37 @@ CREATE TABLE rating_history
     movie_rating integer NOT NULL
 );
 
-/* movies in cinema */
-
-CREATE TABLE movies_in_cinema
+/* cinema halls structure */
+CREATE TABLE cinema_hall
 (
     ID serial NOT NULL UNIQUE PRIMARY KEY,
-    Movie_id INTEGER NOT NULL REFERENCES movie (ID),
-    Cinema_id INTEGER NOT NULL REFERENCES cinema (ID),
-    Rental_start DATE NOT NULL,
-    Rental_end DATE NOT NULL
+    Place_amount integer not null,
+    Hall_params jsonb not null
 );
-/* TODO cinema halls structure */
 
+/* schedule table */
 
-/* profile ticket purchases */
+CREATE TABLE schedule
+(
+    ID serial NOT NULL UNIQUE PRIMARY KEY,
+    Movie_ID INTEGER NOT NULL REFERENCES movie (ID),
+    Cinema_ID INTEGER NOT NULL REFERENCES cinema (ID),
+    Hall_ID INTEGER NOT NULL REFERENCES cinema_hall (ID),
+    Premiere_time timestamptz NOT NULL,
+    UNIQUE(Cinema_ID,Hall_ID,Premiere_time)
+);
 
-
+/* tickets */
+CREATE TABLE ticket
+(
+    ID serial not null unique primary key,
+    User_login VARCHAR(32) not null references users (Login),
+    schedule_id integer not null references schedule (ID),
+    transaction_date timestamp default now(),
+    row integer not null,
+    place integer not null,
+    unique(schedule_id,row,place)
+);
 
 INSERT INTO cinema (CinemaName, Address, Hall_count)
 VALUES  ('CinemaScope1','Москва, Первая улица, д.1',1),
@@ -91,18 +105,25 @@ VALUES  ('Гренландия','Greenland description','Tragedy',112,'Tarantino
         ('После','После description','Fantastic',180,'Rukko','Spain',2020,18,'/media/posle.jpg'),
         ('Стрельцов','Стрельцов description','Drama',120,'Васильев','Russia',2008,18,'/media/strelcov.jpg');
 
-INSERT INTO movies_in_cinema (Movie_id, Cinema_id, Rental_start, Rental_end)
-VALUES (1,2,'2020-09-03','2020-11-21'),
-       (1,3,'2020-09-03','2020-11-03'),
-       (1,4,'2020-05-07','2020-11-29'),
-       (1,1,'2020-09-03','2020-11-15'),
-       (2,2,'2020-09-03','2020-11-03'),
-       (4,3,'2020-09-03','2020-11-29'),
-       (3,4,'2020-09-03','2020-11-21'),
-       (5,1,'2020-09-03','2020-11-30'),
-       (8,2,'2020-11-03','2020-12-18'),
-       (7,3,'2020-09-03','2020-12-31'),
-       (3,1,'2020-09-03','2020-11-28'),
-       (2,1,'2020-09-03','2020-12-29'),
-       (6,1,'2020-05-11','2020-06-07'),
-       (7,1,'2020-09-03','2020-11-29')
+INSERT INTO cinema_hall (Place_amount,Hall_params)
+VALUES (15,'{"levels":[{"place":1,"row":1},{"place":2,"row":1}]}'),
+       (10,'{"levels":[{"place":1,"row":2}]}');
+
+INSERT INTO schedule(Movie_ID, Cinema_ID, Hall_ID, Premiere_time)
+VALUES (1,2,2,now() + interval '1 hour'),
+       (3,3,1,now() + interval '2 days'),
+       (2,2,1,now() + interval '30 days'),
+       (4,3,2,now() + interval '3 days'),
+       (6,4,1,now() + interval '1 day 2 hours'),
+       (5,4,2,now() + interval '2 hours 30 minutes'),
+       (3,1,2,now() + interval '1 hour'),
+       (2,1,1,now() + interval '1 day'),
+       (5,1,1,now() + interval '3 days'),
+       (1,2,2,now() + interval '1 month'),
+       (3,3,1,now() + interval '2 hours'),
+       (2,2,1,now() + interval '20 days'),
+       (4,3,2,now() + interval '1 day'),
+       (6,4,1,now() + interval '3 days 2 hours'),
+       (5,4,2,now() + interval '3 hours 30 minutes'),
+       (3,1,2,now() + interval '10 hours'),
+       (7,1,1,now() + interval '5 days');
