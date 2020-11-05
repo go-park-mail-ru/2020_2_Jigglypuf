@@ -2,7 +2,7 @@ package models
 
 type User struct {
 	ID       uint64
-	Login    string `json:"-" validate:"required,email"`
+	Login    string `validate:"required,email"`
 	Password string `json:"-"`
 }
 
