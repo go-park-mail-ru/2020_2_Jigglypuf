@@ -39,7 +39,7 @@ func (t *ProfileRepository) CreateProfile(profile *models.Profile) error {
 	t.Mu.RLock()
 	{
 		for _, value := range t.Profiles {
-			if value.Login.Login == profile.Login.Login {
+			if value.UserCredentials.Login == profile.UserCredentials.Login {
 				success = false
 			}
 		}
@@ -70,7 +70,7 @@ func (t *ProfileRepository) GetProfile(login *string) (*models.Profile, error) {
 	t.Mu.RLock()
 	{
 		for _, value := range t.Profiles {
-			if value.Login.Login == *login {
+			if value.UserCredentials.Login == *login {
 				*profile = value
 				success = true
 				break
@@ -97,7 +97,7 @@ func (t *ProfileRepository) GetProfileViaID(userID uint64) (*models.Profile, err
 	t.Mu.RLock()
 	{
 		for _, value := range t.Profiles {
-			if value.Login.Login == user.Login {
+			if value.UserCredentials.Login == user.Login {
 				*profile = value
 				success = true
 				break
@@ -107,7 +107,7 @@ func (t *ProfileRepository) GetProfileViaID(userID uint64) (*models.Profile, err
 	t.Mu.RUnlock()
 
 	if !success {
-		profile.Login = user
+		profile.UserCredentials = user
 		t.Mu.Lock()
 		{
 			t.Profiles = append(t.Profiles, *profile)
@@ -120,7 +120,7 @@ func (t *ProfileRepository) GetProfileViaID(userID uint64) (*models.Profile, err
 
 // TODO UpdateCredentials(profile *models.Profile) error
 func (t *ProfileRepository) UpdateCredentials(profile *models.Profile) error {
-	if _, err := t.GetProfile(&profile.Login.Login); err != nil {
+	if _, err := t.GetProfile(&profile.UserCredentials.Login); err != nil {
 		return ProfileNotFound{}
 	}
 
@@ -128,7 +128,7 @@ func (t *ProfileRepository) UpdateCredentials(profile *models.Profile) error {
 }
 
 func (t *ProfileRepository) UpdateProfile(profile *models.Profile, name, surname, avatarPath string) error {
-	if _, err := t.GetProfile(&profile.Login.Login); err != nil {
+	if _, err := t.GetProfile(&profile.UserCredentials.Login); err != nil {
 		return ProfileNotFound{}
 	}
 
@@ -148,7 +148,7 @@ func (t *ProfileRepository) UpdateProfile(profile *models.Profile, name, surname
 	t.Mu.RLock()
 	{
 		for index, val := range t.Profiles {
-			if val.Login.Login == profile.Login.Login {
+			if val.UserCredentials.Login == profile.UserCredentials.Login {
 				profileIndex = index
 			}
 		}

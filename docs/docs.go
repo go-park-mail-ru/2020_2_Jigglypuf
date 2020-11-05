@@ -874,14 +874,14 @@ var doc = `{
                 "avatarPath": {
                     "type": "string"
                 },
-                "login": {
-                    "$ref": "#/definitions/models.User"
-                },
                 "name": {
                     "type": "string"
                 },
                 "surname": {
                     "type": "string"
+                },
+                "userCredentials": {
+                    "$ref": "#/definitions/models.User"
                 }
             }
         },
@@ -1007,9 +1007,6 @@ var doc = `{
                 "login"
             ],
             "properties": {
-                "id": {
-                    "type": "integer"
-                },
                 "login": {
                     "type": "string"
                 }

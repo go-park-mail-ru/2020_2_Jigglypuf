@@ -859,14 +859,14 @@
                 "avatarPath": {
                     "type": "string"
                 },
-                "login": {
-                    "$ref": "#/definitions/models.User"
-                },
                 "name": {
                     "type": "string"
                 },
                 "surname": {
                     "type": "string"
+                },
+                "userCredentials": {
+                    "$ref": "#/definitions/models.User"
                 }
             }
         },
@@ -992,9 +992,6 @@
                 "login"
             ],
             "properties": {
-                "id": {
-                    "type": "integer"
-                },
                 "login": {
                     "type": "string"
                 }

@@ -22,7 +22,7 @@ func (t *ProfileSQLRepository) CreateProfile(profile *models.Profile) error {
 	}
 
 	_, DBErr := t.DBConnection.Exec("INSERT INTO profile(user_id,ProfileName,ProfileSurname,AvatarPath) VALUES ($1,$2,$3,$4)",
-		profile.Login.ID, profile.Name, profile.Surname, profile.AvatarPath)
+		profile.UserCredentials.ID, profile.Name, profile.Surname, profile.AvatarPath)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return DBErr
@@ -36,7 +36,7 @@ func (t *ProfileSQLRepository) DeleteProfile(profile *models.Profile) error {
 		return models.ErrFooNoDBConnection
 	}
 
-	_, DBErr := t.DBConnection.Exec("DELETE FROM profile WHERE user_id = $1", profile.Login.ID)
+	_, DBErr := t.DBConnection.Exec("DELETE FROM profile WHERE user_id = $1", profile.UserCredentials.ID)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return DBErr
@@ -51,7 +51,7 @@ func (t *ProfileSQLRepository) UpdateProfile(profile *models.Profile, name, surn
 	}
 
 	_, DBErr := t.DBConnection.Exec("UPDATE profile SET ProfileName = $1, ProfileSurname = $2, AvatarPath = $3 WHERE user_id = $4",
-		name, surname, avatarPath, profile.Login.ID)
+		name, surname, avatarPath, profile.UserCredentials.ID)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return DBErr
@@ -72,8 +72,8 @@ func (t *ProfileSQLRepository) GetProfileViaID(userID uint64) (*models.Profile, 
 	}
 
 	reqProfile := new(models.Profile)
-	reqProfile.Login = new(models.User)
-	ScanErr := resultSQL.Scan(&reqProfile.Name, &reqProfile.Surname, &reqProfile.AvatarPath, &reqProfile.Login.ID)
+	reqProfile.UserCredentials = new(models.User)
+	ScanErr := resultSQL.Scan(&reqProfile.Name, &reqProfile.Surname, &reqProfile.AvatarPath, &reqProfile.UserCredentials.ID)
 	if ScanErr != nil {
 		log.Println(ScanErr)
 		return nil, ScanErr
