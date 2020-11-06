@@ -6,7 +6,7 @@ import (
 )
 
 func setupCORS(w *http.ResponseWriter, req *http.Request) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "cinemascope.space")
+	(*w).Header().Set("Access-Control-Allow-Origin", req.Header.Get("Origin"))
 	log.Println(req.Header.Get("Origin"))
 	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT")
 	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
