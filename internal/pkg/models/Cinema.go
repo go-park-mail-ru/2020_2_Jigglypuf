@@ -7,6 +7,7 @@ type Cinema struct {
 	Name      string
 	Address   string
 	HallCount int
+	PathToAvatar string
 	AuthorID  uint64
 }
 

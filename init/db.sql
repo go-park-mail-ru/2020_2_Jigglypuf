@@ -25,7 +25,8 @@ CREATE TABLE cinema
     ID serial NOT NULL PRIMARY KEY,
     CinemaName VARCHAR(32) NOT NULL,
     Address VARCHAR(64) NOT NULL,
-    Hall_count integer NOT NULL
+    Hall_count integer NOT NULL,
+    PathToAvatar varchar(64) default '/media/cinemaDefault.jpg'
 );
 
 /* movie table */

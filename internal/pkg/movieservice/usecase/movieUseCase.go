@@ -33,6 +33,10 @@ func (t *MovieUseCase) GetMovie(id uint64, isAuth bool, userID uint64) (*models.
 }
 
 func (t *MovieUseCase) GetMovieList(limit, page int) (*[]models.MovieList, error) {
+	page -= 1
+	if page < 0 || limit < 0{
+		return nil,models.ErrFooIncorrectInputInfo
+	}
 	return t.DBConn.GetMovieList(limit, page)
 }
 
@@ -63,5 +67,9 @@ func (t *MovieUseCase) GetRating(user *models.User, id uint64) (int64, error) {
 }
 
 func (t *MovieUseCase) GetMoviesInCinema(limit, page int) (*[]models.MovieList, error) {
+	page -= 1
+	if page < 0 || limit < 0{
+		return nil,models.ErrFooIncorrectInputInfo
+	}
 	return t.DBConn.GetMoviesInCinema(limit, page)
 }
