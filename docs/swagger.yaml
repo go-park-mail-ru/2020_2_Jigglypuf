@@ -35,6 +35,8 @@ definitions:
     type: object
   models.Movie:
     properties:
+      actors:
+        type: string
       ageGroup:
         type: integer
       country:
@@ -50,6 +52,8 @@ definitions:
       name:
         type: string
       pathToAvatar:
+        type: string
+      pathToSliderAvatar:
         type: string
       personalRating:
         type: integer
@@ -64,6 +68,8 @@ definitions:
     type: object
   models.MovieList:
     properties:
+      actors:
+        type: string
       ageGroup:
         type: integer
       country:
@@ -79,6 +85,8 @@ definitions:
       name:
         type: string
       pathToAvatar:
+        type: string
+      pathToSliderAvatar:
         type: string
       producer:
         type: string

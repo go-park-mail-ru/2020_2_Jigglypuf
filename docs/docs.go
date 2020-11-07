@@ -789,6 +789,9 @@ var doc = `{
         "models.Movie": {
             "type": "object",
             "properties": {
+                "actors": {
+                    "type": "string"
+                },
                 "ageGroup": {
                     "type": "integer"
                 },
@@ -811,6 +814,9 @@ var doc = `{
                     "type": "string"
                 },
                 "pathToAvatar": {
+                    "type": "string"
+                },
+                "pathToSliderAvatar": {
                     "type": "string"
                 },
                 "personalRating": {
@@ -833,6 +839,9 @@ var doc = `{
         "models.MovieList": {
             "type": "object",
             "properties": {
+                "actors": {
+                    "type": "string"
+                },
                 "ageGroup": {
                     "type": "integer"
                 },
@@ -855,6 +864,9 @@ var doc = `{
                     "type": "string"
                 },
                 "pathToAvatar": {
+                    "type": "string"
+                },
+                "pathToSliderAvatar": {
                     "type": "string"
                 },
                 "producer": {

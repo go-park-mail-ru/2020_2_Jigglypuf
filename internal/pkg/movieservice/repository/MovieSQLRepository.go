@@ -46,14 +46,15 @@ func (t *MovieSQLRepository) GetMovie(id uint64) (*models.Movie, error) {
 		return nil, models.ErrFooNoDBConnection
 	}
 
-	resultSQL := t.DBConnection.QueryRow("SELECT ID, MovieName, Description,Genre,Duration,Producer,Country,Release_Year,Age_group, Rating, Rating_count, PathToAvatar FROM movie WHERE ID = $1", id)
+	resultSQL := t.DBConnection.QueryRow("SELECT ID, MovieName, Description,Genre,Duration,Producer,Country,Release_Year,Age_group, Rating, Rating_count, Actors,PathToAvatar,pathToSliderAvatar FROM movie WHERE ID = $1", id)
 	rowsErr := resultSQL.Err()
 	if rowsErr != nil {
 		log.Println(rowsErr)
 		return nil, rowsErr
 	}
 	resultMovie := new(models.Movie)
-	resultErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description, &resultMovie.Genre, &resultMovie.Duration, &resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear, &resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount, &resultMovie.PathToAvatar)
+	resultErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description, &resultMovie.Genre, &resultMovie.Duration, &resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear, &resultMovie.AgeGroup, &resultMovie.Rating,
+		&resultMovie.RatingCount,&resultMovie.Actors, &resultMovie.PathToAvatar,&resultMovie.PathToSliderAvatar)
 	if resultErr != nil {
 		log.Println(resultErr)
 		return nil, resultErr
@@ -67,7 +68,7 @@ func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.MovieList,
 		return nil, models.ErrFooNoDBConnection
 	}
 
-	resultSQL, DBErr := t.DBConnection.Query("SELECT ID, MovieName, Description,Genre,Duration,Producer,Country,Release_Year,Age_group, Rating, Rating_count, PathToAvatar FROM movie LIMIT $1 OFFSET $2", limit, page*limit)
+	resultSQL, DBErr := t.DBConnection.Query("SELECT ID, MovieName, Description,Genre,Duration,Producer,Country,Release_Year,Age_group, Rating, Rating_count, Actors,PathToAvatar,pathToSliderAvatar FROM movie LIMIT $1 OFFSET $2", limit, page*limit)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr
@@ -85,8 +86,8 @@ func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.MovieList,
 		ScanErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description,
 			&resultMovie.Genre, &resultMovie.Duration,
 			&resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear,
-			&resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount,
-			&resultMovie.PathToAvatar)
+			&resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount,&resultMovie.Actors,
+			&resultMovie.PathToAvatar,&resultMovie.PathToSliderAvatar)
 		if ScanErr != nil {
 			log.Println(ScanErr)
 			return nil, ScanErr
@@ -165,7 +166,7 @@ func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int) (*[]models.Movie
 		return nil, models.ErrFooNoDBConnection
 	}
 
-	DBRows, DBErr := t.DBConnection.Query("SELECT DISTINCT v1.Movie_id,v2.MovieName, v2.Description,v2.Genre,v2.Duration,v2.Producer,v2.Country,v2.Release_Year,v2.Age_group, v2.Rating, v2.Rating_count, v2.PathToAvatar FROM schedule v1 JOIN movie v2 on(v1.movie_id = v2.id) WHERE v1.Premiere_time > now()")
+	DBRows, DBErr := t.DBConnection.Query("SELECT DISTINCT v1.Movie_id,v2.MovieName, v2.Description,v2.Genre,v2.Duration,v2.Producer,v2.Country,v2.Release_Year,v2.Age_group, v2.Rating, v2.Rating_count, v2.PathToAvatar,v2.Actors,v2.pathToSliderAvatar FROM schedule v1 JOIN movie v2 on(v1.movie_id = v2.id) WHERE v1.Premiere_time > now()")
 	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr
@@ -189,7 +190,7 @@ func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int) (*[]models.Movie
 			&resultMovie.Genre, &resultMovie.Duration,
 			&resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear,
 			&resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount,
-			&resultMovie.PathToAvatar)
+			&resultMovie.PathToAvatar, &resultMovie.Actors, &resultMovie.PathToSliderAvatar)
 		if ScanErr != nil {
 			log.Println(ScanErr)
 			return nil, ScanErr

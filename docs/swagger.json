@@ -774,6 +774,9 @@
         "models.Movie": {
             "type": "object",
             "properties": {
+                "actors": {
+                    "type": "string"
+                },
                 "ageGroup": {
                     "type": "integer"
                 },
@@ -796,6 +799,9 @@
                     "type": "string"
                 },
                 "pathToAvatar": {
+                    "type": "string"
+                },
+                "pathToSliderAvatar": {
                     "type": "string"
                 },
                 "personalRating": {
@@ -818,6 +824,9 @@
         "models.MovieList": {
             "type": "object",
             "properties": {
+                "actors": {
+                    "type": "string"
+                },
                 "ageGroup": {
                     "type": "integer"
                 },
@@ -840,6 +849,9 @@
                     "type": "string"
                 },
                 "pathToAvatar": {
+                    "type": "string"
+                },
+                "pathToSliderAvatar": {
                     "type": "string"
                 },
                 "producer": {
