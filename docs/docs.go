@@ -766,6 +766,9 @@ var doc = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "pathToAvatar": {
+                    "type": "string"
                 }
             }
         },

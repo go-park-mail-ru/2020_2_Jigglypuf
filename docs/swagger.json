@@ -751,6 +751,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "pathToAvatar": {
+                    "type": "string"
                 }
             }
         },
