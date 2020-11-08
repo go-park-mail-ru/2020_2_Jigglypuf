@@ -20,5 +20,4 @@ var(
 
 func TestSignUp(t *testing.T){
 	TestingStruct.GoMockController = gomock.NewController(t)
-
 }

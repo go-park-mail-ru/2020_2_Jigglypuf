@@ -1,4 +1,4 @@
-//go:generate mockgen -source useCase.go -destination mock/ProfileRep_mock.go -package mock
+//go:generate mockgen -source ProfileUseCase.go -destination mock/ProfileRep_mock.go -package mock
 package profile
 
 import (

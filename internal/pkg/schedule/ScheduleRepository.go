@@ -1,4 +1,4 @@
-//go:generate mockgen -source repository.go -destination mock/ScheduleRep_mock.go -package mock
+//go:generate mockgen -source ScheduleRepository.go -destination mock/ScheduleRep_mock.go -package mock
 package schedule
 
 import (

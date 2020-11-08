@@ -1,4 +1,4 @@
-//go:generate mockgen -source repository.go -destination mock/CinemaRep_mock.go -package mock
+//go:generate mockgen -source CinemaRepository.go -destination mock/CinemaRep_mock.go -package mock
 package cinemaservice
 
 import (

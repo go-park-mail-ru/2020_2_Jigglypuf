@@ -8,7 +8,7 @@ require (
 	github.com/go-openapi/spec v0.19.11 // indirect
 	github.com/go-openapi/swag v0.19.11 // indirect
 	github.com/go-playground/validator/v10 v10.4.1
-	github.com/golang/mock v1.4.4 // indirect
+	github.com/golang/mock v1.4.4
 	github.com/gorilla/mux v1.8.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/lib/pq v1.8.0

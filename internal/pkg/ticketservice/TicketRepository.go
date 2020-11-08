@@ -1,4 +1,4 @@
-//go:generate mockgen -source repository.go -destination mock/TicketRep_mock.go -package mock
+//go:generate mockgen -source TicketRepository.go -destination mock/TicketRep_mock.go -package mock
 package ticketservice
 
 import (

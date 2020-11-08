@@ -1,4 +1,4 @@
-//go:generate mockgen -source UseCase.go -destination mock/CinemaUC_mock.go -package mock
+//go:generate mockgen -source CinemaUseCase.go -destination mock/CinemaUC_mock.go -package mock
 package cinemaservice
 
 import "backend/internal/pkg/models"

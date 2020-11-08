@@ -1,4 +1,4 @@
-//go:generate mockgen -source repository.go -destination mock/HallRep_mock.go -package mock
+//go:generate mockgen -source HallRepository.go -destination mock/HallRep_mock.go -package mock
 package hallservice
 
 import "backend/internal/pkg/models"

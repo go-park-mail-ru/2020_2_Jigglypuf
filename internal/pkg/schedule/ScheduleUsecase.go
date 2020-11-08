@@ -1,4 +1,4 @@
-//go:generate mockgen -source usecase.go -destination mock/ScheduleUC_mock.go -package mock
+//go:generate mockgen -source ScheduleUsecase.go -destination mock/ScheduleUC_mock.go -package mock
 package schedule
 
 import "backend/internal/pkg/models"

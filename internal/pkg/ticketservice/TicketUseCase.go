@@ -1,4 +1,4 @@
-//go:generate mockgen -source usecase.go -destination mock/ticketUC_mock.go -package mock
+//go:generate mockgen -source TicketUseCase.go -destination mock/ticketUC_mock.go -package mock
 package ticketservice
 
 import "backend/internal/pkg/models"

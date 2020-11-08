@@ -1,4 +1,4 @@
-//go:generate mockgen -source UseCase.go -destination mock/cookieUC_mock.go -package mock
+//go:generate mockgen -source CookieUseCase.go -destination mock/cookieUC_mock.go -package mock
 package cookie
 
 import "net/http"
