@@ -1,3 +1,4 @@
+//go:generate mockgen -source usecase.go -destination mock/HallUC_mock.go -package mock
 package hallservice
 
 import "backend/internal/pkg/models"

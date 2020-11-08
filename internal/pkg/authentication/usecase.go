@@ -1,3 +1,4 @@
+//go:generate mockgen -source usecase.go -destination mock/AuthenticationUC_mock.go -package mock
 package authentication
 
 import (

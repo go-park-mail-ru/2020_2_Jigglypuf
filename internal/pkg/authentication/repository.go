@@ -1,3 +1,4 @@
+//go:generate mockgen -source repository.go -destination mock/AuthenticationRep_mock.go -package mock
 package authentication
 
 import (

@@ -1,3 +1,4 @@
+//go:generate mockgen -source repository.go -destination mock/ProfileRep_mock.go -package mock
 package profile
 
 import (

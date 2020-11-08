@@ -1,3 +1,4 @@
+//go:generate mockgen -source CookieRepository.go -destination mock/CookieRep_mock.go -package mock
 package cookie
 
 import (

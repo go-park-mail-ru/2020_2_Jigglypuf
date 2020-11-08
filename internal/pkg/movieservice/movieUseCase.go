@@ -1,3 +1,4 @@
+//go:generate mockgen -source movieUseCase.go -destination mock/MovieUC_mock.go -package mock
 package movieservice
 
 import "backend/internal/pkg/models"

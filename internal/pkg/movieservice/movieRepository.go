@@ -1,3 +1,4 @@
+//go:generate mockgen -source movieRepository.go -destination mock/MovieRep_mock.go -package mock
 package movieservice
 
 import (
