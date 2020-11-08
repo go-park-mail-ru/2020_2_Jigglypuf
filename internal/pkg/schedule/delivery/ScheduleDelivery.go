@@ -21,9 +21,9 @@ func NewScheduleDelivery(useCase schedule.TimeTableUseCase) *ScheduleDelivery {
 // @Summary Get movie schedule
 // @Description Returns movie schedule by getting movie id, cinema id and day(date) in format schedule.TimeStandard
 // @ID movie-schedule-id
-// @Param schedule.MovieIDQueryParamName query int true "schedule.MovieIDQueryParamName"
-// @Param schedule.CinemaIDQueryParamName query int true "schedule.CinemaIDQueryParamName"
-// @Param schedule.DateQueryParamName query string true "schedule.DateQueryParamName"
+// @Param movie_id query int true "movie_id"
+// @Param cinema_id query int true "cinema_id"
+// @Param date query string true "date"
 // @Success 200 {array} models.Schedule
 // @Failure 400 {object} models.ServerResponse "Bad body"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"

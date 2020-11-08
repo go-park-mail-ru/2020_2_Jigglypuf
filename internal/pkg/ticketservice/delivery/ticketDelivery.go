@@ -141,7 +141,7 @@ func (t *TicketDelivery) GetUsersSimpleTicket(w http.ResponseWriter, r *http.Req
 // @Summary Get schedule hall ticket list
 // @Description Get schedule hall ticket list by id
 // @ID get-schedule-ticket-list-id
-// @Param id path int true "ticketservice.ScheduleIDName"
+// @Param id path int true "schedule_id"
 // @Success 200 {array} models.TicketPlace
 // @Failure 400 {object} models.ServerResponse "Bad body"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"

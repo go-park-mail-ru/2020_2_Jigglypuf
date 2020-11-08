@@ -511,22 +511,22 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "schedule.MovieIDQueryParamName",
-                        "name": "schedule.MovieIDQueryParamName",
+                        "description": "movie_id",
+                        "name": "movie_id",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "schedule.CinemaIDQueryParamName",
-                        "name": "schedule.CinemaIDQueryParamName",
+                        "description": "cinema_id",
+                        "name": "cinema_id",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "schedule.DateQueryParamName",
-                        "name": "schedule.DateQueryParamName",
+                        "description": "date",
+                        "name": "date",
                         "in": "query",
                         "required": true
                     }
@@ -648,7 +648,7 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ticketservice.ScheduleIDName",
+                        "description": "schedule_id",
                         "name": "id",
                         "in": "path",
                         "required": true

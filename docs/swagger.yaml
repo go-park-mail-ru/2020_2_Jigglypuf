@@ -522,19 +522,19 @@ paths:
       description: Returns movie schedule by getting movie id, cinema id and day(date) in format schedule.TimeStandard
       operationId: movie-schedule-id
       parameters:
-      - description: schedule.MovieIDQueryParamName
+      - description: movie_id
         in: query
-        name: schedule.MovieIDQueryParamName
+        name: movie_id
         required: true
         type: integer
-      - description: schedule.CinemaIDQueryParamName
+      - description: cinema_id
         in: query
-        name: schedule.CinemaIDQueryParamName
+        name: cinema_id
         required: true
         type: integer
-      - description: schedule.DateQueryParamName
+      - description: date
         in: query
-        name: schedule.DateQueryParamName
+        name: date
         required: true
         type: string
       responses:
@@ -646,7 +646,7 @@ paths:
       description: Get schedule hall ticket list by id
       operationId: get-schedule-ticket-list-id
       parameters:
-      - description: ticketservice.ScheduleIDName
+      - description: schedule_id
         in: path
         name: id
         required: true
