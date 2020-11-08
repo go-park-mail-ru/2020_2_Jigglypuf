@@ -8,7 +8,6 @@ import (
 	"backend/internal/pkg/models"
 	"database/sql"
 	"github.com/julienschmidt/httprouter"
-	"sync"
 )
 
 type CinemaService struct {
@@ -24,21 +23,6 @@ func configureCinemaRouter(handler *cinemaDelivery.CinemaHandler) *httprouter.Ro
 	cinemaAPIRouter.GET(cinemaConfig.URLPattern+":id/", handler.GetCinema)
 
 	return cinemaAPIRouter
-}
-
-func StartMock(mutex *sync.RWMutex) *CinemaService {
-	cinemaRep := cinemaRepository.NewCinemaRepository(mutex)
-	cinemaUC := cinemaUseCase.NewCinemaUseCase(cinemaRep)
-	cinemaHandler := cinemaDelivery.NewCinemaHandler(cinemaUC)
-
-	cinemaRouter := configureCinemaRouter(cinemaHandler)
-
-	return &CinemaService{
-		cinemaRep,
-		cinemaUC,
-		cinemaHandler,
-		cinemaRouter,
-	}
 }
 
 func Start(connection *sql.DB) (*CinemaService, error) {
