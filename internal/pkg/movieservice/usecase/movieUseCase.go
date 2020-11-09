@@ -1,17 +1,17 @@
 package usecase
 
 import (
-	"backend/internal/pkg/authentication"
+	"backend/internal/pkg/authentication/interfaces"
 	"backend/internal/pkg/models"
 	"backend/internal/pkg/movieservice"
 )
 
 type MovieUseCase struct {
 	DBConn         movieservice.MovieRepository
-	UserRepository authentication.AuthRepository
+	UserRepository interfaces.AuthRepository
 }
 
-func NewMovieUseCase(rep movieservice.MovieRepository, userRepository authentication.AuthRepository) *MovieUseCase {
+func NewMovieUseCase(rep movieservice.MovieRepository, userRepository interfaces.AuthRepository) *MovieUseCase {
 	return &MovieUseCase{
 		DBConn:         rep,
 		UserRepository: userRepository,

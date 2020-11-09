@@ -10,7 +10,7 @@ import (
 	reflect "reflect"
 )
 
-// MockAuthRepository is a mock of AuthRepository interface
+// MockAuthRepository is a mock of AuthRepository interfaces
 type MockAuthRepository struct {
 	ctrl     *gomock.Controller
 	recorder *MockAuthRepositoryMockRecorder

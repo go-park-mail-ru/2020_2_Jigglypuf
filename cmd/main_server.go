@@ -10,7 +10,7 @@ import (
 	profileService "backend/internal/app/profileserver"
 	scheduleService "backend/internal/app/scheduleserver"
 	"backend/internal/app/ticketservice"
-	authConfig "backend/internal/pkg/authentication"
+	"backend/internal/pkg/authentication/configs"
 	cinemaConfig "backend/internal/pkg/cinemaservice"
 	hallConfig "backend/internal/pkg/hallservice"
 	"backend/internal/pkg/middleware/cookie"
@@ -90,7 +90,7 @@ func configureRouter(application *ServerStruct) http.Handler {
 
 	handler.Handle(movieConfig.URLPattern, application.movieService.MovieRouter)
 	handler.Handle(cinemaConfig.URLPattern, application.cinemaService.CinemaRouter)
-	handler.Handle(authConfig.URLPattern, application.authService.AuthRouter)
+	handler.Handle(configs.URLPattern, application.authService.AuthRouter)
 	handler.Handle(profileConfig.URLPattern, application.profileService.ProfileRouter)
 	handler.Handle(scheduleConfig.URLPattern, application.scheduleService.Router)
 	handler.Handle(hallConfig.URLPattern, application.hallService.Router)
@@ -117,7 +117,7 @@ func configureServer(port string, funcHandler http.Handler) *http.Server {
 
 func startDBWork() (*sql.DB, *tarantool.Connection, error) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		authConfig.Host, authConfig.Port, authConfig.User, authConfig.Password, authConfig.DBName)
+		configs.Host, configs.Port, configs.User, configs.Password, configs.DBName)
 
 	PostgreSQLConnection, DBErr := sql.Open("postgres", psqlInfo)
 	if DBErr != nil {

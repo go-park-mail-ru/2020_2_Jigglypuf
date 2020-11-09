@@ -1,7 +1,7 @@
 package delivery
 
 import (
-	"backend/internal/pkg/authentication"
+	"backend/internal/pkg/authentication/interfaces"
 	cookieService "backend/internal/pkg/middleware/cookie"
 	"backend/internal/pkg/models"
 	"encoding/json"
@@ -11,10 +11,10 @@ import (
 )
 
 type UserHandler struct {
-	useCase authentication.UserUseCase
+	useCase interfaces.UserUseCase
 }
 
-func NewUserHandler(useCase authentication.UserUseCase) *UserHandler {
+func NewUserHandler(useCase interfaces.UserUseCase) *UserHandler {
 	return &UserHandler{
 		useCase: useCase,
 	}

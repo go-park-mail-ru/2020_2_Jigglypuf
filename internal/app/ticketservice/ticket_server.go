@@ -1,7 +1,7 @@
 package ticketservice
 
 import (
-	"backend/internal/pkg/authentication"
+	"backend/internal/pkg/authentication/interfaces"
 	"backend/internal/pkg/hallservice"
 	"backend/internal/pkg/models"
 	"backend/internal/pkg/schedule"
@@ -34,7 +34,7 @@ func configureAPI(handler *delivery.TicketDelivery) *mux.Router {
 	return router
 }
 
-func Start(connection *sql.DB, authRep authentication.AuthRepository, hallRep hallservice.Repository) (*TicketService, error) {
+func Start(connection *sql.DB, authRep interfaces.AuthRepository, hallRep hallservice.Repository) (*TicketService, error) {
 	if connection == nil || authRep == nil || hallRep == nil {
 		return nil, models.ErrFooArgsMismatch
 	}

@@ -10,7 +10,7 @@ import (
 	reflect "reflect"
 )
 
-// MockMovieRepository is a mock of MovieRepository interface
+// MockMovieRepository is a mock of MovieRepository interfaces
 type MockMovieRepository struct {
 	ctrl     *gomock.Controller
 	recorder *MockMovieRepositoryMockRecorder

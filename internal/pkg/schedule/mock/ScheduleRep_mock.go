@@ -10,7 +10,7 @@ import (
 	reflect "reflect"
 )
 
-// MockTimeTableRepository is a mock of TimeTableRepository interface
+// MockTimeTableRepository is a mock of TimeTableRepository interfaces
 type MockTimeTableRepository struct {
 	ctrl     *gomock.Controller
 	recorder *MockTimeTableRepositoryMockRecorder

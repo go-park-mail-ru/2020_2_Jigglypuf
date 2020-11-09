@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"backend/internal/pkg/authentication"
+	"backend/internal/pkg/authentication/interfaces"
 	"backend/internal/pkg/hallservice"
 	"backend/internal/pkg/models"
 	"backend/internal/pkg/ticketservice"
@@ -14,11 +14,11 @@ type TicketUseCase struct {
 	validator      *validator.Validate
 	sanitizer      bluemonday.Policy
 	repository     ticketservice.Repository
-	userRepository authentication.AuthRepository
+	userRepository interfaces.AuthRepository
 	hallRepository hallservice.Repository
 }
 
-func NewTicketUseCase(repository ticketservice.Repository, authRepository authentication.AuthRepository, hallRepository hallservice.Repository) *TicketUseCase {
+func NewTicketUseCase(repository ticketservice.Repository, authRepository interfaces.AuthRepository, hallRepository hallservice.Repository) *TicketUseCase {
 	return &TicketUseCase{
 		validator:      validator.New(),
 		repository:     repository,

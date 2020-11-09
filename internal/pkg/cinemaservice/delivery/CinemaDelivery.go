@@ -53,11 +53,7 @@ func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r *http.Request, params
 	}
 
 	w.WriteHeader(http.StatusOK)
-	response, err := json.Marshal(result)
-	if err != nil {
-		models.BadBodyHTTPResponse(&w, err)
-	}
-
+	response, _ := json.Marshal(result)
 	_, _ = w.Write(response)
 }
 
@@ -102,10 +98,6 @@ func (t *CinemaHandler) GetCinemaList(w http.ResponseWriter, r *http.Request, pa
 	}
 
 	w.WriteHeader(http.StatusOK)
-	response, err := json.Marshal(result)
-	if err != nil {
-		models.BadBodyHTTPResponse(&w, err)
-	}
-
+	response, _ := json.Marshal(result)
 	_, _ = w.Write(response)
 }

@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"backend/internal/pkg/authentication"
+	"backend/internal/pkg/authentication/interfaces"
 	"backend/internal/pkg/middleware/cookie"
 	"backend/internal/pkg/models"
 	"backend/internal/pkg/profile"
@@ -18,13 +18,13 @@ import (
 type UserUseCase struct {
 	sanitizer         *bluemonday.Policy
 	validator         *validator.Validate
-	repository        authentication.AuthRepository
+	repository        interfaces.AuthRepository
 	cookieDBConn      cookie.Repository
 	profileRepository profile.Repository
 	salt              string
 }
 
-func NewUserUseCase(repository authentication.AuthRepository, profileRepository profile.Repository, cookieConn cookie.Repository, salt string) *UserUseCase {
+func NewUserUseCase(repository interfaces.AuthRepository, profileRepository profile.Repository, cookieConn cookie.Repository, salt string) *UserUseCase {
 	return &UserUseCase{
 		sanitizer:         bluemonday.UGCPolicy(),
 		validator:         validator.New(),

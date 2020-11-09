@@ -1,7 +1,7 @@
 package movieserver
 
 import (
-	"backend/internal/pkg/authentication"
+	"backend/internal/pkg/authentication/interfaces"
 	"backend/internal/pkg/models"
 	movieConfig "backend/internal/pkg/movieservice"
 	movieDelivery "backend/internal/pkg/movieservice/delivery"
@@ -29,7 +29,7 @@ func configureMovieRouter(handler *movieDelivery.MovieHandler) *mux.Router {
 	return movieRouter
 }
 
-func Start(connection *sql.DB, authRep authentication.AuthRepository) (*MovieService, error) {
+func Start(connection *sql.DB, authRep interfaces.AuthRepository) (*MovieService, error) {
 	if connection == nil {
 		return nil, models.ErrFooNoDBConnection
 	}

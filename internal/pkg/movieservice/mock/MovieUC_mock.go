@@ -10,7 +10,7 @@ import (
 	reflect "reflect"
 )
 
-// MockMovieUseCase is a mock of MovieUseCase interface
+// MockMovieUseCase is a mock of MovieUseCase interfaces
 type MockMovieUseCase struct {
 	ctrl     *gomock.Controller
 	recorder *MockMovieUseCaseMockRecorder
