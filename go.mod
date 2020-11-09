@@ -21,6 +21,6 @@ require (
 	github.com/tarantool/go-tarantool v0.0.0-20200816172506-a535b8e0224a
 	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897
 	golang.org/x/net v0.0.0-20201024042810-be3efd7ff127 // indirect
-	golang.org/x/tools v0.0.0-20201023174141-c8cfbd0f21e6 // indirect
+	golang.org/x/tools v0.0.0-20201023174141-c8cfbd0f21e6
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0
 )

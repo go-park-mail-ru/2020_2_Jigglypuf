@@ -6,6 +6,7 @@ import (
 	"backend/internal/pkg/models"
 	"backend/internal/pkg/profile"
 	"backend/internal/pkg/utils"
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/microcosm-cc/bluemonday"
 	"golang.org/x/crypto/bcrypt"
@@ -135,6 +136,7 @@ func (t *UserUseCase) SignIn(input *models.AuthInput) (*http.Cookie, error) {
 
 func (t *UserUseCase) SignOut(cookie *http.Cookie) (*http.Cookie, error) {
 	cookie.Expires = time.Now().Add(-time.Hour)
-	_ = t.cookieDBConn.RemoveCookie(cookie)
-	return cookie, nil
+	fmt.Print(cookie)
+	cookieErr := t.cookieDBConn.RemoveCookie(cookie)
+	return cookie, cookieErr
 }

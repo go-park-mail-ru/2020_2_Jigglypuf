@@ -6,6 +6,7 @@ import (
 	"backend/internal/pkg/models"
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
+	"log"
 	"net/http"
 )
 
@@ -69,6 +70,7 @@ func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request, pa
 	defer r.Body.Close()
 
 	if r.Method != http.MethodPost {
+		log.Println("incorrect method")
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
