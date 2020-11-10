@@ -20,12 +20,6 @@ type GetCinemaList struct {
 	Page  int
 }
 
-type CinemaHall struct {
-	ID          uint64
-	PlaceAmount int
-	PlaceConfig *HallConfig
-}
-
 type HallConfig struct{
 	levels []HallPlace
 }
@@ -33,6 +27,12 @@ type HallConfig struct{
 type HallPlace struct{
 	Place int
 	Row int
+}
+
+type CinemaHall struct {
+	ID          uint64
+	PlaceAmount int
+	PlaceConfig HallConfig
 }
 
 

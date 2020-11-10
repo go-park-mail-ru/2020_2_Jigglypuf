@@ -41,7 +41,6 @@ func (t *SQLRepository) GetHallStructure(hallID uint64) (*models.CinemaHall, err
 	}
 
 	hallItem := new(models.CinemaHall)
-	hallItem.PlaceConfig = new(models.HallConfig)
 	placeConfig := ""
 	hallItem.ID = hallID
 	ScanErr := SQLResult.Scan(&hallItem.PlaceAmount, &placeConfig)
