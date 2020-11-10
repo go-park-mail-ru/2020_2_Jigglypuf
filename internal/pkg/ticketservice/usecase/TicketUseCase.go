@@ -4,6 +4,7 @@ import (
 	"backend/internal/pkg/authentication/interfaces"
 	"backend/internal/pkg/hallservice"
 	"backend/internal/pkg/models"
+	"backend/internal/pkg/schedule"
 	"backend/internal/pkg/ticketservice"
 	"github.com/go-playground/validator/v10"
 	"github.com/microcosm-cc/bluemonday"
@@ -16,15 +17,17 @@ type TicketUseCase struct {
 	repository     ticketservice.Repository
 	userRepository interfaces.AuthRepository
 	hallRepository hallservice.Repository
+	scheduleRepository schedule.TimeTableRepository
 }
 
-func NewTicketUseCase(repository ticketservice.Repository, authRepository interfaces.AuthRepository, hallRepository hallservice.Repository) *TicketUseCase {
+func NewTicketUseCase(repository ticketservice.Repository, authRepository interfaces.AuthRepository, hallRepository hallservice.Repository,scheduleRepository schedule.TimeTableRepository) *TicketUseCase {
 	return &TicketUseCase{
 		validator:      validator.New(),
 		repository:     repository,
 		sanitizer:      *bluemonday.UGCPolicy(),
 		userRepository: authRepository,
 		hallRepository: hallRepository,
+		scheduleRepository: scheduleRepository,
 	}
 }
 
@@ -64,7 +67,13 @@ func (t *TicketUseCase) BuyTicket(ticket *models.TicketInput, userID uint64) err
 		}
 		ticket.Login = user.Login
 	}
-	availability, avErr := t.hallRepository.CheckAvailability(ticket.HallID, &ticket.PlaceField)
+
+	HallID, HallErr := t.scheduleRepository.GetScheduleHallID(ticket.ScheduleID)
+	if HallErr != nil{
+		return models.ErrFooIncorrectInputInfo
+	}
+
+	availability, avErr := t.hallRepository.CheckAvailability(HallID, &ticket.PlaceField)
 	if avErr != nil || !availability {
 		return models.ErrFooPlaceAlreadyBusy
 	}

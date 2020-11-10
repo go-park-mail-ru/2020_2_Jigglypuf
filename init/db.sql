@@ -112,8 +112,16 @@ VALUES  ('Гренландия','Билл Кроун','Greenland description','T
         ('Однажды в… Голливуде','Леонардно Ди Каприо','Фильм повествует о череде событий, произошедших в Голливуде в 1969 году, на закате его «золотого века». По сюжету, известный ТВ актер Рик Далтон и его дублер Клифф Бут пытаются найти свое место в стремительно меняющемся мире киноиндустрии.','Комедия',160,'Квентин Тарантино','США',2019,16,'/media/once_upon_a_time_in_hollywood_poster.jpg','');
 
 INSERT INTO cinema_hall (Place_amount,Hall_params)
-VALUES (15,'{"levels":[{"place":1,"row":1},{"place":2,"row":1}]}'),
-       (10,'{"levels":[{"place":1,"row":2}]}');
+VALUES (15,'{"levels":[{"place":1,"row":1},{"place":2,"row":1},{"place":3,"row":1},{"place":4,"row":1},{"place":5,"row":1},{"place":6,"row":1},{"place":7,"row":1},{"place":8,"row":1},
+  {"place":1,"row":2},{"place":2,"row":2},{"place":3,"row":2},{"place":4,"row":2},{"place":5,"row":2},{"place":6,"row":2},{"place":7,"row":2},{"place":8,"row":2},
+  {"place":1,"row":3},{"place":2,"row":3},{"place":3,"row":3},{"place":4,"row":3},{"place":5,"row":3},{"place":6,"row":3},{"place":7,"row":3},{"place":8,"row":3},
+  {"place":1,"row":4},{"place":2,"row":4},{"place":3,"row":4},{"place":4,"row":4},{"place":5,"row":4},{"place":6,"row":4},{"place":7,"row":4},{"place":8,"row":4},
+  {"place":1,"row":5},{"place":2,"row":5},{"place":3,"row":5},{"place":4,"row":5},{"place":5,"row":5},{"place":6,"row":5},{"place":7,"row":5},{"place":8,"row":5}]}'),
+       (10,'{"levels":[{"place":1,"row":1},{"place":2,"row":1},{"place":3,"row":1},{"place":4,"row":1},{"place":5,"row":1},{"place":6,"row":1},{"place":7,"row":1},{"place":8,"row":1},
+         {"place":1,"row":2},{"place":2,"row":2},{"place":3,"row":2},{"place":4,"row":2},{"place":5,"row":2},{"place":6,"row":2},{"place":7,"row":2},{"place":8,"row":2},
+         {"place":1,"row":3},{"place":2,"row":3},{"place":3,"row":3},{"place":4,"row":3},{"place":5,"row":3},{"place":6,"row":3},{"place":7,"row":3},{"place":8,"row":3},
+         {"place":1,"row":4},{"place":2,"row":4},{"place":3,"row":4},{"place":4,"row":4},{"place":5,"row":4},{"place":6,"row":4},{"place":7,"row":4},{"place":8,"row":4},
+         {"place":1,"row":5},{"place":2,"row":5},{"place":3,"row":5},{"place":4,"row":5},{"place":5,"row":5},{"place":6,"row":5},{"place":7,"row":5},{"place":8,"row":5}]}');
 
 INSERT INTO schedule(Movie_ID, Cinema_ID, Hall_ID, Premiere_time, Cost)
 VALUES (1,2,2,now() + interval '1 hour', 400),
@@ -140,4 +148,16 @@ VALUES (1,2,2,now() + interval '1 hour', 400),
        (10,4,1,now() + interval '1 day 15 hours',777),
        (10,4,2,now() + interval '10 hours',322),
        (10,1,2,now() + interval '5 hours',228),
-       (10,1,1,now() + interval '11 days',666);
+       (10,2,2,now() + interval '7 hours',228),
+       (10,3,2,now() + interval '9 hours',228),
+       (10,1,1,now() + interval '11 days',666),
+       (11,2,2,now() + interval '6 days', 549),
+       (11,3,1,now() + interval '3 days', 359),
+       (11,2,1,now() + interval '15 days',349),
+       (11,3,2,now() + interval '9 days',339),
+       (11,4,1,now() + interval '1 day 15 hours',777),
+       (11,4,2,now() + interval '10 hours',322),
+       (11,1,2,now() + interval '5 hours',228),
+       (11,2,2,now() + interval '5 hours',228),
+       (11,3,2,now() + interval '5 hours',228),
+       (11,1,1,now() + interval '11 days',666);

@@ -34,12 +34,12 @@ func configureAPI(handler *delivery.TicketDelivery) *mux.Router {
 	return router
 }
 
-func Start(connection *sql.DB, authRep interfaces.AuthRepository, hallRep hallservice.Repository) (*TicketService, error) {
+func Start(connection *sql.DB, authRep interfaces.AuthRepository, hallRep hallservice.Repository, scheduleRep schedule.TimeTableRepository) (*TicketService, error) {
 	if connection == nil || authRep == nil || hallRep == nil {
 		return nil, models.ErrFooArgsMismatch
 	}
 	rep := repository.NewTicketSQLRepository(connection)
-	uc := usecase.NewTicketUseCase(rep, authRep, hallRep)
+	uc := usecase.NewTicketUseCase(rep, authRep, hallRep,scheduleRep)
 	handler := delivery.NewTicketDelivery(uc)
 	router := configureAPI(handler)
 

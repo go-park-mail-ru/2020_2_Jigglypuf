@@ -8,4 +8,5 @@ import (
 type TimeTableRepository interface {
 	GetMovieSchedule(MovieID uint64, date string) (*[]models.Schedule, error)
 	GetMovieCinemaSchedule(MovieID, CinemaID uint64, date string) (*[]models.Schedule, error)
+	GetScheduleHallID(scheduleID uint64)(uint64, error)
 }

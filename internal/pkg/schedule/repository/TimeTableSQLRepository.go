@@ -67,3 +67,15 @@ func (t *ScheduleSQLRepository) GetMovieSchedule(movieID uint64, date string) (*
 
 	return &scheduleList, nil
 }
+
+func (t *ScheduleSQLRepository) GetScheduleHallID(scheduleID uint64)(uint64, error){
+	if t.DBConnection == nil {
+		return 0, models.ErrFooNoDBConnection
+	}
+	var HallID uint64 = 0
+	ScanErr := t.DBConnection.QueryRow("SELECT hall_id from schedule where id = $1", scheduleID).Scan(&HallID)
+	if ScanErr != nil{
+		return 0,models.ErrFooIncorrectInputInfo
+	}
+	return HallID, nil
+}

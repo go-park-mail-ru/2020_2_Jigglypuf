@@ -47,7 +47,6 @@ type Ticket struct {
 type TicketInput struct {
 	Login      string `validate:"required,email"`
 	ScheduleID uint64
-	HallID     uint64
 	PlaceField TicketPlace
 }
 

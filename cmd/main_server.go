@@ -67,9 +67,13 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 	newCinemaService, cinemaErr := cinemaService.Start(mainDBConnection)
 	newMovieService, movieErr := movieService.Start(mainDBConnection, newAuthService.AuthenticationRepository)
 	newScheduleService, scheduleErr := scheduleService.Start(mainDBConnection)
-	newTicketService, ticketErr := ticketservice.Start(mainDBConnection, newAuthService.AuthenticationRepository, newHallService.Repository)
+	if scheduleErr != nil{
+		log.Println(scheduleErr)
+		return nil, models.ErrFooInitFail
+	}
+	newTicketService, ticketErr := ticketservice.Start(mainDBConnection, newAuthService.AuthenticationRepository, newHallService.Repository,newScheduleService.Repository)
 
-	if cinemaErr != nil || movieErr != nil || scheduleErr != nil || ticketErr != nil {
+	if cinemaErr != nil || movieErr != nil || ticketErr != nil {
 		log.Println(models.ErrFooInitFail)
 		return nil, models.ErrFooInitFail
 	}
