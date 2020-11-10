@@ -252,7 +252,7 @@ func TestLogOutErrorsHandling(t *testing.T){
 		{
 			httptest.NewRequest(http.MethodPost, "/logout/", strings.NewReader("aisndoansd")),
 			httptest.NewRecorder(),
-			400,
+			401,
 		},
 	}
 
@@ -267,19 +267,26 @@ func TestLogOutErrorsHandling(t *testing.T){
 	tearDown()
 }
 
-//func TestLogOutUCErrorHandling(t *testing.T){
-//	setUp(t)
-//	correctAuthenticationModel := models.AuthInput{
-//		Login: "someone@somene.ru",
-//		Password: "voasndoiasndqw",
-//	}
-//
-//	authenticationBody, _ := json.Marshal(correctAuthenticationModel)
-//
-//	testReq := httptest.NewRequest(http.MethodPost, "/logout", strings.NewReader(string(authenticationBody)))
-//	testRec := httptest.NewRecorder()
-//	ctx := testReq.Context()
-//	ctx = context.WithValue(ctx,cookie.ContextIsAuthName, true)
-//
-//	tearDown()
-//}
+func TestLogOutUCErrorHandling(t *testing.T){
+	setUp(t)
+	correctAuthenticationModel := models.AuthInput{
+		Login: "someone@somene.ru",
+		Password: "voasndoiasndqw",
+	}
+
+	authenticationBody, _ := json.Marshal(correctAuthenticationModel)
+
+	testReq := httptest.NewRequest(http.MethodPost, "/logout", strings.NewReader(string(authenticationBody)))
+	testRec := httptest.NewRecorder()
+	ctx := testReq.Context()
+	ctx = context.WithValue(ctx,cookie.ContextIsAuthName, true)
+
+	TestingStruct.UseCaseMock.EXPECT().SignOut(gomock.Any()).Return(nil,errors.New("some error"))
+	TestingStruct.Handler.SignOutHandler(testRec, testReq.WithContext(ctx), httprouter.Params{})
+
+	if testRec.Code != http.StatusUnauthorized{
+		t.Fatalf("TEST: Success log out test case "+
+			"handler returned wrong status code: got %v want %v", testRec.Code, http.StatusUnauthorized)
+	}
+	tearDown()
+}
