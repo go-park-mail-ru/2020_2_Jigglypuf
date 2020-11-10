@@ -159,5 +159,4 @@ VALUES (1,2,2,now() + interval '1 hour', 400),
        (11,4,2,now() + interval '10 hours',322),
        (11,1,2,now() + interval '5 hours',228),
        (11,2,2,now() + interval '5 hours',228),
-       (11,3,2,now() + interval '5 hours',228),
-       (11,1,1,now() + interval '11 days',666);
+       (11,3,2,now() + interval '5 hours',228);
