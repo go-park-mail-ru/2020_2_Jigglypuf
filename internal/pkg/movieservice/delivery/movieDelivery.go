@@ -99,6 +99,10 @@ func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 	}
 	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
 	UserID := r.Context().Value(cookieService.ContextUserIDName)
+	if isAuth == nil || !isAuth.(bool) {
+		isAuth = false
+		UserID = uint64(0)
+	}
 
 	result, err := t.movieUseCase.GetMovie(uint64(integerName), isAuth.(bool), UserID.(uint64))
 
@@ -108,11 +112,8 @@ func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	response, err := json.Marshal(result)
-	if err != nil {
-		models.BadBodyHTTPResponse(&w, err)
-		return
-	}
+	response, _ := json.Marshal(result)
+
 	_, _ = w.Write(response)
 }
 
@@ -190,11 +191,7 @@ func (t *MovieHandler) GetMoviesInCinema(w http.ResponseWriter, r *http.Request)
 	}
 
 	w.WriteHeader(http.StatusOK)
-	response, err := json.Marshal(movieList)
-	if err != nil {
-		models.BadBodyHTTPResponse(&w, err)
-		return
-	}
+	response, _ := json.Marshal(movieList)
 
 	_, _ = w.Write(response)
 }

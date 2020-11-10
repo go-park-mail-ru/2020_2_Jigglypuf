@@ -48,10 +48,7 @@ func (t *HallDelivery) GetHallStructure(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	outputBuf, castErr := json.Marshal(hallItem)
-	if castErr != nil {
-		models.InternalErrorHTTPResponse(&w)
-		return
-	}
+	outputBuf, _ := json.Marshal(hallItem)
+
 	_, _ = w.Write(outputBuf)
 }
