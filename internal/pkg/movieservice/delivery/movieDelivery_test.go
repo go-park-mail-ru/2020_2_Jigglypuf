@@ -1,10 +1,10 @@
 package delivery
 
 import (
-	cookieService "backend/internal/pkg/middleware/cookie"
-	"backend/internal/pkg/models"
-	"backend/internal/pkg/movieservice"
-	"backend/internal/pkg/movieservice/mock"
+	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice/mock"
 	"context"
 	"encoding/json"
 	"github.com/golang/mock/gomock"

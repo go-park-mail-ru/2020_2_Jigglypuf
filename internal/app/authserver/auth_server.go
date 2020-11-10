@@ -1,14 +1,14 @@
 package authserver
 
 import (
-	"backend/internal/pkg/authentication/configs"
-	authDelivery "backend/internal/pkg/authentication/delivery"
-	"backend/internal/pkg/authentication/interfaces"
-	authRepository "backend/internal/pkg/authentication/repository"
-	authUseCase "backend/internal/pkg/authentication/usecase"
-	"backend/internal/pkg/middleware/cookie"
-	"backend/internal/pkg/models"
-	"backend/internal/pkg/profile"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/configs"
+	authDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/delivery"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	authRepository "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/repository"
+	authUseCase "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/usecase"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
 	"database/sql"
 	"github.com/julienschmidt/httprouter"
 )

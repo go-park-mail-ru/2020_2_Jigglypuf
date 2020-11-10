@@ -1,11 +1,11 @@
 package scheduleserver
 
 import (
-	"backend/internal/pkg/models"
-	"backend/internal/pkg/schedule"
-	"backend/internal/pkg/schedule/delivery"
-	"backend/internal/pkg/schedule/repository"
-	"backend/internal/pkg/schedule/usecase"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule/delivery"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule/repository"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule/usecase"
 	"database/sql"
 	"github.com/gorilla/mux"
 )

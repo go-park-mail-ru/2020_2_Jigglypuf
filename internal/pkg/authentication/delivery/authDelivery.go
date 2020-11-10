@@ -1,9 +1,9 @@
 package delivery
 
 import (
-	"backend/internal/pkg/authentication/interfaces"
-	cookieService "backend/internal/pkg/middleware/cookie"
-	"backend/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"log"

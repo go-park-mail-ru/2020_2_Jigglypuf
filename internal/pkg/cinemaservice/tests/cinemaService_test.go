@@ -2,9 +2,9 @@ package tests
 
 //
 // import (
-//	"backend/internal/pkg/cinemaservice/delivery"
-//	"backend/internal/pkg/cinemaservice/repository"
-//	"backend/internal/pkg/cinemaservice/usecase"
+//	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice/delivery"
+//	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice/repository"
+//	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice/usecase"
 //	"io/ioutil"
 //	"net/http"
 //	"net/http/httptest"

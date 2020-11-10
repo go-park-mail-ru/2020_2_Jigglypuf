@@ -5,13 +5,13 @@
 package mock
 
 import (
-	models "backend/internal/pkg/models"
+	models "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	gomock "github.com/golang/mock/gomock"
 	http "net/http"
 	reflect "reflect"
 )
 
-// MockRepository is a mock of Repository interfaces
+// MockRepository is a mock of Repository interface
 type MockRepository struct {
 	ctrl     *gomock.Controller
 	recorder *MockRepositoryMockRecorder

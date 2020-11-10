@@ -1,11 +1,11 @@
 package usecase
 
 import (
-	"backend/internal/pkg/authentication/interfaces"
-	"backend/internal/pkg/middleware/cookie"
-	"backend/internal/pkg/models"
-	"backend/internal/pkg/profile"
-	"backend/internal/pkg/utils"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/utils"
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/microcosm-cc/bluemonday"

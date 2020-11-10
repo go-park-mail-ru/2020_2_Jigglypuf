@@ -1,4 +1,4 @@
-module backend
+module github.com/go-park-mail-ru/2020_2_Jigglypuf
 
 go 1.15
 

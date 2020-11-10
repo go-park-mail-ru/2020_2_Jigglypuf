@@ -1,9 +1,9 @@
 package delivery
 
 import (
-	"backend/internal/pkg/middleware/cookie"
-	"backend/internal/pkg/middleware/cookie/mock"
-	"backend/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie/mock"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/golang/mock/gomock"
 	"net/http"
 	"net/http/httptest"

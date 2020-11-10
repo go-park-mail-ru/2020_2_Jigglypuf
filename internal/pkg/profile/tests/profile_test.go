@@ -1,11 +1,11 @@
 package tests
 
 // import (
-//	authService "backend/internal/app/authserver"
-//	cookieService "backend/internal/app/cookieserver"
-//	profileDelivery "backend/internal/pkg/profile/delivery"
-//	profileRepository "backend/internal/pkg/profile/repository"
-//	profileUseCase "backend/internal/pkg/profile/usecase"
+//	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/authserver"
+//	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/cookieserver"
+//	profileDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/delivery"
+//	profileRepository "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/repository"
+//	profileUseCase "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/usecase"
 //	"github.com/stretchr/testify/require"
 //	"io/ioutil"
 //	"net/http"

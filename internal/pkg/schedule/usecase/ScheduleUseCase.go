@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"backend/internal/pkg/models"
-	"backend/internal/pkg/schedule"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
 	"github.com/go-playground/validator/v10"
 	"strconv"
 	"time"

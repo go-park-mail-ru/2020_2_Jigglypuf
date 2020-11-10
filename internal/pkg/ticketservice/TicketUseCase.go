@@ -1,7 +1,7 @@
 //go:generate mockgen -source TicketUseCase.go -destination mock/ticketUC_mock.go -package mock
 package ticketservice
 
-import "backend/internal/pkg/models"
+import "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 
 type UseCase interface {
 	BuyTicket(ticket *models.TicketInput, userID uint64) error

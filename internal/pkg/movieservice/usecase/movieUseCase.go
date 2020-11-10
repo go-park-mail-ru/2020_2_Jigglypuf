@@ -1,9 +1,9 @@
 package usecase
 
 import (
-	"backend/internal/pkg/authentication/interfaces"
-	"backend/internal/pkg/models"
-	"backend/internal/pkg/movieservice"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
 )
 
 type MovieUseCase struct {

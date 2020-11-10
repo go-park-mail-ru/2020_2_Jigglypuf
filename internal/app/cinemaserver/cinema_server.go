@@ -1,11 +1,11 @@
 package cinemaserver
 
 import (
-	cinemaConfig "backend/internal/pkg/cinemaservice"
-	cinemaDelivery "backend/internal/pkg/cinemaservice/delivery"
-	cinemaRepository "backend/internal/pkg/cinemaservice/repository"
-	cinemaUseCase "backend/internal/pkg/cinemaservice/usecase"
-	"backend/internal/pkg/models"
+	cinemaConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice"
+	cinemaDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice/delivery"
+	cinemaRepository "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice/repository"
+	cinemaUseCase "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice/usecase"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"database/sql"
 	"github.com/julienschmidt/httprouter"
 )

@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"backend/internal/pkg/cinemaservice"
-	"backend/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 )
 
 type CinemaUseCase struct {

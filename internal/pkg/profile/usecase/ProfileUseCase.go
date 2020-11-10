@@ -1,9 +1,9 @@
 package usecase
 
 import (
-	"backend/internal/pkg/models"
-	"backend/internal/pkg/profile"
-	"backend/internal/pkg/utils"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/utils"
 	"github.com/microcosm-cc/bluemonday"
 )
 

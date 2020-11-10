@@ -1,11 +1,11 @@
 package profileserver
 
 import (
-	"backend/internal/pkg/models"
-	profileConfig "backend/internal/pkg/profile"
-	profileDelivery "backend/internal/pkg/profile/delivery"
-	profileRepository "backend/internal/pkg/profile/repository"
-	profileUseCase "backend/internal/pkg/profile/usecase"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	profileConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
+	profileDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/delivery"
+	profileRepository "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/repository"
+	profileUseCase "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/usecase"
 	"database/sql"
 	"github.com/julienschmidt/httprouter"
 )

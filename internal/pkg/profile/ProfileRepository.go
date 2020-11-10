@@ -2,7 +2,7 @@
 package profile
 
 import (
-	"backend/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 )
 
 type Repository interface {

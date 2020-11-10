@@ -5,12 +5,12 @@
 package mock
 
 import (
-	models "backend/internal/pkg/models"
+	models "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 )
 
-// MockUseCase is a mock of UseCase interfaces
+// MockUseCase is a mock of UseCase interface
 type MockUseCase struct {
 	ctrl     *gomock.Controller
 	recorder *MockUseCaseMockRecorder

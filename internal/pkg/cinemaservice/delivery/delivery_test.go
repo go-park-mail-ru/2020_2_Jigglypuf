@@ -1,9 +1,9 @@
 package delivery
 
 import (
-	"backend/internal/pkg/cinemaservice"
-	"backend/internal/pkg/cinemaservice/mock"
-	"backend/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice/mock"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"encoding/json"
 	"errors"
 	"github.com/golang/mock/gomock"

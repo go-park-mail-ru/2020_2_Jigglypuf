@@ -1,9 +1,9 @@
 package delivery
 
 import (
-	"backend/internal/pkg/hallservice"
-	"backend/internal/pkg/hallservice/mock"
-	"backend/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice/mock"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"errors"
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"

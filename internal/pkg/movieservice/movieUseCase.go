@@ -1,7 +1,7 @@
 //go:generate mockgen -source movieUseCase.go -destination mock/MovieUC_mock.go -package mock
 package movieservice
 
-import "backend/internal/pkg/models"
+import "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 
 type MovieUseCase interface {
 	GetMovie(id uint64, isAuth bool, userID uint64) (*models.Movie, error)

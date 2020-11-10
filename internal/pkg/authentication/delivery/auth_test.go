@@ -1,9 +1,9 @@
 package delivery
 
 import (
-	"backend/internal/pkg/authentication/mock"
-	"backend/internal/pkg/middleware/cookie"
-	"backend/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/mock"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"context"
 	"encoding/json"
 	"errors"

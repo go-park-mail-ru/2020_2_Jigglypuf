@@ -1,14 +1,14 @@
 package authentication
 
 import (
-	"backend/internal/pkg/authentication/delivery"
-	"backend/internal/pkg/authentication/interfaces"
-	"backend/internal/pkg/authentication/repository"
-	"backend/internal/pkg/authentication/usecase"
-	"backend/internal/pkg/middleware/cookie"
-	cookieMock "backend/internal/pkg/middleware/cookie/mock"
-	"backend/internal/pkg/models"
-	profileMock "backend/internal/pkg/profile/mock"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/delivery"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/repository"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/usecase"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	cookieMock "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie/mock"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	profileMock "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/mock"
 	"context"
 	"database/sql"
 	"encoding/json"

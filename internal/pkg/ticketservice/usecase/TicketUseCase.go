@@ -1,11 +1,11 @@
 package usecase
 
 import (
-	"backend/internal/pkg/authentication/interfaces"
-	"backend/internal/pkg/hallservice"
-	"backend/internal/pkg/models"
-	"backend/internal/pkg/schedule"
-	"backend/internal/pkg/ticketservice"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice"
 	"github.com/go-playground/validator/v10"
 	"github.com/microcosm-cc/bluemonday"
 	"strconv"

@@ -1,7 +1,7 @@
 //go:generate mockgen -source CinemaUseCase.go -destination mock/CinemaUC_mock.go -package mock
 package cinemaservice
 
-import "backend/internal/pkg/models"
+import "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 
 type UseCase interface {
 	CreateCinema(*models.Cinema) error

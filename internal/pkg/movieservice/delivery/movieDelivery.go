@@ -1,9 +1,9 @@
 package delivery
 
 import (
-	cookieService "backend/internal/pkg/middleware/cookie"
-	"backend/internal/pkg/models"
-	"backend/internal/pkg/movieservice"
+	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"

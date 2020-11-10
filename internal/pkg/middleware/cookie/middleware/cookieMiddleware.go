@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	CookieService "backend/internal/app/cookieserver"
-	"backend/internal/pkg/middleware/cookie"
+	CookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/cookieserver"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
 	"context"
 	"net/http"
 )
