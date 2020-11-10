@@ -22,9 +22,8 @@ func getQueryLimitPageArgs(r *http.Request) (int, int, error) {
 	}
 	limit, limitErr := strconv.Atoi(Limit[0])
 	page, pageErr := strconv.Atoi(Page[0])
-
 	if limitErr != nil || pageErr != nil {
-		return 0, 0, limitErr
+		return 0, 0, models.IncorrectGetParameters{}
 	}
 	return limit, page, nil
 }
@@ -55,6 +54,7 @@ func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request) {
 	limit, page, queryErr := getQueryLimitPageArgs(r)
 	if queryErr != nil {
 		models.BadBodyHTTPResponse(&w, queryErr)
+		return
 	}
 
 	resultArray, err := t.movieUseCase.GetMovieList(limit, page)
