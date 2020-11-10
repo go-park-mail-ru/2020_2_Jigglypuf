@@ -21,7 +21,7 @@ type GetCinemaList struct {
 }
 
 type HallConfig struct{
-	levels []HallPlace
+	Levels []HallPlace
 }
 
 type HallPlace struct{
