@@ -76,6 +76,7 @@ CREATE TABLE schedule
     Cinema_ID INTEGER NOT NULL REFERENCES cinema (ID),
     Hall_ID INTEGER NOT NULL REFERENCES cinema_hall (ID),
     Premiere_time timestamptz NOT NULL,
+    Cost INTEGER NOT NULL,
     UNIQUE(Cinema_ID,Hall_ID,Premiere_time)
 );
 
@@ -131,4 +132,12 @@ VALUES (1,2,2,now() + interval '1 hour'),
        (6,4,1,now() + interval '3 days 2 hours'),
        (5,4,2,now() + interval '3 hours 30 minutes'),
        (3,1,2,now() + interval '10 hours'),
-       (7,1,1,now() + interval '5 days');
+       (7,1,1,now() + interval '5 days'),
+       (10,2,2,now() + interval '6 days'),
+       (10,3,1,now() + interval '3 days'),
+       (10,2,1,now() + interval '15 days'),
+       (10,3,2,now() + interval '9 days'),
+       (10,4,1,now() + interval '1 day 15 hours'),
+       (10,4,2,now() + interval '10 hours'),
+       (10,1,2,now() + interval '5 hours'),
+       (10,1,1,now() + interval '11 days');

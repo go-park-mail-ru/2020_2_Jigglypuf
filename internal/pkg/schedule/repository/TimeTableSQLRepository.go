@@ -21,7 +21,7 @@ func (t *ScheduleSQLRepository) GetMovieCinemaSchedule(movieID, cinemaID uint64,
 		return nil, models.ErrFooNoDBConnection
 	}
 
-	DBRows, DBErr := t.DBConnection.Query("SELECT ID,Movie_id,Cinema_ID,Hall_ID,Premiere_time FROM schedule "+
+	DBRows, DBErr := t.DBConnection.Query("SELECT ID,Movie_id,Cinema_ID,Hall_ID,Premiere_time,Cost FROM schedule "+
 		"WHERE Movie_ID = $1 AND Cinema_ID = $2 AND DATE(Premiere_time) = DATE($3)", movieID, cinemaID, date)
 	if DBErr != nil || DBRows == nil || DBRows.Err() != nil {
 		log.Println(DBErr)
@@ -30,7 +30,8 @@ func (t *ScheduleSQLRepository) GetMovieCinemaSchedule(movieID, cinemaID uint64,
 	scheduleList := make([]models.Schedule, 0)
 	scheduleItem := new(models.Schedule)
 	for DBRows.Next() {
-		ScanErr := DBRows.Scan(&scheduleItem.ID, &scheduleItem.MovieID, &scheduleItem.CinemaID, &scheduleItem.HallID, &scheduleItem.PremierTime)
+		ScanErr := DBRows.Scan(&scheduleItem.ID, &scheduleItem.MovieID, &scheduleItem.CinemaID, &scheduleItem.HallID,
+			&scheduleItem.PremierTime, &scheduleItem.Cost)
 		if ScanErr != nil {
 			log.Println(ScanErr)
 			return nil, models.ErrFooNoDBConnection
@@ -46,7 +47,7 @@ func (t *ScheduleSQLRepository) GetMovieSchedule(movieID uint64, date string) (*
 		return nil, models.ErrFooNoDBConnection
 	}
 
-	DBRows, DBErr := t.DBConnection.Query("SELECT ID,Movie_id,Cinema_ID,Hall_ID,Premiere_time FROM schedule "+
+	DBRows, DBErr := t.DBConnection.Query("SELECT ID,Movie_id,Cinema_ID,Hall_ID,Premiere_time, Cost FROM schedule "+
 		"WHERE Movie_ID = $1 AND DATE(Premiere_time) = DATE($2)", movieID, date)
 	if DBErr != nil || DBRows != nil && DBRows.Err() != nil {
 		log.Println(DBErr)
@@ -55,7 +56,8 @@ func (t *ScheduleSQLRepository) GetMovieSchedule(movieID uint64, date string) (*
 	scheduleList := make([]models.Schedule, 0)
 	scheduleItem := new(models.Schedule)
 	for DBRows.Next() {
-		ScanErr := DBRows.Scan(&scheduleItem.ID, &scheduleItem.MovieID, &scheduleItem.CinemaID, &scheduleItem.HallID, &scheduleItem.PremierTime)
+		ScanErr := DBRows.Scan(&scheduleItem.ID, &scheduleItem.MovieID, &scheduleItem.CinemaID, &scheduleItem.HallID,
+			&scheduleItem.PremierTime,&scheduleItem.Cost)
 		if ScanErr != nil {
 			log.Println(ScanErr)
 			return nil, models.ErrFooNoDBConnection

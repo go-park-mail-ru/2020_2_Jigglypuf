@@ -937,6 +937,9 @@ var doc = `{
                 "cinemaID": {
                     "type": "integer"
                 },
+                "cost": {
+                    "type": "integer"
+                },
                 "hallID": {
                     "type": "integer"
                 },
