@@ -782,9 +782,12 @@ var doc = `{
                     "type": "integer"
                 },
                 "placeConfig": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.HallConfig"
                 }
             }
+        },
+        "models.HallConfig": {
+            "type": "object"
         },
         "models.Movie": {
             "type": "object",

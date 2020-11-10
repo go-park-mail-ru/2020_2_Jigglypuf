@@ -84,7 +84,7 @@ CREATE TABLE schedule
 CREATE TABLE ticket
 (
     ID serial not null unique primary key,
-    User_login VARCHAR(32) not null references users (Login),
+    User_login VARCHAR(32) not null,
     schedule_id integer not null references schedule (ID),
     transaction_date timestamp default now(),
     row integer not null,

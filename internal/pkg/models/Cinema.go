@@ -23,8 +23,18 @@ type GetCinemaList struct {
 type CinemaHall struct {
 	ID          uint64
 	PlaceAmount int
-	PlaceConfig string
+	PlaceConfig HallConfig
 }
+
+type HallConfig struct{
+	levels []HallPlace
+}
+
+type HallPlace struct{
+	Place int
+	Row int
+}
+
 
 type Ticket struct {
 	ID              uint64

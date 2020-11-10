@@ -31,7 +31,9 @@ definitions:
       placeAmount:
         type: integer
       placeConfig:
-        type: string
+        $ref: '#/definitions/models.HallConfig'
+    type: object
+  models.HallConfig:
     type: object
   models.Movie:
     properties:
