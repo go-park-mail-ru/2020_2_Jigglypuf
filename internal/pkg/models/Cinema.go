@@ -23,7 +23,7 @@ type GetCinemaList struct {
 type CinemaHall struct {
 	ID          uint64
 	PlaceAmount int
-	PlaceConfig HallConfig
+	PlaceConfig *HallConfig
 }
 
 type HallConfig struct{
