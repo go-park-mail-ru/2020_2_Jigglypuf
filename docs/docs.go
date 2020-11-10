@@ -787,7 +787,26 @@ var doc = `{
             }
         },
         "models.HallConfig": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "levels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.HallPlace"
+                    }
+                }
+            }
+        },
+        "models.HallPlace": {
+            "type": "object",
+            "properties": {
+                "place": {
+                    "type": "integer"
+                },
+                "row": {
+                    "type": "integer"
+                }
+            }
         },
         "models.Movie": {
             "type": "object",

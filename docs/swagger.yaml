@@ -34,6 +34,18 @@ definitions:
         $ref: '#/definitions/models.HallConfig'
     type: object
   models.HallConfig:
+    properties:
+      levels:
+        items:
+          $ref: '#/definitions/models.HallPlace'
+        type: array
+    type: object
+  models.HallPlace:
+    properties:
+      place:
+        type: integer
+      row:
+        type: integer
     type: object
   models.Movie:
     properties:
