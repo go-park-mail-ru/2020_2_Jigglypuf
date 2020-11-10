@@ -1016,9 +1016,6 @@ var doc = `{
                 "login"
             ],
             "properties": {
-                "hallID": {
-                    "type": "integer"
-                },
                 "login": {
                     "type": "string"
                 },
