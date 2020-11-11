@@ -120,7 +120,7 @@ func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, para
 // @Router /api/profile/ [put]
 func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
-
+	log.Println("kek")
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method != http.MethodPut {

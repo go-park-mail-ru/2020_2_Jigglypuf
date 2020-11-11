@@ -164,7 +164,7 @@ func main() {
 
 	responseHandler := configureRouter(serverConfig)
 	serverConfig.httpServer = configureServer("8080", responseHandler)
-	log.Println("Starting server at port 8080")
+	log.Println("Starting server at port 8080 kek")
 	err := serverConfig.httpServer.ListenAndServe()
 	if err != nil {
 		log.Fatalln(err)
