@@ -103,7 +103,7 @@ func (t *MovieSQLRepository) RateMovie(user *models.User, id uint64, rating int6
 		return models.ErrFooNoDBConnection
 	}
 
-	_, DBErr := t.DBConnection.Exec("INSERT INTO rating_history (user_id,movie_id,movie_rating) VALUES ($1,$2,$3)",
+	_, DBErr := t.DBConnection.Exec("INSERT INTO rating_history (user_id,movie_id,movie_rating) VALUES ($1,$2,$3) on conflict(user_id, movie_id) do update set movie_rating = $3",
 		user.ID, id, rating)
 	if DBErr != nil {
 		log.Println(DBErr)

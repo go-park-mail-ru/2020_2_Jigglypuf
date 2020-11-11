@@ -11,6 +11,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"regexp"
 )
 
 type ProfileHandler struct {
@@ -33,6 +34,17 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 	returnPath := profile.MediaPath
 	if fileErr != nil {
 		return "", SavingError{}
+	}
+
+	buff := make([]byte, 512)
+	_, err := image.Read(buff)
+	if err != nil{
+		return "",SavingError{}
+	}
+
+	filetype := http.DetectContentType(buff)
+	if matched, regexErr := regexp.Match("image/.*", []byte(filetype)); !matched || regexErr != nil{
+		return "",SavingError{}
 	}
 
 	defer image.Close()
@@ -89,11 +101,7 @@ func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, para
 	}
 
 	w.WriteHeader(http.StatusOK)
-	responseProfile, responseErr := json.Marshal(requiredProfile)
-	if responseErr != nil {
-		models.BadBodyHTTPResponse(&w, responseErr)
-		return
-	}
+	responseProfile, _ := json.Marshal(requiredProfile)
 
 	_, _ = w.Write(responseProfile)
 }

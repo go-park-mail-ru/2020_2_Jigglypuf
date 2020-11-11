@@ -56,7 +56,8 @@ CREATE TABLE rating_history
     ID serial NOT NULL PRIMARY KEY ,
     user_id integer references users (ID),
     movie_id integer references movie (ID),
-    movie_rating integer NOT NULL
+    movie_rating integer NOT NULL,
+    UNIQUE(user_id, movie_id)
 );
 
 /* cinema halls structure */
