@@ -27,7 +27,7 @@ func NewHallDelivery(useCase hallservice.UseCase) *HallDelivery {
 // @Failure 400 {object} models.ServerResponse
 // @Failure 405 {object} models.ServerResponse
 // @Failure 500 {object} models.ServerResponse
-// @Router /hall/{id}/ [get]
+// @Router /api/hall/{id}/ [get]
 func (t *HallDelivery) GetHallStructure(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)

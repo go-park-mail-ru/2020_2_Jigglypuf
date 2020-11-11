@@ -43,7 +43,7 @@ func NewMovieHandler(usecase movieservice.MovieUseCase) *MovieHandler {
 // @Success 200 {array} models.MovieList
 // @Failure 400 {object} models.ServerResponse
 // @Failure 405 {object} models.ServerResponse
-// @Router /movie/ [get]
+// @Router /api/movie/ [get]
 func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -82,7 +82,7 @@ func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Movie
 // @Failure 400 {object} models.ServerResponse
 // @Failure 405 {object} models.ServerResponse
-// @Router /movie/{id}/ [get]
+// @Router /api/movie/{id}/ [get]
 func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -127,7 +127,7 @@ func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {object} models.ServerResponse "Bad body"
 // @Failure 401 {object} models.ServerResponse "No authorization"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
-// @Router /movie/rate/ [post]
+// @Router /api/movie/rate/ [post]
 func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
@@ -170,7 +170,7 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {object} models.ServerResponse "Bad body"
 // @Failure 401 {object} models.ServerResponse "No authorization"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
-// @Router /movie/actual/ [get]
+// @Router /api/movie/actual/ [get]
 func (t *MovieHandler) GetMoviesInCinema(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)

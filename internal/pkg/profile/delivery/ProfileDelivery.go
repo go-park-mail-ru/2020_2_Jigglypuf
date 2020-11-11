@@ -62,7 +62,7 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 // @Failure 400 {object} models.ServerResponse "Bad body"
 // @Failure 401 {object} models.ServerResponse "No authorization"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
-// @Router /profile/ [get]
+// @Router /api/profile/ [get]
 func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 
@@ -107,7 +107,7 @@ func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, para
 // @Failure 400 {object} models.ServerResponse "Bad body"
 // @Failure 401 {object} models.ServerResponse "No authorization"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
-// @Router /profile/ [put]
+// @Router /api/profile/ [put]
 func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 

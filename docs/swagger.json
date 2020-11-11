@@ -9,7 +9,7 @@
     "host": "https://cinemascope.space",
     "basePath": "/",
     "paths": {
-        "/auth/login/": {
+        "/api/auth/login/": {
             "post": {
                 "description": "login user and get cookie",
                 "consumes": [
@@ -45,7 +45,7 @@
                 }
             }
         },
-        "/auth/logout/": {
+        "/api/auth/logout/": {
             "post": {
                 "description": "SignOut user",
                 "summary": "SignOut",
@@ -67,7 +67,7 @@
                 }
             }
         },
-        "/auth/register/": {
+        "/api/auth/register/": {
             "post": {
                 "description": "register user and get cookie",
                 "consumes": [
@@ -103,7 +103,7 @@
                 }
             }
         },
-        "/cinema/": {
+        "/api/cinema/": {
             "get": {
                 "description": "Get cinema list",
                 "summary": "GetCinemaList",
@@ -149,7 +149,7 @@
                 }
             }
         },
-        "/cinema/{id}/": {
+        "/api/cinema/{id}/": {
             "get": {
                 "description": "Get cinema",
                 "summary": "GetCinema",
@@ -185,7 +185,7 @@
                 }
             }
         },
-        "/csrf/": {
+        "/api/csrf/": {
             "get": {
                 "description": "Returns movie schedule by ID",
                 "summary": "Get CSRF by cookie",
@@ -218,7 +218,7 @@
                 }
             }
         },
-        "/hall/{id}/": {
+        "/api/hall/{id}/": {
             "get": {
                 "description": "Get cinema hall placement structure",
                 "summary": "Get hall structure",
@@ -260,7 +260,7 @@
                 }
             }
         },
-        "/movie/": {
+        "/api/movie/": {
             "get": {
                 "description": "Get movie list",
                 "summary": "GetMovieList",
@@ -306,7 +306,7 @@
                 }
             }
         },
-        "/movie/actual/": {
+        "/api/movie/actual/": {
             "get": {
                 "description": "Returns movie that in the cinema",
                 "summary": "Get movies in cinema",
@@ -358,7 +358,7 @@
                 }
             }
         },
-        "/movie/rate/": {
+        "/api/movie/rate/": {
             "post": {
                 "description": "Rate movie",
                 "consumes": [
@@ -400,7 +400,7 @@
                 }
             }
         },
-        "/movie/{id}/": {
+        "/api/movie/{id}/": {
             "get": {
                 "description": "Get movie",
                 "summary": "GetMovie",
@@ -436,7 +436,7 @@
                 }
             }
         },
-        "/profile/": {
+        "/api/profile/": {
             "get": {
                 "description": "Get Profile",
                 "summary": "GetProfile",
@@ -521,7 +521,7 @@
                 }
             }
         },
-        "/schedule/": {
+        "/api/schedule/": {
             "get": {
                 "description": "Returns movie schedule by getting movie id, cinema id and day(date) in format schedule.TimeStandard",
                 "summary": "Get movie schedule",
@@ -580,7 +580,7 @@
                 }
             }
         },
-        "/schedule/{id}": {
+        "/api/schedule/{id}": {
             "get": {
                 "description": "Returns movie schedule by ID",
                 "summary": "Get schedule by id",
@@ -622,7 +622,7 @@
                 }
             }
         },
-        "/ticket/": {
+        "/api/ticket/": {
             "get": {
                 "description": "Get user ticket list",
                 "summary": "Get user ticket list",
@@ -664,7 +664,7 @@
                 }
             }
         },
-        "/ticket/buy/": {
+        "/api/ticket/buy/": {
             "post": {
                 "description": "Buys ticket by schedule ID and place to authenticated user or by e-mail",
                 "consumes": [
@@ -700,7 +700,7 @@
                 }
             }
         },
-        "/ticket/schedule/{id}/": {
+        "/api/ticket/schedule/{id}/": {
             "get": {
                 "description": "Get schedule hall ticket list by id",
                 "summary": "Get schedule hall ticket list",
@@ -745,7 +745,7 @@
                 }
             }
         },
-        "/ticket/{id}/": {
+        "/api/ticket/{id}/": {
             "get": {
                 "description": "Get user ticket by id",
                 "summary": "Get user ticket",

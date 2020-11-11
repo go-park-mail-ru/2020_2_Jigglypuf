@@ -1,4 +1,4 @@
 package cinemaservice
 
-const URLPattern = "/cinema/"
+const URLPattern = "/api/cinema/"
 const CinemaIDParam = "id"

@@ -29,7 +29,7 @@ func NewScheduleDelivery(useCase schedule.TimeTableUseCase) *ScheduleDelivery {
 // @Failure 400 {object} models.ServerResponse "Bad body"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
 // @Failure 500 {object} models.ServerResponse "internal error"
-// @Router /schedule/ [get]
+// @Router /api/schedule/ [get]
 func (t *ScheduleDelivery) GetMovieSchedule(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -60,7 +60,7 @@ func (t *ScheduleDelivery) GetMovieSchedule(w http.ResponseWriter, r *http.Reque
 // @Failure 400 {object} models.ServerResponse "Bad body"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
 // @Failure 500 {object} models.ServerResponse "internal error"
-// @Router /schedule/{id} [get]
+// @Router /api/schedule/{id} [get]
 func (t *ScheduleDelivery) GetSchedule(w http.ResponseWriter, r *http.Request){
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)

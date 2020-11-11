@@ -40,7 +40,7 @@ func NewHashCSRFToken(secret string, duration time.Duration)(*HashCSRFToken, err
 // @Failure 400 {object} models.ServerResponse "Bad body"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
 // @Failure 500 {object} models.ServerResponse "internal error"
-// @Router /csrf/ [get]
+// @Router /api/csrf/ [get]
 func (t *HashCSRFToken) GenerateCSRFToken(w http.ResponseWriter, r *http.Request){
 	if r.Method != http.MethodGet{
 		models.BadMethodHTTPResponse(&w)

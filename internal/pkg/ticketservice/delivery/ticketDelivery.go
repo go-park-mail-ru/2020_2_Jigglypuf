@@ -28,7 +28,7 @@ func NewTicketDelivery(useCase ticketservice.UseCase) *TicketDelivery {
 // @Success 200
 // @Failure 400 {object} models.ServerResponse "Bad body"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
-// @Router /ticket/buy/ [post]
+// @Router /api/ticket/buy/ [post]
 func (t *TicketDelivery) BuyTicket(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		models.BadMethodHTTPResponse(&w)
@@ -68,7 +68,7 @@ func (t *TicketDelivery) BuyTicket(w http.ResponseWriter, r *http.Request) {
 // @Failure 401 {object} models.ServerResponse "No auth"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
 // @Failure 500 {object} models.ServerResponse "Internal err"
-// @Router /ticket/ [get]
+// @Router /api/ticket/ [get]
 func (t *TicketDelivery) GetUserTickets(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -101,7 +101,7 @@ func (t *TicketDelivery) GetUserTickets(w http.ResponseWriter, r *http.Request) 
 // @Failure 401 {object} models.ServerResponse "No auth"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
 // @Failure 500 {object} models.ServerResponse "Internal err"
-// @Router /ticket/{id}/ [get]
+// @Router /api/ticket/{id}/ [get]
 func (t *TicketDelivery) GetUsersSimpleTicket(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -138,7 +138,7 @@ func (t *TicketDelivery) GetUsersSimpleTicket(w http.ResponseWriter, r *http.Req
 // @Failure 400 {object} models.ServerResponse "Bad body"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
 // @Failure 500 {object} models.ServerResponse "Internal err"
-// @Router /ticket/schedule/{id}/ [get]
+// @Router /api/ticket/schedule/{id}/ [get]
 func (t *TicketDelivery) GetHallScheduleTickets(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)

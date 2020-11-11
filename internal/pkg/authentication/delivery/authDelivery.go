@@ -29,7 +29,7 @@ func NewUserHandler(useCase interfaces.UserUseCase) *UserHandler {
 // @Success 200
 // @Failure 400 {object} models.ServerResponse
 // @Failure 405 {object} models.ServerResponse
-// @Router /auth/login/ [post]
+// @Router /api/auth/login/ [post]
 func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 
@@ -65,7 +65,7 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request, params
 // @Success 200
 // @Failure 400 {object} models.ServerResponse
 // @Failure 405 {object} models.ServerResponse
-// @Router /auth/register/ [post]
+// @Router /api/auth/register/ [post]
 func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 
@@ -102,7 +102,7 @@ func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request, pa
 // @Success 200
 // @Failure 405 {object} models.ServerResponse
 // @Failure 401 {object} models.ServerResponse
-// @Router /auth/logout/ [post]
+// @Router /api/auth/logout/ [post]
 func (t *UserHandler) SignOutHandler(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	if r.Method != http.MethodPost {
 		models.BadMethodHTTPResponse(&w)
