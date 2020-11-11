@@ -71,7 +71,6 @@ func (t *CookieTarantoolRepository) SetCookie(cookie *http.Cookie, userID uint64
 
 func (t *CookieTarantoolRepository) RemoveCookie(cookie *http.Cookie) error {
 	_, DBErr := t.connectionDB.Delete(tarantoolConfig.DBSpaceName, "primary", []interface{}{cookie.Value})
-
 	if DBErr != nil {
 		return DBErr
 	}

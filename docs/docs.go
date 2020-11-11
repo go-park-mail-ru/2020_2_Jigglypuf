@@ -200,6 +200,39 @@ var doc = `{
                 }
             }
         },
+        "/csrf/": {
+            "get": {
+                "description": "Returns movie schedule by ID",
+                "summary": "Get CSRF by cookie",
+                "operationId": "csrf-id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/csrf.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad body",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "internal error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/hall/{id}/": {
             "get": {
                 "description": "Get cinema hall placement structure",
@@ -562,6 +595,48 @@ var doc = `{
                 }
             }
         },
+        "/schedule/{id}": {
+            "get": {
+                "description": "Returns movie schedule by ID",
+                "summary": "Get schedule by id",
+                "operationId": "schedule-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "schedule id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Schedule"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad body",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "internal error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/ticket/": {
             "get": {
                 "description": "Get user ticket list",
@@ -735,6 +810,14 @@ var doc = `{
         }
     },
     "definitions": {
+        "csrf.Response": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "models.AuthInput": {
             "type": "object",
             "required": [

@@ -18,19 +18,19 @@ type TestingCookieStruct struct{
 }
 
 var(
-	TestingStruct *TestingCookieStruct = nil
+	testingStruct *TestingCookieStruct = nil
 )
 
 func setUp(t *testing.T){
-	TestingStruct = new(TestingCookieStruct)
-	TestingStruct.goMockController = gomock.NewController(t)
+	testingStruct = new(TestingCookieStruct)
+	testingStruct.goMockController = gomock.NewController(t)
 
-	TestingStruct.useCaseMock = mock.NewMockUseCase(TestingStruct.goMockController)
-	TestingStruct.handler = NewCookieHandler(TestingStruct.useCaseMock)
+	testingStruct.useCaseMock = mock.NewMockUseCase(testingStruct.goMockController)
+	testingStruct.handler = NewCookieHandler(testingStruct.useCaseMock)
 }
 
 func tearDown(){
-	TestingStruct.goMockController.Finish()
+	testingStruct.goMockController.Finish()
 }
 
 func TestCookieSuccessDelivery(t *testing.T){
@@ -47,8 +47,8 @@ func TestCookieSuccessDelivery(t *testing.T){
 
 	testReq := httptest.NewRequest("GET", "/cookie/", nil)
 	testReq.AddCookie(&cookieValue)
-	TestingStruct.useCaseMock.EXPECT().CheckCookie(gomock.Any()).Return(uint64(1), true)
-	_, returnErr := TestingStruct.handler.CheckCookie(testReq)
+	testingStruct.useCaseMock.EXPECT().CheckCookie(gomock.Any()).Return(uint64(1), true)
+	_, returnErr := testingStruct.handler.CheckCookie(testReq)
 	if !returnErr{
 		t.Fatalf("TEST: Success cookie")
 	}
@@ -61,7 +61,7 @@ func TestCookieDeliveryFailCase(t *testing.T){
 	setUp(t)
 
 	testReq := httptest.NewRequest(http.MethodGet, "/cookie/", nil)
-	_, returnErr := TestingStruct.handler.CheckCookie(testReq)
+	_, returnErr := testingStruct.handler.CheckCookie(testReq)
 	if returnErr{
 		t.Fatalf("TEST: Failure cookie")
 	}

@@ -1,5 +1,10 @@
 basePath: /
 definitions:
+  csrf.Response:
+    properties:
+      token:
+        type: string
+    type: object
   models.AuthInput:
     properties:
       login:
@@ -329,6 +334,28 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: GetCinema
+  /csrf/:
+    get:
+      description: Returns movie schedule by ID
+      operationId: csrf-id
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/csrf.Response'
+        "400":
+          description: Bad body
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "500":
+          description: internal error
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: Get CSRF by cookie
   /hall/{id}/:
     get:
       description: Get cinema hall placement structure
@@ -571,6 +598,34 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: Get movie schedule
+  /schedule/{id}:
+    get:
+      description: Returns movie schedule by ID
+      operationId: schedule-id
+      parameters:
+      - description: schedule id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Schedule'
+        "400":
+          description: Bad body
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "500":
+          description: internal error
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: Get schedule by id
   /ticket/:
     get:
       description: Get user ticket list

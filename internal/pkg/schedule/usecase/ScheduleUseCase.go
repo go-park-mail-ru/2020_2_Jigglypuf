@@ -35,3 +35,12 @@ func (t *ScheduleUseCase) GetMovieSchedule(movieID, cinemaID string, date string
 	}
 	return t.ScheduleRepository.GetMovieCinemaSchedule(uint64(castedMovieID), uint64(castedCinemaID), date)
 }
+
+func (t *ScheduleUseCase) GetSchedule(scheduleID string)(*models.Schedule, error){
+	castedScheduleID, castErr := strconv.Atoi(scheduleID)
+	if castErr != nil{
+		return nil,models.ErrFooCastErr
+	}
+
+	return t.ScheduleRepository.GetSchedule(uint64(castedScheduleID))
+}

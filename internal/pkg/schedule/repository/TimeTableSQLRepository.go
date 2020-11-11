@@ -79,3 +79,17 @@ func (t *ScheduleSQLRepository) GetScheduleHallID(scheduleID uint64)(uint64, err
 	}
 	return HallID, nil
 }
+
+func (t *ScheduleSQLRepository) GetSchedule(scheduleID uint64)(*models.Schedule, error){
+	if t.DBConnection == nil {
+		return nil, models.ErrFooNoDBConnection
+	}
+	resultItem := new(models.Schedule)
+	ScanErr := t.DBConnection.QueryRow("SELECT id, movie_id, cinema_id, hall_id, premiere_time, cost from schedule where id = $1", scheduleID).Scan(&resultItem.ID,
+		&resultItem.MovieID, &resultItem.CinemaID, &resultItem.HallID, &resultItem.PremierTime, &resultItem.Cost)
+	if ScanErr != nil{
+		return nil,models.ErrFooIncorrectInputInfo
+	}
+
+	return resultItem, nil
+}

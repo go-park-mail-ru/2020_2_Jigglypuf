@@ -19,19 +19,19 @@ type TestingHallStruct struct{
 }
 
 var(
-	TestingStruct *TestingHallStruct = nil
+	testingStruct *TestingHallStruct = nil
 )
 
 func setUp(t *testing.T){
-	TestingStruct = new(TestingHallStruct)
-	TestingStruct.GoMockController = gomock.NewController(t)
+	testingStruct = new(TestingHallStruct)
+	testingStruct.GoMockController = gomock.NewController(t)
 
-	TestingStruct.useCaseMock = mock.NewMockUseCase(TestingStruct.GoMockController)
-	TestingStruct.handler = NewHallDelivery(TestingStruct.useCaseMock)
+	testingStruct.useCaseMock = mock.NewMockUseCase(testingStruct.GoMockController)
+	testingStruct.handler = NewHallDelivery(testingStruct.useCaseMock)
 }
 
 func tearDown(){
-	TestingStruct.GoMockController.Finish()
+	testingStruct.GoMockController.Finish()
 }
 
 func TestGetHallStructureSuccessCase(t *testing.T){
@@ -43,10 +43,10 @@ func TestGetHallStructureSuccessCase(t *testing.T){
 	varsMap := map[string]string{
 		hallservice.HallIDPathName: "1",
 	}
-	TestingStruct.useCaseMock.EXPECT().GetHallStructure(gomock.Any()).Return(hallItem, nil)
+	testingStruct.useCaseMock.EXPECT().GetHallStructure(gomock.Any()).Return(hallItem, nil)
 	testReq = mux.SetURLVars(testReq, varsMap)
 
-	TestingStruct.handler.GetHallStructure(testRecorder, testReq)
+	testingStruct.handler.GetHallStructure(testRecorder, testReq)
 
 	if testRecorder.Code != http.StatusOK{
 		t.Fatalf("TEST: Success get hall "+
@@ -77,7 +77,7 @@ func TestGetHallStructureFailureCases(t *testing.T){
 	}
 
 	for _, val := range testCases{
-		TestingStruct.handler.GetHallStructure(val.Recorder, val.Request)
+		testingStruct.handler.GetHallStructure(val.Recorder, val.Request)
 		if val.Recorder.Code != val.StatusCode{
 			t.Fatalf("TEST: Failure get hall "+
 				"handler returned wrong status code: got %v want %v", val.Recorder.Code, val.StatusCode)
@@ -95,10 +95,10 @@ func TestGetHallUCErrorHandling(t *testing.T){
 	varsMap := map[string]string{
 		hallservice.HallIDPathName: "1",
 	}
-	TestingStruct.useCaseMock.EXPECT().GetHallStructure(gomock.Any()).Return(nil, errors.New("test error"))
+	testingStruct.useCaseMock.EXPECT().GetHallStructure(gomock.Any()).Return(nil, errors.New("test error"))
 	testReq = mux.SetURLVars(testReq, varsMap)
 
-	TestingStruct.handler.GetHallStructure(testRecorder, testReq)
+	testingStruct.handler.GetHallStructure(testRecorder, testReq)
 	if testRecorder.Code != http.StatusBadRequest{
 		t.Fatalf("TEST: Failure UC get hall "+
 			"handler returned wrong status code: got %v want %v", testRecorder.Code, http.StatusBadRequest)

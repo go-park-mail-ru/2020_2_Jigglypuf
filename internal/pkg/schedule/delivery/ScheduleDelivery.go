@@ -4,6 +4,7 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"net/http"
 )
 
@@ -40,6 +41,42 @@ func (t *ScheduleDelivery) GetMovieSchedule(w http.ResponseWriter, r *http.Reque
 	cinemaID := r.URL.Query().Get(schedule.CinemaIDQueryParamName)
 	date := r.URL.Query().Get(schedule.DateQueryParamName)
 	resultList, paramErr := t.UseCase.GetMovieSchedule(movieID, cinemaID, date)
+	if paramErr != nil {
+		models.BadBodyHTTPResponse(&w, paramErr)
+		return
+	}
+
+	outputBuf, castErr := json.Marshal(resultList)
+	if castErr != nil {
+		models.InternalErrorHTTPResponse(&w)
+		return
+	}
+
+	_, _ = w.Write(outputBuf)
+}
+
+
+// Schedule godoc
+// @Summary Get schedule by id
+// @Description Returns movie schedule by ID
+// @ID schedule-id
+// @Param id path int true "schedule id"
+// @Success 200 {object} models.Schedule
+// @Failure 400 {object} models.ServerResponse "Bad body"
+// @Failure 405 {object} models.ServerResponse "Method not allowed"
+// @Failure 500 {object} models.ServerResponse "internal error"
+// @Router /schedule/{id} [get]
+func (t *ScheduleDelivery) GetSchedule(w http.ResponseWriter, r *http.Request){
+	if r.Method != http.MethodGet {
+		models.BadMethodHTTPResponse(&w)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	vars := mux.Vars(r)
+	scheduleID := vars[schedule.ScheduleID]
+	resultList, paramErr := t.UseCase.GetSchedule(scheduleID)
+
 	if paramErr != nil {
 		models.BadBodyHTTPResponse(&w, paramErr)
 		return

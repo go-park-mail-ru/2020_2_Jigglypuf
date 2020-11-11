@@ -1,12 +1,13 @@
 package scheduleserver
 
 import (
+	"database/sql"
+	"fmt"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule/delivery"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule/repository"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule/usecase"
-	"database/sql"
 	"github.com/gorilla/mux"
 )
 
@@ -21,6 +22,7 @@ func configureRouter(handler *delivery.ScheduleDelivery) *mux.Router {
 	router := mux.NewRouter()
 
 	router.HandleFunc(schedule.URLPattern, handler.GetMovieSchedule)
+	router.HandleFunc(schedule.URLPattern + fmt.Sprintf("{%s:[0-9]+}/", schedule.ScheduleID),handler.GetSchedule)
 	return router
 }
 

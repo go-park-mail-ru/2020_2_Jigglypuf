@@ -1,6 +1,10 @@
 package authentication
 
 import (
+	"context"
+	"database/sql"
+	"encoding/json"
+	"errors"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/delivery"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/repository"
@@ -9,10 +13,6 @@ import (
 	cookieMock "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie/mock"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	profileMock "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/mock"
-	"context"
-	"database/sql"
-	"encoding/json"
-	"errors"
 	"github.com/golang/mock/gomock"
 	"github.com/julienschmidt/httprouter"
 	"golang.org/x/crypto/bcrypt"
@@ -44,34 +44,34 @@ type TestCase struct {
 }
 
 var (
-	TestingStruct *TestingAuthenticationStruct = nil
+	testingStruct *TestingAuthenticationStruct = nil
 )
 
 func setUp(t *testing.T) {
-	TestingStruct = new(TestingAuthenticationStruct)
-	TestingStruct.GoMockController = gomock.NewController(t)
+	testingStruct = new(TestingAuthenticationStruct)
+	testingStruct.GoMockController = gomock.NewController(t)
 
 	DBConnect, DBMock, DBErr := sqlmock.New()
 	if DBErr != nil {
 		t.Fatal(DBErr)
 	}
-	TestingStruct.DBConn = DBConnect
-	TestingStruct.DBMock = DBMock
-	profileRepFoo := profileMock.NewMockRepository(TestingStruct.GoMockController)
-	cookieRepFoo := cookieMock.NewMockRepository(TestingStruct.GoMockController)
+	testingStruct.DBConn = DBConnect
+	testingStruct.DBMock = DBMock
+	profileRepFoo := profileMock.NewMockRepository(testingStruct.GoMockController)
+	cookieRepFoo := cookieMock.NewMockRepository(testingStruct.GoMockController)
 	authRep := repository.NewAuthSQLRepository(DBConnect)
 	authUC := usecase.NewUserUseCase(authRep, profileRepFoo, cookieRepFoo, "testing_salt")
 	authHandler := delivery.NewUserHandler(authUC)
-	TestingStruct.Repository = authRep
-	TestingStruct.UseCase = authUC
-	TestingStruct.Handler = authHandler
-	TestingStruct.ProfileRepMock = profileRepFoo
-	TestingStruct.CookieRepMock = cookieRepFoo
+	testingStruct.Repository = authRep
+	testingStruct.UseCase = authUC
+	testingStruct.Handler = authHandler
+	testingStruct.ProfileRepMock = profileRepFoo
+	testingStruct.CookieRepMock = cookieRepFoo
 }
 
 func tearDown() {
-	TestingStruct.GoMockController.Finish()
-	_ = TestingStruct.DBConn.Close()
+	testingStruct.GoMockController.Finish()
+	_ = testingStruct.DBConn.Close()
 }
 
 func TestSignUpSuccessCase(t *testing.T) {
@@ -88,17 +88,17 @@ func TestSignUpSuccessCase(t *testing.T) {
 		httptest.NewRequest("POST", "/signup/", strings.NewReader(string(RegistrationBody))),
 		http.Response{StatusCode: http.StatusOK},
 		httptest.NewRecorder(),
-		TestingStruct.Handler.RegisterHandler,
+		testingStruct.Handler.RegisterHandler,
 	}
 
 	// проверка работы регистрации
 
 	resultRows := []string{"ID"}
-	TestingStruct.DBMock.ExpectQuery("INSERT INTO users .*").WillReturnRows(sqlmock.NewRows(resultRows).AddRow(1))
-	TestingStruct.DBMock.ExpectCommit()
+	testingStruct.DBMock.ExpectQuery("INSERT INTO users .*").WillReturnRows(sqlmock.NewRows(resultRows).AddRow(1))
+	testingStruct.DBMock.ExpectCommit()
 
-	TestingStruct.ProfileRepMock.EXPECT().CreateProfile(gomock.Any()).Return(nil)
-	TestingStruct.CookieRepMock.EXPECT().SetCookie(gomock.Any(), gomock.Any()).Return(nil)
+	testingStruct.ProfileRepMock.EXPECT().CreateProfile(gomock.Any()).Return(nil)
+	testingStruct.CookieRepMock.EXPECT().SetCookie(gomock.Any(), gomock.Any()).Return(nil)
 
 	value.TestHandler(value.TestResponseWriter, value.TestRequest, httprouter.Params{})
 	if value.TestResponseWriter.Code != value.TestResponse.StatusCode {
@@ -127,7 +127,7 @@ func TestSignUpValidation(t *testing.T) {
 		httptest.NewRequest("POST", "/signup/", strings.NewReader(string(incorrectRegistrationBody))),
 		http.Response{StatusCode: http.StatusBadRequest},
 		httptest.NewRecorder(),
-		TestingStruct.Handler.RegisterHandler,
+		testingStruct.Handler.RegisterHandler,
 	}
 
 	// проверка работы валидатора
@@ -153,11 +153,11 @@ func TestUserIdentityCase(t *testing.T) {
 		httptest.NewRequest("POST", "/signup/", strings.NewReader(string(RegistrationBody))),
 		http.Response{StatusCode: http.StatusBadRequest},
 		httptest.NewRecorder(),
-		TestingStruct.Handler.RegisterHandler,
+		testingStruct.Handler.RegisterHandler,
 	}
 
-	TestingStruct.DBMock.ExpectQuery("INSERT INTO users .*").WillReturnError(errors.New("user already exists"))
-	TestingStruct.DBMock.ExpectCommit()
+	testingStruct.DBMock.ExpectQuery("INSERT INTO users .*").WillReturnError(errors.New("user already exists"))
+	testingStruct.DBMock.ExpectCommit()
 
 	testCase.TestHandler(testCase.TestResponseWriter, testCase.TestRequest, httprouter.Params{})
 	if testCase.TestResponseWriter.Code != testCase.TestResponse.StatusCode {
@@ -181,12 +181,12 @@ func TestCheckSignUpErrors(t *testing.T) {
 		httptest.NewRequest("POST", "/signup/", strings.NewReader(string(RegistrationBody))),
 		http.Response{StatusCode: http.StatusBadRequest},
 		httptest.NewRecorder(),
-		TestingStruct.Handler.RegisterHandler,
+		testingStruct.Handler.RegisterHandler,
 	}
 
 	// check if database returned error
-	TestingStruct.DBMock.ExpectQuery("INSERT INTO users .*").WillReturnError(errors.New("some error"))
-	TestingStruct.DBMock.ExpectCommit()
+	testingStruct.DBMock.ExpectQuery("INSERT INTO users .*").WillReturnError(errors.New("some error"))
+	testingStruct.DBMock.ExpectCommit()
 	value.TestHandler(value.TestResponseWriter, value.TestRequest, httprouter.Params{})
 	if value.TestResponseWriter.Code != http.StatusBadRequest {
 		t.Fatalf("TEST: "+value.TestName+" "+
@@ -208,14 +208,14 @@ func TestSignUpProfileError(t *testing.T) {
 		httptest.NewRequest("POST", "/signup/", strings.NewReader(string(RegistrationBody))),
 		http.Response{StatusCode: http.StatusBadRequest},
 		httptest.NewRecorder(),
-		TestingStruct.Handler.RegisterHandler,
+		testingStruct.Handler.RegisterHandler,
 	}
 
 	// check if profile returned error
 	resultRows := []string{"ID"}
-	TestingStruct.DBMock.ExpectQuery("INSERT INTO users .*").WillReturnRows(sqlmock.NewRows(resultRows).AddRow(1))
-	TestingStruct.DBMock.ExpectCommit()
-	TestingStruct.ProfileRepMock.EXPECT().CreateProfile(gomock.Any()).Return(errors.New("some error"))
+	testingStruct.DBMock.ExpectQuery("INSERT INTO users .*").WillReturnRows(sqlmock.NewRows(resultRows).AddRow(1))
+	testingStruct.DBMock.ExpectCommit()
+	testingStruct.ProfileRepMock.EXPECT().CreateProfile(gomock.Any()).Return(errors.New("some error"))
 	value.TestResponseWriter = httptest.NewRecorder()
 	value.TestHandler(value.TestResponseWriter, value.TestRequest, httprouter.Params{})
 	if value.TestResponseWriter.Code != http.StatusBadRequest {
@@ -239,15 +239,15 @@ func TestSignUpCookieErr(t *testing.T){
 		httptest.NewRequest("POST", "/signup/", strings.NewReader(string(RegistrationBody))),
 		http.Response{StatusCode: http.StatusBadRequest},
 		httptest.NewRecorder(),
-		TestingStruct.Handler.RegisterHandler,
+		testingStruct.Handler.RegisterHandler,
 	}
 
 	// check if cookie service returned error
 	resultRows := []string{"ID"}
-	TestingStruct.DBMock.ExpectQuery("INSERT INTO users .*").WillReturnRows(sqlmock.NewRows(resultRows).AddRow(1))
-	TestingStruct.DBMock.ExpectCommit()
-	TestingStruct.ProfileRepMock.EXPECT().CreateProfile(gomock.Any()).Return(nil)
-	TestingStruct.CookieRepMock.EXPECT().SetCookie(gomock.Any(), gomock.Any()).Return(errors.New("some error"))
+	testingStruct.DBMock.ExpectQuery("INSERT INTO users .*").WillReturnRows(sqlmock.NewRows(resultRows).AddRow(1))
+	testingStruct.DBMock.ExpectCommit()
+	testingStruct.ProfileRepMock.EXPECT().CreateProfile(gomock.Any()).Return(nil)
+	testingStruct.CookieRepMock.EXPECT().SetCookie(gomock.Any(), gomock.Any()).Return(errors.New("some error"))
 	value.TestResponseWriter = httptest.NewRecorder()
 	value.TestHandler(value.TestResponseWriter, value.TestRequest, httprouter.Params{})
 	if value.TestResponseWriter.Code != http.StatusBadRequest {
@@ -271,7 +271,7 @@ func TestSignUpDeliveryError(t *testing.T){
 		httptest.NewRequest("POST", "/signup/", strings.NewReader(string(RegistrationBody))),
 		http.Response{StatusCode: http.StatusBadRequest},
 		httptest.NewRecorder(),
-		TestingStruct.Handler.RegisterHandler,
+		testingStruct.Handler.RegisterHandler,
 	}
 	// check if method not allowed
 	value.TestRequest =  httptest.NewRequest(http.MethodGet,"/signup/",strings.NewReader("sinaoifnoisd"))
@@ -306,17 +306,17 @@ func TestSignInSuccessCase(t *testing.T) {
 		httptest.NewRequest("POST", "/signin/", strings.NewReader(string(authenticationBody))),
 		http.Response{StatusCode: http.StatusOK},
 		httptest.NewRecorder(),
-		TestingStruct.Handler.AuthHandler,
+		testingStruct.Handler.AuthHandler,
 	}
 
 
 	resultRows := []string{"ID","Login","Password"}
 	hashPassword,_ := bcrypt.GenerateFromPassword([]byte(correctAuthenticationModel.Password + "testing_salt"),7)
-	TestingStruct.DBMock.ExpectQuery("SELECT .* FROM users .*").WillReturnRows(sqlmock.NewRows(resultRows).AddRow(1,correctAuthenticationModel.Login, 
+	testingStruct.DBMock.ExpectQuery("SELECT .* FROM users .*").WillReturnRows(sqlmock.NewRows(resultRows).AddRow(1,correctAuthenticationModel.Login,
 		string(hashPassword)))
-	TestingStruct.DBMock.ExpectCommit()
+	testingStruct.DBMock.ExpectCommit()
 	
-	TestingStruct.CookieRepMock.EXPECT().SetCookie(gomock.Any(), gomock.Any()).Return(nil)
+	testingStruct.CookieRepMock.EXPECT().SetCookie(gomock.Any(), gomock.Any()).Return(nil)
 
 	testCase.TestHandler(testCase.TestResponseWriter, testCase.TestRequest, httprouter.Params{})
 	if testCase.TestResponseWriter.Code != testCase.TestResponse.StatusCode {
@@ -342,7 +342,7 @@ func TestSignInValidator(t *testing.T){
 		httptest.NewRequest("POST", "/signin/", strings.NewReader(string(authenticationBody))),
 		http.Response{StatusCode: http.StatusBadRequest},
 		httptest.NewRecorder(),
-		TestingStruct.Handler.AuthHandler,
+		testingStruct.Handler.AuthHandler,
 	}
 
 	testCase.TestHandler(testCase.TestResponseWriter, testCase.TestRequest, httprouter.Params{})
@@ -364,7 +364,7 @@ func TestSignInErrors(t *testing.T) {
 	// check if method is incorrect
 	testReq := httptest.NewRequest("GET", "/signin/", strings.NewReader(string(authenticationBody)))
 	testRecorder := httptest.NewRecorder()
-	TestingStruct.Handler.AuthHandler(testRecorder, testReq, httprouter.Params{})
+	testingStruct.Handler.AuthHandler(testRecorder, testReq, httprouter.Params{})
 	if testRecorder.Code != http.StatusMethodNotAllowed {
 		t.Fatalf("TEST: method not allowed "+
 			"handler returned wrong status code: got %v want %v", testRecorder.Code, http.StatusMethodNotAllowed)
@@ -373,7 +373,7 @@ func TestSignInErrors(t *testing.T) {
 	//check if input is incorrect
 	testReq = httptest.NewRequest("POST", "/signin/", strings.NewReader("incorrect input"))
 	testRecorder = httptest.NewRecorder()
-	TestingStruct.Handler.AuthHandler(testRecorder, testReq, httprouter.Params{})
+	testingStruct.Handler.AuthHandler(testRecorder, testReq, httprouter.Params{})
 	if testRecorder.Code != http.StatusBadRequest {
 		t.Fatalf("TEST: incorrect input format "+
 			"handler returned wrong status code: got %v want %v", testRecorder.Code, http.StatusMethodNotAllowed)
@@ -384,7 +384,7 @@ func TestSignInErrors(t *testing.T) {
 	emptyBody, _ := json.Marshal(emptyModel)
 	testReq = httptest.NewRequest("POST", "/signin/", strings.NewReader(string(emptyBody)))
 	testRecorder = httptest.NewRecorder()
-	TestingStruct.Handler.AuthHandler(testRecorder, testReq, httprouter.Params{})
+	testingStruct.Handler.AuthHandler(testRecorder, testReq, httprouter.Params{})
 	if testRecorder.Code != http.StatusBadRequest {
 		t.Fatalf("TEST: empty input model "+
 			"handler returned wrong status code: got %v want %v", testRecorder.Code, http.StatusMethodNotAllowed)
@@ -400,11 +400,11 @@ func TestSignInInternalDBError(t *testing.T) {
 	}
 	authenticationBody, _ := json.Marshal(authenticationModel)
 	// check if db returned error
-	TestingStruct.DBMock.ExpectQuery("SELECT .* FROM users .*").WillReturnError(errors.New("some error"))
-	TestingStruct.DBMock.ExpectCommit()
+	testingStruct.DBMock.ExpectQuery("SELECT .* FROM users .*").WillReturnError(errors.New("some error"))
+	testingStruct.DBMock.ExpectCommit()
 	testReq := httptest.NewRequest("POST", "/signin/", strings.NewReader(string(authenticationBody)))
 	testRecorder := httptest.NewRecorder()
-	TestingStruct.Handler.AuthHandler(testRecorder, testReq, httprouter.Params{})
+	testingStruct.Handler.AuthHandler(testRecorder, testReq, httprouter.Params{})
 	if testRecorder.Code != http.StatusBadRequest {
 		t.Fatalf("TEST: handling db error "+
 			"handler returned wrong status code: got %v want %v", testRecorder.Code, http.StatusMethodNotAllowed)
@@ -421,12 +421,12 @@ func TestSignInPasswordIncorrect(t *testing.T) {
 	authenticationBody, _ := json.Marshal(authenticationModel)
 	//check if password is incorrect
 	resultRows := []string{"ID", "Login", "Password"}
-	TestingStruct.DBMock.ExpectQuery("SELECT .* FROM users .*").WillReturnRows(sqlmock.NewRows(resultRows).AddRow(1,
+	testingStruct.DBMock.ExpectQuery("SELECT .* FROM users .*").WillReturnRows(sqlmock.NewRows(resultRows).AddRow(1,
 		authenticationModel.Login, "another_password"))
-	TestingStruct.DBMock.ExpectCommit()
+	testingStruct.DBMock.ExpectCommit()
 	testReq := httptest.NewRequest("POST", "/signin/", strings.NewReader(string(authenticationBody)))
 	testRecorder := httptest.NewRecorder()
-	TestingStruct.Handler.AuthHandler(testRecorder, testReq, httprouter.Params{})
+	testingStruct.Handler.AuthHandler(testRecorder, testReq, httprouter.Params{})
 	if testRecorder.Code != http.StatusBadRequest {
 		t.Fatalf("TEST: handling incorrct pass "+
 			"handler returned wrong status code: got %v want %v", testRecorder.Code, http.StatusMethodNotAllowed)
@@ -443,14 +443,14 @@ func TestSignInHandlingCookieErr(t *testing.T){
 	// check if cookie service returned error
 	resultRows := []string{"ID","Login","Password"}
 	hashPassword,_ := bcrypt.GenerateFromPassword([]byte(authenticationModel.Password + "testing_salt"),7)
-	TestingStruct.DBMock.ExpectQuery("SELECT .* FROM users .*").WillReturnRows(sqlmock.NewRows(resultRows).AddRow(1,authenticationModel.Login,
+	testingStruct.DBMock.ExpectQuery("SELECT .* FROM users .*").WillReturnRows(sqlmock.NewRows(resultRows).AddRow(1,authenticationModel.Login,
 		string(hashPassword)))
-	TestingStruct.DBMock.ExpectCommit()
+	testingStruct.DBMock.ExpectCommit()
 
-	TestingStruct.CookieRepMock.EXPECT().SetCookie(gomock.Any(), gomock.Any()).Return(errors.New("some error"))
+	testingStruct.CookieRepMock.EXPECT().SetCookie(gomock.Any(), gomock.Any()).Return(errors.New("some error"))
 	testReq := httptest.NewRequest("POST", "/signin/", strings.NewReader(string(authenticationBody)))
 	testRecorder := httptest.NewRecorder()
-	TestingStruct.Handler.AuthHandler(testRecorder, testReq, httprouter.Params{})
+	testingStruct.Handler.AuthHandler(testRecorder, testReq, httprouter.Params{})
 	if testRecorder.Code != http.StatusBadRequest{
 		t.Fatalf("TEST: handling cookie service error "+
 			"handler returned wrong status code: got %v want %v", testRecorder.Code, http.StatusMethodNotAllowed)
@@ -475,9 +475,9 @@ func TestLogOutSuccessCase(t *testing.T){
 	ctx = context.WithValue(ctx,cookie.ContextIsAuthName, true)
 	ctx = context.WithValue(ctx,cookie.ContextUserIDName, 1)
 	testReq.AddCookie(&testCookie)
-	TestingStruct.CookieRepMock.EXPECT().RemoveCookie(gomock.Any()).Return(nil)
+	testingStruct.CookieRepMock.EXPECT().RemoveCookie(gomock.Any()).Return(nil)
 
-	TestingStruct.Handler.SignOutHandler(testResponseRecorder, testReq.WithContext(ctx), httprouter.Params{})
+	testingStruct.Handler.SignOutHandler(testResponseRecorder, testReq.WithContext(ctx), httprouter.Params{})
 	if testResponseRecorder.Code != http.StatusOK{
 		t.Fatalf("TEST: success logout status code "+
 			"handler returned wrong status code: got %v want %v",testResponseRecorder.Code, http.StatusOK)
@@ -491,7 +491,7 @@ func TestLogOutErrors(t *testing.T){
 	//check if method is invalid
 	testReq := httptest.NewRequest(http.MethodGet, "/logout", nil)
 	testRecorder := httptest.NewRecorder()
-	TestingStruct.Handler.SignOutHandler(testRecorder, testReq, httprouter.Params{})
+	testingStruct.Handler.SignOutHandler(testRecorder, testReq, httprouter.Params{})
 	if testRecorder.Code != http.StatusMethodNotAllowed{
 		t.Fatalf("TEST: method not allowed logout status code "+
 			"handler returned wrong status code: got %v want %v",testRecorder.Code, http.StatusMethodNotAllowed)
@@ -500,7 +500,7 @@ func TestLogOutErrors(t *testing.T){
 	// check if no authorization
 	testReq = httptest.NewRequest(http.MethodPost, "/logout", nil)
 	testRecorder = httptest.NewRecorder()
-	TestingStruct.Handler.SignOutHandler(testRecorder, testReq, httprouter.Params{})
+	testingStruct.Handler.SignOutHandler(testRecorder, testReq, httprouter.Params{})
 	if testRecorder.Code != http.StatusUnauthorized{
 		t.Fatalf("TEST: unauthorized logout status code "+
 			"handler returned wrong status code: got %v want %v",testRecorder.Code, http.StatusUnauthorized)
@@ -522,8 +522,8 @@ func TestLogOutErrors(t *testing.T){
 	ctx = context.WithValue(ctx,cookie.ContextUserIDName, 1)
 	testReq.AddCookie(&testCookie)
 	testRecorder = httptest.NewRecorder()
-	TestingStruct.CookieRepMock.EXPECT().RemoveCookie(gomock.Any()).Return(errors.New("test cookie error"))
-	TestingStruct.Handler.SignOutHandler(testRecorder, testReq.WithContext(ctx), httprouter.Params{})
+	testingStruct.CookieRepMock.EXPECT().RemoveCookie(gomock.Any()).Return(errors.New("test cookie error"))
+	testingStruct.Handler.SignOutHandler(testRecorder, testReq.WithContext(ctx), httprouter.Params{})
 	if testRecorder.Code != http.StatusUnauthorized{
 		t.Fatalf("TEST: cookie error logout status code "+
 			"handler returned wrong status code: got %v want %v",testRecorder.Code, http.StatusUnauthorized)

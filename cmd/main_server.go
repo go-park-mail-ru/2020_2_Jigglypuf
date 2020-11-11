@@ -16,6 +16,7 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie/middleware"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cors"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/csrf"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	movieConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
 	profileConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
@@ -42,6 +43,7 @@ type ServerStruct struct {
 	ticketService   *ticketservice.TicketService
 	hallService     *hallService.HallService
 	httpServer      *http.Server
+	csrfMiddleware  *csrf.HashCSRFToken
 }
 
 func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sql.DB) (*ServerStruct, error) {
@@ -72,8 +74,8 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 		return nil, models.ErrFooInitFail
 	}
 	newTicketService, ticketErr := ticketservice.Start(mainDBConnection, newAuthService.AuthenticationRepository, newHallService.Repository,newScheduleService.Repository)
-
-	if cinemaErr != nil || movieErr != nil || ticketErr != nil {
+	newHashCSRFMiddleware, csrfErr := csrf.NewHashCSRFToken(models.RandStringRunes(7),time.Hour*24)
+	if cinemaErr != nil || movieErr != nil || ticketErr != nil || csrfErr != nil{
 		log.Println(models.ErrFooInitFail)
 		return nil, models.ErrFooInitFail
 	}
@@ -86,6 +88,7 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 		scheduleService: newScheduleService,
 		ticketService:   newTicketService,
 		hallService:     newHallService,
+		csrfMiddleware: newHashCSRFMiddleware,
 	}, nil
 }
 
@@ -99,14 +102,15 @@ func configureRouter(application *ServerStruct) http.Handler {
 	handler.Handle(scheduleConfig.URLPattern, application.scheduleService.Router)
 	handler.Handle(hallConfig.URLPattern, application.hallService.Router)
 	handler.Handle(ticketConfig.URLPattern, application.ticketService.Router)
+	handler.HandleFunc("/csrf/", application.csrfMiddleware.GenerateCSRFToken)
 
 	handler.HandleFunc("/media/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, r.RequestURI, http.StatusMovedPermanently)
 	})
 	handler.HandleFunc("/docs/", httpSwagger.WrapHandler)
-	middlewareHandler := middleware.CookieMiddleware(handler, application.cookieService)
+	middlewareHandler := application.csrfMiddleware.CSRFMiddleware(handler)
+	middlewareHandler = middleware.CookieMiddleware(middlewareHandler, application.cookieService.CookieDelivery)
 	middlewareHandler = cors.MiddlewareCORS(middlewareHandler)
-
 	return middlewareHandler
 }
 
