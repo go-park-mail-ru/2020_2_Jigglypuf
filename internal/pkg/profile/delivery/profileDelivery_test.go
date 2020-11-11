@@ -18,5 +18,9 @@ var(
 )
 
 func setup(t *testing.T){
+	testingStruct = new(ProfileTesting)
+	testingStruct.goMockController = gomock.NewController(t)
 
+	testingStruct.useCaseMock = mock.NewMockUseCase(testingStruct.goMockController)
+	testingStruct.handler = NewProfileHandler(testingStruct.useCaseMock)
 }
