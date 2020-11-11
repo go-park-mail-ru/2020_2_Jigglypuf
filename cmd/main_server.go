@@ -95,14 +95,14 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 func configureRouter(application *ServerStruct) http.Handler {
 	handler := http.NewServeMux()
 
-	handler.Handle(movieConfig.URLPattern, application.movieService.MovieRouter)
-	handler.Handle(cinemaConfig.URLPattern, application.cinemaService.CinemaRouter)
-	handler.Handle(configs.URLPattern, application.authService.AuthRouter)
-	handler.Handle(profileConfig.URLPattern, application.profileService.ProfileRouter)
-	handler.Handle(scheduleConfig.URLPattern, application.scheduleService.Router)
-	handler.Handle(hallConfig.URLPattern, application.hallService.Router)
-	handler.Handle(ticketConfig.URLPattern, application.ticketService.Router)
-	handler.HandleFunc("/csrf/", application.csrfMiddleware.GenerateCSRFToken)
+	handler.Handle("/api" +movieConfig.URLPattern, application.movieService.MovieRouter)
+	handler.Handle("/api" +cinemaConfig.URLPattern, application.cinemaService.CinemaRouter)
+	handler.Handle("/api" +configs.URLPattern, application.authService.AuthRouter)
+	handler.Handle("/api" +profileConfig.URLPattern, application.profileService.ProfileRouter)
+	handler.Handle("/api" +scheduleConfig.URLPattern, application.scheduleService.Router)
+	handler.Handle("/api" +hallConfig.URLPattern, application.hallService.Router)
+	handler.Handle("/api" +ticketConfig.URLPattern, application.ticketService.Router)
+	handler.HandleFunc("/api/csrf/", application.csrfMiddleware.GenerateCSRFToken)
 
 	handler.HandleFunc("/media/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, r.RequestURI, http.StatusMovedPermanently)
