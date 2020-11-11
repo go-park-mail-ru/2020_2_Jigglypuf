@@ -37,18 +37,14 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 	}
 
 	buff := make([]byte, 512)
-	log.Println("saving avatar")
 	_, err := image.Read(buff)
-	log.Println("readed avatar")
 	if err != nil{
 		return "",SavingError{}
 	}
-	log.Println("no errors while reading")
 	filetype := http.DetectContentType(buff)
 	if matched, regexErr := regexp.Match("image/.*", []byte(filetype)); !matched || regexErr != nil{
 		return "",SavingError{}
 	}
-	log.Println("regex mathched")
 	defer image.Close()
 	uniqueName := models.RandStringRunes(32)
 	fileName := uniqueName
@@ -59,7 +55,6 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 
 	defer f.Close()
 	_, copyingError := io.Copy(f, image)
-	log.Println("saved")
 	if copyingError != nil {
 		return "", SavingError{}
 	}
@@ -120,7 +115,6 @@ func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, para
 // @Router /api/profile/ [put]
 func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
-	log.Println("kek")
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method != http.MethodPut {
