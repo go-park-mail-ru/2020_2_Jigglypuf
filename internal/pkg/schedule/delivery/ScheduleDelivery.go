@@ -46,12 +46,7 @@ func (t *ScheduleDelivery) GetMovieSchedule(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	outputBuf, castErr := json.Marshal(resultList)
-	if castErr != nil {
-		models.InternalErrorHTTPResponse(&w)
-		return
-	}
-
+	outputBuf, _ := json.Marshal(resultList)
 	_, _ = w.Write(outputBuf)
 }
 
@@ -82,11 +77,7 @@ func (t *ScheduleDelivery) GetSchedule(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	outputBuf, castErr := json.Marshal(resultList)
-	if castErr != nil {
-		models.InternalErrorHTTPResponse(&w)
-		return
-	}
+	outputBuf, _ := json.Marshal(resultList)
 
 	_, _ = w.Write(outputBuf)
 }

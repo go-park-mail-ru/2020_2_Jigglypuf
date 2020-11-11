@@ -77,3 +77,18 @@ func (mr *MockTimeTableRepositoryMockRecorder) GetScheduleHallID(scheduleID inte
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetScheduleHallID", reflect.TypeOf((*MockTimeTableRepository)(nil).GetScheduleHallID), scheduleID)
 }
+
+// GetSchedule mocks base method
+func (m *MockTimeTableRepository) GetSchedule(scheduleID uint64) (*models.Schedule, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSchedule", scheduleID)
+	ret0, _ := ret[0].(*models.Schedule)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSchedule indicates an expected call of GetSchedule
+func (mr *MockTimeTableRepositoryMockRecorder) GetSchedule(scheduleID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSchedule", reflect.TypeOf((*MockTimeTableRepository)(nil).GetSchedule), scheduleID)
+}

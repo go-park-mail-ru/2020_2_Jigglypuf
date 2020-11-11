@@ -108,8 +108,8 @@ func configureRouter(application *ServerStruct) http.Handler {
 		http.Redirect(w, r, r.RequestURI, http.StatusMovedPermanently)
 	})
 	handler.HandleFunc("/docs/", httpSwagger.WrapHandler)
-	middlewareHandler := application.csrfMiddleware.CSRFMiddleware(handler)
-	middlewareHandler = middleware.CookieMiddleware(middlewareHandler, application.cookieService.CookieDelivery)
+	//middlewareHandler := application.csrfMiddleware.CSRFMiddleware(handler)
+	middlewareHandler := middleware.CookieMiddleware(handler, application.cookieService.CookieDelivery)
 	middlewareHandler = cors.MiddlewareCORS(middlewareHandler)
 	return middlewareHandler
 }

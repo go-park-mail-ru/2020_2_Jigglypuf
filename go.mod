@@ -16,7 +16,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/lib/pq v1.8.0
-	github.com/magiconair/properties v1.8.4 // indirect
+	github.com/magiconair/properties v1.8.4
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/mitchellh/mapstructure v1.3.3 // indirect

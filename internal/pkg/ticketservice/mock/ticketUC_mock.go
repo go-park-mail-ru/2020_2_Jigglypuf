@@ -34,7 +34,7 @@ func (m *MockUseCase) EXPECT() *MockUseCaseMockRecorder {
 }
 
 // BuyTicket mocks base method
-func (m *MockUseCase) BuyTicket(ticket *models.TicketInput, userID uint64) error {
+func (m *MockUseCase) BuyTicket(ticket *models.TicketInput, userID interface{}) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "BuyTicket", ticket, userID)
 	ret0, _ := ret[0].(error)

@@ -52,7 +52,7 @@ func (t *TicketDelivery) BuyTicket(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	buyErr := t.useCase.BuyTicket(ticketItem, userID.(uint64))
+	buyErr := t.useCase.BuyTicket(ticketItem, userID)
 	if buyErr != nil {
 		models.BadBodyHTTPResponse(&w, buyErr)
 		return
@@ -87,11 +87,7 @@ func (t *TicketDelivery) GetUserTickets(w http.ResponseWriter, r *http.Request) 
 		models.BadBodyHTTPResponse(&w, getTicketErr)
 		return
 	}
-	outputBuf, castErr := json.Marshal(ticketList)
-	if castErr != nil {
-		models.InternalErrorHTTPResponse(&w)
-		return
-	}
+	outputBuf, _ := json.Marshal(ticketList)
 	_, _ = w.Write(outputBuf)
 }
 
@@ -128,11 +124,7 @@ func (t *TicketDelivery) GetUsersSimpleTicket(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	outputBuf, outputErr := json.Marshal(ticketItem)
-	if outputErr != nil {
-		models.InternalErrorHTTPResponse(&w)
-		return
-	}
+	outputBuf, _ := json.Marshal(ticketItem)
 
 	_, _ = w.Write(outputBuf)
 }
@@ -161,11 +153,7 @@ func (t *TicketDelivery) GetHallScheduleTickets(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	outputBuf, castErr := json.Marshal(ticketList)
-	if castErr != nil {
-		models.InternalErrorHTTPResponse(&w)
-		return
-	}
+	outputBuf, _ := json.Marshal(ticketList)
 
 	_, _ = w.Write(outputBuf)
 }

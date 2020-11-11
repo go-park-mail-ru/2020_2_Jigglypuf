@@ -59,9 +59,15 @@ func (t *TicketUseCase) GetHallScheduleTickets(scheduleID string) (*[]models.Tic
 	return t.repository.GetHallTickets(uint64(castedScheduleID))
 }
 
-func (t *TicketUseCase) BuyTicket(ticket *models.TicketInput, userID uint64) error {
+func (t *TicketUseCase) BuyTicket(ticket *models.TicketInput, userID interface{}) error {
 	if ticket.Login == "" {
-		user, getUserErr := t.userRepository.GetUserByID(userID)
+		if userID == nil{
+			return models.ErrFooNoAuthorization
+		}
+		if _,ok := userID.(uint64); !ok{
+			return models.ErrFooNoAuthorization
+		}
+		user, getUserErr := t.userRepository.GetUserByID(userID.(uint64))
 		if getUserErr != nil {
 			return models.ErrFooNoAuthorization
 		}

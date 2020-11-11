@@ -47,3 +47,18 @@ func (mr *MockTimeTableUseCaseMockRecorder) GetMovieSchedule(MovieID, CinemaID, 
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMovieSchedule", reflect.TypeOf((*MockTimeTableUseCase)(nil).GetMovieSchedule), MovieID, CinemaID, date)
 }
+
+// GetSchedule mocks base method
+func (m *MockTimeTableUseCase) GetSchedule(ScheduleID string) (*models.Schedule, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSchedule", ScheduleID)
+	ret0, _ := ret[0].(*models.Schedule)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSchedule indicates an expected call of GetSchedule
+func (mr *MockTimeTableUseCaseMockRecorder) GetSchedule(ScheduleID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSchedule", reflect.TypeOf((*MockTimeTableUseCase)(nil).GetSchedule), ScheduleID)
+}
