@@ -1,1 +1,3 @@
-server/server
+cmd/server
+cmd/cmd
+swagger

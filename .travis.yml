@@ -1,0 +1,14 @@
+language: go
+
+go: "1.15"
+
+notifications:
+  email: false
+
+before_script:
+  - go mod tidy
+  - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.31.0
+
+script:
+  - go test ./...
+  - golangci-lint run -c .golangci-lint.yml
