@@ -17,6 +17,7 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie/middleware"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cors"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/csrf"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/logger"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	movieConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
 	profileConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
@@ -111,6 +112,7 @@ func configureRouter(application *ServerStruct) http.Handler {
 	middlewareHandler := application.csrfMiddleware.CSRFMiddleware(handler)
 	middlewareHandler = middleware.CookieMiddleware(middlewareHandler, application.cookieService.CookieDelivery)
 	middlewareHandler = cors.MiddlewareCORS(middlewareHandler)
+	middlewareHandler = logger.AccessLogMiddleware(middlewareHandler)
 	return middlewareHandler
 }
 

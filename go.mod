@@ -24,6 +24,7 @@ require (
 	github.com/pborman/uuid v1.2.1 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/rakyll/gotest v0.0.5 // indirect
+	github.com/sirupsen/logrus v1.7.0 // indirect
 	github.com/spf13/afero v1.4.1 // indirect
 	github.com/spf13/cobra v1.1.1 // indirect
 	github.com/stretchr/testify v1.6.1
