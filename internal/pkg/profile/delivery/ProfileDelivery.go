@@ -46,8 +46,8 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 		return "",SavingError{}
 	}
 	defer image.Close()
-	uniqueName := models.RandStringRunes(32)
-	fileName := uniqueName
+	uniqueName := models.RandStringRunes(10)
+	fileName := uniqueName + handler.Filename
 	f, saveErr := os.OpenFile(profile.SavingPath+fileName, os.O_WRONLY|os.O_CREATE, 0666)
 	if saveErr != nil {
 		return "", SavingError{}
