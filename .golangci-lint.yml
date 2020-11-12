@@ -33,41 +33,41 @@ linters-settings:
 linters:
   disable-all: true
   enable:
-    - megacheck
+#    - megacheck
     - govet
-    - bodyclose
-    - deadcode
-    - depguard
-    - dogsled
-    - dupl
-    - errcheck
-    - exhaustive
-    - gochecknoinits
-    - goconst
-    - gocritic
-    - gocyclo
-    - gofmt
-    - golint
-    # - gomnd
-    - goprintffuncname
-    - gosec
-    - gosimple
-    - govet
-    - misspell
-    - nakedret
-    - noctx
-    - nolintlint
-    # - rowserrcheck
-    - scopelint
-    - staticcheck
-    - structcheck
-    - stylecheck
-    - typecheck
-    - unconvert
-    - unparam
-    - unused
-    - varcheck
-    - whitespace
+#    - bodyclose
+#    - deadcode
+#    - depguard
+#    - dogsled
+#    - dupl
+#    - errcheck
+#    - exhaustive
+#    - gochecknoinits
+#    - goconst
+#    - gocritic
+#    - gocyclo
+#    - gofmt
+#    - golint
+#    # - gomnd
+#    - goprintffuncname
+#    - gosec
+#    - gosimple
+#    - govet
+#    - misspell
+#    - nakedret
+#    - noctx
+#    - nolintlint
+#    # - rowserrcheck
+#    - scopelint
+#    - staticcheck
+#    - structcheck
+#    - stylecheck
+#    - typecheck
+#    - unconvert
+#    - unparam
+#    - unused
+#    - varcheck
+#    - whitespace
 
 
 issues:
