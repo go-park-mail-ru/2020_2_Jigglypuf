@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 )
 
 type ProfileHandler struct {
@@ -46,8 +47,8 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 		return "",SavingError{}
 	}
 	defer image.Close()
-	uniqueName := models.RandStringRunes(10)
-	fileName := uniqueName + handler.Filename
+	uniqueName := models.RandStringRunes(25)
+	fileName := uniqueName + "." + strings.Split(filetype,"/")[1]
 	f, saveErr := os.OpenFile(profile.SavingPath+fileName, os.O_WRONLY|os.O_CREATE, 0666)
 	if saveErr != nil {
 		return "", SavingError{}
