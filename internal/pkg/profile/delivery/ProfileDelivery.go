@@ -1,10 +1,10 @@
 package delivery
 
 import (
-	"encoding/json"
 	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
+	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"io"
 	"log"
@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 )
 
 type ProfileHandler struct {
@@ -47,7 +48,7 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 	}
 	defer image.Close()
 	uniqueName := models.RandStringRunes(25)
-	fileName := uniqueName
+	fileName := uniqueName + "." + strings.Split(filetype,"/")[1]
 	f, saveErr := os.OpenFile(profile.SavingPath+fileName, os.O_WRONLY|os.O_CREATE, 0666)
 	if saveErr != nil {
 		return "", SavingError{}
