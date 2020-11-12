@@ -152,7 +152,7 @@ func (t *MovieSQLRepository) UpdateMovieRating(movieID uint64, ratingScore int64
 		return ScanErr
 	}
 
-	var newRating float64 = (rating + float64(ratingScore)) / float64(RatingCount)
+	var newRating = (rating) / float64(RatingCount)
 	_, RatingDBErr := t.DBConnection.Exec("UPDATE movie SET Rating = $1, Rating_count = $2 WHERE ID = $3",
 		newRating, RatingCount, movieID)
 	return RatingDBErr
