@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"backend/internal/pkg/models"
-	"backend/internal/pkg/schedule"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
 	"github.com/go-playground/validator/v10"
 	"strconv"
 	"time"
@@ -34,4 +34,13 @@ func (t *ScheduleUseCase) GetMovieSchedule(movieID, cinemaID string, date string
 		return t.ScheduleRepository.GetMovieSchedule(uint64(castedMovieID), date)
 	}
 	return t.ScheduleRepository.GetMovieCinemaSchedule(uint64(castedMovieID), uint64(castedCinemaID), date)
+}
+
+func (t *ScheduleUseCase) GetSchedule(scheduleID string)(*models.Schedule, error){
+	castedScheduleID, castErr := strconv.Atoi(scheduleID)
+	if castErr != nil{
+		return nil,models.ErrFooCastErr
+	}
+
+	return t.ScheduleRepository.GetSchedule(uint64(castedScheduleID))
 }

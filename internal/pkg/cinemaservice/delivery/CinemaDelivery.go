@@ -1,8 +1,8 @@
 package delivery
 
 import (
-	"backend/internal/pkg/cinemaservice"
-	"backend/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
@@ -27,7 +27,7 @@ func NewCinemaHandler(useCase cinemaservice.UseCase) *CinemaHandler {
 // @Success 200 {object} models.Cinema
 // @Failure 400 {object} models.ServerResponse
 // @Failure 405 {object} models.ServerResponse
-// @Router /cinema/{id}/ [get]
+// @Router /api/cinema/{id}/ [get]
 func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 
@@ -53,11 +53,7 @@ func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r *http.Request, params
 	}
 
 	w.WriteHeader(http.StatusOK)
-	response, err := json.Marshal(result)
-	if err != nil {
-		models.BadBodyHTTPResponse(&w, err)
-	}
-
+	response, _ := json.Marshal(result)
 	_, _ = w.Write(response)
 }
 
@@ -70,7 +66,7 @@ func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r *http.Request, params
 // @Success 200 {array} models.Cinema
 // @Failure 400 {object} models.ServerResponse
 // @Failure 405 {object} models.ServerResponse
-// @Router /cinema/ [get]
+// @Router /api/cinema/ [get]
 func (t *CinemaHandler) GetCinemaList(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 
@@ -102,10 +98,6 @@ func (t *CinemaHandler) GetCinemaList(w http.ResponseWriter, r *http.Request, pa
 	}
 
 	w.WriteHeader(http.StatusOK)
-	response, err := json.Marshal(result)
-	if err != nil {
-		models.BadBodyHTTPResponse(&w, err)
-	}
-
+	response, _ := json.Marshal(result)
 	_, _ = w.Write(response)
 }

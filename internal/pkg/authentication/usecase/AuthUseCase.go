@@ -1,11 +1,12 @@
 package usecase
 
 import (
-	"backend/internal/pkg/authentication"
-	"backend/internal/pkg/middleware/cookie"
-	"backend/internal/pkg/models"
-	"backend/internal/pkg/profile"
-	"backend/internal/pkg/utils"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/utils"
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/microcosm-cc/bluemonday"
 	"golang.org/x/crypto/bcrypt"
@@ -17,13 +18,13 @@ import (
 type UserUseCase struct {
 	sanitizer         *bluemonday.Policy
 	validator         *validator.Validate
-	repository        authentication.AuthRepository
+	repository        interfaces.AuthRepository
 	cookieDBConn      cookie.Repository
 	profileRepository profile.Repository
 	salt              string
 }
 
-func NewUserUseCase(repository authentication.AuthRepository, profileRepository profile.Repository, cookieConn cookie.Repository, salt string) *UserUseCase {
+func NewUserUseCase(repository interfaces.AuthRepository, profileRepository profile.Repository, cookieConn cookie.Repository, salt string) *UserUseCase {
 	return &UserUseCase{
 		sanitizer:         bluemonday.UGCPolicy(),
 		validator:         validator.New(),
@@ -87,7 +88,7 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 	prof := new(models.Profile)
 	prof.Name = input.Name
 	prof.Surname = input.Surname
-	prof.Login = &user
+	prof.UserCredentials = &user
 	prof.AvatarPath = profile.NoAvatarImage
 	profileErr := t.profileRepository.CreateProfile(prof)
 	if profileErr != nil {
@@ -135,6 +136,7 @@ func (t *UserUseCase) SignIn(input *models.AuthInput) (*http.Cookie, error) {
 
 func (t *UserUseCase) SignOut(cookie *http.Cookie) (*http.Cookie, error) {
 	cookie.Expires = time.Now().Add(-time.Hour)
-	_ = t.cookieDBConn.RemoveCookie(cookie)
-	return cookie, nil
+	fmt.Print(cookie)
+	cookieErr := t.cookieDBConn.RemoveCookie(cookie)
+	return cookie, cookieErr
 }

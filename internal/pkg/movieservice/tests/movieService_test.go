@@ -2,10 +2,10 @@ package tests
 
 //
 // import (
-//	userRepository "backend/internal/pkg/authentication/repository"
-//	"backend/internal/pkg/movieservice/delivery"
-//	"backend/internal/pkg/movieservice/repository"
-//	"backend/internal/pkg/movieservice/usecase"
+//	userRepository "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/repository"
+//	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice/delivery"
+//	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice/repository"
+//	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice/usecase"
 //	"io/ioutil"
 //	"net/http"
 //	"net/http/httptest"

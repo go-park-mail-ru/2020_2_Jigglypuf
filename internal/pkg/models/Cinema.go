@@ -7,6 +7,7 @@ type Cinema struct {
 	Name      string
 	Address   string
 	HallCount int
+	PathToAvatar string
 	AuthorID  uint64
 }
 
@@ -19,11 +20,21 @@ type GetCinemaList struct {
 	Page  int
 }
 
+type HallConfig struct{
+	Levels []HallPlace
+}
+
+type HallPlace struct{
+	Place int
+	Row int
+}
+
 type CinemaHall struct {
 	ID          uint64
 	PlaceAmount int
-	PlaceConfig string
+	PlaceConfig HallConfig
 }
+
 
 type Ticket struct {
 	ID              uint64
@@ -36,7 +47,6 @@ type Ticket struct {
 type TicketInput struct {
 	Login      string `validate:"required,email"`
 	ScheduleID uint64
-	HallID     uint64
 	PlaceField TicketPlace
 }
 

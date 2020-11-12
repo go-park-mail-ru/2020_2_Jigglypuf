@@ -1,10 +1,10 @@
 package cookieserver
 
 import (
-	"backend/internal/pkg/middleware/cookie"
-	cookieDelivery "backend/internal/pkg/middleware/cookie/delivery"
-	cookieRepository "backend/internal/pkg/middleware/cookie/repository"
-	cookieUseCase "backend/internal/pkg/middleware/cookie/usecase"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	cookieDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie/delivery"
+	cookieRepository "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie/repository"
+	cookieUseCase "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie/usecase"
 	"github.com/tarantool/go-tarantool"
 )
 

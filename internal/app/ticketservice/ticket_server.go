@@ -1,14 +1,14 @@
 package ticketservice
 
 import (
-	"backend/internal/pkg/authentication"
-	"backend/internal/pkg/hallservice"
-	"backend/internal/pkg/models"
-	"backend/internal/pkg/schedule"
-	"backend/internal/pkg/ticketservice"
-	"backend/internal/pkg/ticketservice/delivery"
-	"backend/internal/pkg/ticketservice/repository"
-	"backend/internal/pkg/ticketservice/usecase"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice/delivery"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice/repository"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice/usecase"
 	"database/sql"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -28,18 +28,18 @@ func configureAPI(handler *delivery.TicketDelivery) *mux.Router {
 	router.HandleFunc(ticketservice.URLPattern, handler.GetUserTickets).Methods("GET")
 	router.HandleFunc(ticketservice.URLPattern+fmt.Sprintf("{%s:[0-9]+}/", ticketservice.TicketIDQuery),
 		handler.GetUsersSimpleTicket).Methods("GET")
-	router.HandleFunc("/ticket"+schedule.URLPattern+fmt.Sprintf("{%s:[0-9]+}/", ticketservice.ScheduleIDName),
+	router.HandleFunc(ticketservice.ScheduleURLPattern +fmt.Sprintf("{%s:[0-9]+}/", ticketservice.ScheduleIDName),
 		handler.GetHallScheduleTickets).Methods("GET")
 
 	return router
 }
 
-func Start(connection *sql.DB, authRep authentication.AuthRepository, hallRep hallservice.Repository) (*TicketService, error) {
+func Start(connection *sql.DB, authRep interfaces.AuthRepository, hallRep hallservice.Repository, scheduleRep schedule.TimeTableRepository) (*TicketService, error) {
 	if connection == nil || authRep == nil || hallRep == nil {
 		return nil, models.ErrFooArgsMismatch
 	}
 	rep := repository.NewTicketSQLRepository(connection)
-	uc := usecase.NewTicketUseCase(rep, authRep, hallRep)
+	uc := usecase.NewTicketUseCase(rep, authRep, hallRep,scheduleRep)
 	handler := delivery.NewTicketDelivery(uc)
 	router := configureAPI(handler)
 

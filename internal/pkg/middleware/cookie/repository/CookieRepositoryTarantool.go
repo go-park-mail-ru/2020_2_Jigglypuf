@@ -1,8 +1,8 @@
 package repository
 
 import (
-	tarantoolConfig "backend/internal/pkg/middleware/cookie"
-	"backend/internal/pkg/models"
+	tarantoolConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"encoding/json"
 	"errors"
 	"github.com/tarantool/go-tarantool"
@@ -71,7 +71,6 @@ func (t *CookieTarantoolRepository) SetCookie(cookie *http.Cookie, userID uint64
 
 func (t *CookieTarantoolRepository) RemoveCookie(cookie *http.Cookie) error {
 	_, DBErr := t.connectionDB.Delete(tarantoolConfig.DBSpaceName, "primary", []interface{}{cookie.Value})
-
 	if DBErr != nil {
 		return DBErr
 	}

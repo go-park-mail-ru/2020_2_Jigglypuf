@@ -1,17 +1,17 @@
 package usecase
 
 import (
-	"backend/internal/pkg/authentication"
-	"backend/internal/pkg/models"
-	"backend/internal/pkg/movieservice"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
 )
 
 type MovieUseCase struct {
 	DBConn         movieservice.MovieRepository
-	UserRepository authentication.AuthRepository
+	UserRepository interfaces.AuthRepository
 }
 
-func NewMovieUseCase(rep movieservice.MovieRepository, userRepository authentication.AuthRepository) *MovieUseCase {
+func NewMovieUseCase(rep movieservice.MovieRepository, userRepository interfaces.AuthRepository) *MovieUseCase {
 	return &MovieUseCase{
 		DBConn:         rep,
 		UserRepository: userRepository,
@@ -33,6 +33,10 @@ func (t *MovieUseCase) GetMovie(id uint64, isAuth bool, userID uint64) (*models.
 }
 
 func (t *MovieUseCase) GetMovieList(limit, page int) (*[]models.MovieList, error) {
+	page -= 1
+	if page < 0 || limit < 0{
+		return nil,models.ErrFooIncorrectInputInfo
+	}
 	return t.DBConn.GetMovieList(limit, page)
 }
 
@@ -63,5 +67,9 @@ func (t *MovieUseCase) GetRating(user *models.User, id uint64) (int64, error) {
 }
 
 func (t *MovieUseCase) GetMoviesInCinema(limit, page int) (*[]models.MovieList, error) {
+	page -= 1
+	if page < 0 || limit < 0{
+		return nil,models.ErrFooIncorrectInputInfo
+	}
 	return t.DBConn.GetMoviesInCinema(limit, page)
 }

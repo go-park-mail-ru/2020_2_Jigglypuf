@@ -13,7 +13,9 @@ type Movie struct {
 	Rating         float64
 	RatingCount    int
 	PersonalRating int64
+	Actors 		 string
 	PathToAvatar   string
+	PathToSliderAvatar string
 }
 
 type MovieList struct {
@@ -28,7 +30,9 @@ type MovieList struct {
 	AgeGroup     int
 	Rating       float64
 	RatingCount  int
+	Actors 		 string
 	PathToAvatar string
+	PathToSliderAvatar string
 }
 
 type RatingSet struct {

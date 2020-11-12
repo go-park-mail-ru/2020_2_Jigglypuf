@@ -1,5 +1,10 @@
 basePath: /
 definitions:
+  csrf.Response:
+    properties:
+      token:
+        type: string
+    type: object
   models.AuthInput:
     properties:
       login:
@@ -21,6 +26,8 @@ definitions:
         type: integer
       name:
         type: string
+      pathToAvatar:
+        type: string
     type: object
   models.CinemaHall:
     properties:
@@ -29,10 +36,26 @@ definitions:
       placeAmount:
         type: integer
       placeConfig:
-        type: string
+        $ref: '#/definitions/models.HallConfig'
+    type: object
+  models.HallConfig:
+    properties:
+      levels:
+        items:
+          $ref: '#/definitions/models.HallPlace'
+        type: array
+    type: object
+  models.HallPlace:
+    properties:
+      place:
+        type: integer
+      row:
+        type: integer
     type: object
   models.Movie:
     properties:
+      actors:
+        type: string
       ageGroup:
         type: integer
       country:
@@ -48,6 +71,8 @@ definitions:
       name:
         type: string
       pathToAvatar:
+        type: string
+      pathToSliderAvatar:
         type: string
       personalRating:
         type: integer
@@ -62,6 +87,8 @@ definitions:
     type: object
   models.MovieList:
     properties:
+      actors:
+        type: string
       ageGroup:
         type: integer
       country:
@@ -77,6 +104,8 @@ definitions:
       name:
         type: string
       pathToAvatar:
+        type: string
+      pathToSliderAvatar:
         type: string
       producer:
         type: string
@@ -95,6 +124,8 @@ definitions:
         type: string
       surname:
         type: string
+      userCredentials:
+        $ref: '#/definitions/models.User'
     type: object
   models.RateMovie:
     properties:
@@ -119,6 +150,8 @@ definitions:
   models.Schedule:
     properties:
       cinemaID:
+        type: integer
+      cost:
         type: integer
       hallID:
         type: integer
@@ -153,8 +186,6 @@ definitions:
     type: object
   models.TicketInput:
     properties:
-      hallID:
-        type: integer
       login:
         type: string
       placeField:
@@ -171,6 +202,13 @@ definitions:
       row:
         type: integer
     type: object
+  models.User:
+    properties:
+      login:
+        type: string
+    required:
+    - login
+    type: object
 host: https://cinemascope.space
 info:
   contact: {}
@@ -178,7 +216,7 @@ info:
   title: CinemaScope Backend API
   version: "0.5"
 paths:
-  /auth/login/:
+  /api/auth/login/:
     post:
       consumes:
       - application/json
@@ -202,7 +240,7 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: login
-  /auth/logout/:
+  /api/auth/logout/:
     post:
       description: SignOut user
       operationId: SignOut-user-by-register-data
@@ -217,7 +255,7 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: SignOut
-  /auth/register/:
+  /api/auth/register/:
     post:
       consumes:
       - application/json
@@ -241,7 +279,7 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: Register
-  /cinema/:
+  /api/cinema/:
     get:
       description: Get cinema list
       operationId: cinema-list-id
@@ -272,7 +310,7 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: GetCinemaList
-  /cinema/{id}/:
+  /api/cinema/{id}/:
     get:
       description: Get cinema
       operationId: cinema-id
@@ -296,7 +334,29 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: GetCinema
-  /hall/{id}/:
+  /api/csrf/:
+    get:
+      description: Returns movie schedule by ID
+      operationId: csrf-id
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/csrf.Response'
+        "400":
+          description: Bad body
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "500":
+          description: internal error
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: Get CSRF by cookie
+  /api/hall/{id}/:
     get:
       description: Get cinema hall placement structure
       operationId: hall-id
@@ -324,7 +384,7 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: Get hall structure
-  /movie/:
+  /api/movie/:
     get:
       description: Get movie list
       operationId: movie-list-id
@@ -355,7 +415,7 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: GetMovieList
-  /movie/{id}/:
+  /api/movie/{id}/:
     get:
       description: Get movie
       operationId: movie-id
@@ -379,7 +439,7 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: GetMovie
-  /movie/actual/:
+  /api/movie/actual/:
     get:
       description: Returns movie that in the cinema
       operationId: movie-in-cinema-id
@@ -414,7 +474,7 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: Get movies in cinema
-  /movie/rate/:
+  /api/movie/rate/:
     post:
       consumes:
       - application/json
@@ -442,7 +502,7 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: RateMovie
-  /profile/:
+  /api/profile/:
     get:
       description: Get Profile
       operationId: profile-id
@@ -498,24 +558,24 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: GetProfile
-  /schedule/:
+  /api/schedule/:
     get:
       description: Returns movie schedule by getting movie id, cinema id and day(date) in format schedule.TimeStandard
       operationId: movie-schedule-id
       parameters:
-      - description: schedule.MovieIDQueryParamName
+      - description: movie_id
         in: query
-        name: schedule.MovieIDQueryParamName
+        name: movie_id
         required: true
         type: integer
-      - description: schedule.CinemaIDQueryParamName
+      - description: cinema_id
         in: query
-        name: schedule.CinemaIDQueryParamName
+        name: cinema_id
         required: true
         type: integer
-      - description: schedule.DateQueryParamName
+      - description: date
         in: query
-        name: schedule.DateQueryParamName
+        name: date
         required: true
         type: string
       responses:
@@ -538,7 +598,35 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: Get movie schedule
-  /ticket/:
+  /api/schedule/{id}:
+    get:
+      description: Returns movie schedule by ID
+      operationId: schedule-id
+      parameters:
+      - description: schedule id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Schedule'
+        "400":
+          description: Bad body
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "500":
+          description: internal error
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: Get schedule by id
+  /api/ticket/:
     get:
       description: Get user ticket list
       operationId: get-ticket-list-id
@@ -566,7 +654,7 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: Get user ticket list
-  /ticket/{id}/:
+  /api/ticket/{id}/:
     get:
       description: Get user ticket by id
       operationId: get-ticket-id
@@ -598,7 +686,7 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: Get user ticket
-  /ticket/buy/:
+  /api/ticket/buy/:
     post:
       consumes:
       - application/json
@@ -622,12 +710,12 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: Buy ticket
-  /ticket/schedule/{id}/:
+  /api/ticket/schedule/{id}/:
     get:
       description: Get schedule hall ticket list by id
       operationId: get-schedule-ticket-list-id
       parameters:
-      - description: ticketservice.ScheduleIDName
+      - description: schedule_id
         in: path
         name: id
         required: true

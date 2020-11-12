@@ -1,19 +1,20 @@
 package delivery
 
 import (
-	"backend/internal/pkg/authentication"
-	cookieService "backend/internal/pkg/middleware/cookie"
-	"backend/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
+	"log"
 	"net/http"
 )
 
 type UserHandler struct {
-	useCase authentication.UserUseCase
+	useCase interfaces.UserUseCase
 }
 
-func NewUserHandler(useCase authentication.UserUseCase) *UserHandler {
+func NewUserHandler(useCase interfaces.UserUseCase) *UserHandler {
 	return &UserHandler{
 		useCase: useCase,
 	}
@@ -28,7 +29,7 @@ func NewUserHandler(useCase authentication.UserUseCase) *UserHandler {
 // @Success 200
 // @Failure 400 {object} models.ServerResponse
 // @Failure 405 {object} models.ServerResponse
-// @Router /auth/login/ [post]
+// @Router /api/auth/login/ [post]
 func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 
@@ -64,11 +65,12 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request, params
 // @Success 200
 // @Failure 400 {object} models.ServerResponse
 // @Failure 405 {object} models.ServerResponse
-// @Router /auth/register/ [post]
+// @Router /api/auth/register/ [post]
 func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 
 	if r.Method != http.MethodPost {
+		log.Println("incorrect method")
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
@@ -100,7 +102,7 @@ func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request, pa
 // @Success 200
 // @Failure 405 {object} models.ServerResponse
 // @Failure 401 {object} models.ServerResponse
-// @Router /auth/logout/ [post]
+// @Router /api/auth/logout/ [post]
 func (t *UserHandler) SignOutHandler(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	if r.Method != http.MethodPost {
 		models.BadMethodHTTPResponse(&w)

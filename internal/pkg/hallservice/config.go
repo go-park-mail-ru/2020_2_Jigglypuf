@@ -2,5 +2,5 @@ package hallservice
 
 const (
 	HallIDPathName = "hallid"
-	URLPattern     = "/hall/"
+	URLPattern     = "/api/hall/"
 )

@@ -1,14 +1,13 @@
 package cinemaserver
 
 import (
-	cinemaConfig "backend/internal/pkg/cinemaservice"
-	cinemaDelivery "backend/internal/pkg/cinemaservice/delivery"
-	cinemaRepository "backend/internal/pkg/cinemaservice/repository"
-	cinemaUseCase "backend/internal/pkg/cinemaservice/usecase"
-	"backend/internal/pkg/models"
+	cinemaConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice"
+	cinemaDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice/delivery"
+	cinemaRepository "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice/repository"
+	cinemaUseCase "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice/usecase"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"database/sql"
 	"github.com/julienschmidt/httprouter"
-	"sync"
 )
 
 type CinemaService struct {
@@ -24,21 +23,6 @@ func configureCinemaRouter(handler *cinemaDelivery.CinemaHandler) *httprouter.Ro
 	cinemaAPIRouter.GET(cinemaConfig.URLPattern+":id/", handler.GetCinema)
 
 	return cinemaAPIRouter
-}
-
-func StartMock(mutex *sync.RWMutex) *CinemaService {
-	cinemaRep := cinemaRepository.NewCinemaRepository(mutex)
-	cinemaUC := cinemaUseCase.NewCinemaUseCase(cinemaRep)
-	cinemaHandler := cinemaDelivery.NewCinemaHandler(cinemaUC)
-
-	cinemaRouter := configureCinemaRouter(cinemaHandler)
-
-	return &CinemaService{
-		cinemaRep,
-		cinemaUC,
-		cinemaHandler,
-		cinemaRouter,
-	}
 }
 
 func Start(connection *sql.DB) (*CinemaService, error) {

@@ -1,9 +1,9 @@
 package delivery
 
 import (
-	cookieService "backend/internal/pkg/middleware/cookie"
-	"backend/internal/pkg/models"
-	"backend/internal/pkg/profile"
+	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"io"
@@ -11,6 +11,8 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"regexp"
+	"strings"
 )
 
 type ProfileHandler struct {
@@ -35,9 +37,19 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 		return "", SavingError{}
 	}
 
+	buff := make([]byte, 512)
+	_, err := image.Read(buff)
+	_, _ = image.Seek(int64(0),0)
+	if err != nil{
+		return "",SavingError{}
+	}
+	filetype := http.DetectContentType(buff)
+	if matched, regexErr := regexp.Match("image/.*", []byte(filetype)); !matched || regexErr != nil{
+		return "",SavingError{}
+	}
 	defer image.Close()
-	uniqueName := models.RandStringRunes(32)
-	fileName := uniqueName
+	uniqueName := models.RandStringRunes(25)
+	fileName := uniqueName + "." + strings.Split(filetype,"/")[1]
 	f, saveErr := os.OpenFile(profile.SavingPath+fileName, os.O_WRONLY|os.O_CREATE, 0666)
 	if saveErr != nil {
 		return "", SavingError{}
@@ -45,7 +57,6 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 
 	defer f.Close()
 	_, copyingError := io.Copy(f, image)
-
 	if copyingError != nil {
 		return "", SavingError{}
 	}
@@ -62,7 +73,7 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 // @Failure 400 {object} models.ServerResponse "Bad body"
 // @Failure 401 {object} models.ServerResponse "No authorization"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
-// @Router /profile/ [get]
+// @Router /api/profile/ [get]
 func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 
@@ -89,11 +100,7 @@ func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, para
 	}
 
 	w.WriteHeader(http.StatusOK)
-	responseProfile, responseErr := json.Marshal(requiredProfile)
-	if responseErr != nil {
-		models.BadBodyHTTPResponse(&w, responseErr)
-		return
-	}
+	responseProfile, _ := json.Marshal(requiredProfile)
 
 	_, _ = w.Write(responseProfile)
 }
@@ -107,10 +114,9 @@ func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, para
 // @Failure 400 {object} models.ServerResponse "Bad body"
 // @Failure 401 {object} models.ServerResponse "No authorization"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
-// @Router /profile/ [put]
+// @Router /api/profile/ [put]
 func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
-
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method != http.MethodPut {

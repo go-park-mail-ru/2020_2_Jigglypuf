@@ -1,13 +1,14 @@
 package authserver
 
 import (
-	authConfig "backend/internal/pkg/authentication"
-	authDelivery "backend/internal/pkg/authentication/delivery"
-	authRepository "backend/internal/pkg/authentication/repository"
-	authUseCase "backend/internal/pkg/authentication/usecase"
-	"backend/internal/pkg/middleware/cookie"
-	"backend/internal/pkg/models"
-	"backend/internal/pkg/profile"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/configs"
+	authDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/delivery"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	authRepository "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/repository"
+	authUseCase "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/usecase"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
 	"database/sql"
 	"github.com/julienschmidt/httprouter"
 )
@@ -15,16 +16,16 @@ import (
 type AuthService struct {
 	AuthenticationDelivery   *authDelivery.UserHandler
 	AuthenticationUseCase    *authUseCase.UserUseCase
-	AuthenticationRepository authConfig.AuthRepository
+	AuthenticationRepository interfaces.AuthRepository
 	AuthRouter               *httprouter.Router
 }
 
 func configureAuthRouter(authHandler *authDelivery.UserHandler) *httprouter.Router {
 	authAPIHandler := httprouter.New()
 
-	authAPIHandler.POST(authConfig.URLPattern+"register/", authHandler.RegisterHandler)
-	authAPIHandler.POST(authConfig.URLPattern+"login/", authHandler.AuthHandler)
-	authAPIHandler.POST(authConfig.URLPattern+"logout/", authHandler.SignOutHandler)
+	authAPIHandler.POST(configs.URLPattern+"register/", authHandler.RegisterHandler)
+	authAPIHandler.POST(configs.URLPattern+"login/", authHandler.AuthHandler)
+	authAPIHandler.POST(configs.URLPattern+"logout/", authHandler.SignOutHandler)
 
 	return authAPIHandler
 }
@@ -34,7 +35,7 @@ func Start(cookieRepository cookie.Repository, profileRepository profile.Reposit
 		return nil, models.ErrFooNoDBConnection
 	}
 	authRep := authRepository.NewAuthSQLRepository(connection)
-	authCase := authUseCase.NewUserUseCase(authRep, profileRepository, cookieRepository, authConfig.Salt)
+	authCase := authUseCase.NewUserUseCase(authRep, profileRepository, cookieRepository, configs.Salt)
 	authHandler := authDelivery.NewUserHandler(authCase)
 
 	router := configureAuthRouter(authHandler)

@@ -17,7 +17,7 @@ box.once('init', function()
     box.schema.func.create('check_session', {setuid= true})
 
     box.schema.user.create("Backend_cinema_interface", {password='some_password'})
-    box.schema.user.grant('Backend_cinema_interface', 'read,write,execute,create,drop', 'universe')
+    box.schemwa.user.grant('Backend_cinema_interface', 'read,write,execute,create,drop', 'universe')
     box.schema.user.grant('Backend_cinema_interface', 'execute', 'function', 'create_session')
     box.schema.user.grant('Backend_cinema_interface', 'execute', 'function', 'check_session')
     box.session.su('Backend_cinema_interface')

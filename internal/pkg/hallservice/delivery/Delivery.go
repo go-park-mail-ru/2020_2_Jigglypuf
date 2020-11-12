@@ -1,8 +1,8 @@
 package delivery
 
 import (
-	"backend/internal/pkg/hallservice"
-	"backend/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -27,7 +27,7 @@ func NewHallDelivery(useCase hallservice.UseCase) *HallDelivery {
 // @Failure 400 {object} models.ServerResponse
 // @Failure 405 {object} models.ServerResponse
 // @Failure 500 {object} models.ServerResponse
-// @Router /hall/{id}/ [get]
+// @Router /api/hall/{id}/ [get]
 func (t *HallDelivery) GetHallStructure(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -48,10 +48,7 @@ func (t *HallDelivery) GetHallStructure(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	outputBuf, castErr := json.Marshal(hallItem)
-	if castErr != nil {
-		models.InternalErrorHTTPResponse(&w)
-		return
-	}
+	outputBuf, _ := json.Marshal(hallItem)
+
 	_, _ = w.Write(outputBuf)
 }

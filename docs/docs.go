@@ -24,7 +24,7 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/auth/login/": {
+        "/api/auth/login/": {
             "post": {
                 "description": "login user and get cookie",
                 "consumes": [
@@ -60,7 +60,7 @@ var doc = `{
                 }
             }
         },
-        "/auth/logout/": {
+        "/api/auth/logout/": {
             "post": {
                 "description": "SignOut user",
                 "summary": "SignOut",
@@ -82,7 +82,7 @@ var doc = `{
                 }
             }
         },
-        "/auth/register/": {
+        "/api/auth/register/": {
             "post": {
                 "description": "register user and get cookie",
                 "consumes": [
@@ -118,7 +118,7 @@ var doc = `{
                 }
             }
         },
-        "/cinema/": {
+        "/api/cinema/": {
             "get": {
                 "description": "Get cinema list",
                 "summary": "GetCinemaList",
@@ -164,7 +164,7 @@ var doc = `{
                 }
             }
         },
-        "/cinema/{id}/": {
+        "/api/cinema/{id}/": {
             "get": {
                 "description": "Get cinema",
                 "summary": "GetCinema",
@@ -200,7 +200,40 @@ var doc = `{
                 }
             }
         },
-        "/hall/{id}/": {
+        "/api/csrf/": {
+            "get": {
+                "description": "Returns movie schedule by ID",
+                "summary": "Get CSRF by cookie",
+                "operationId": "csrf-id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/csrf.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad body",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "internal error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/hall/{id}/": {
             "get": {
                 "description": "Get cinema hall placement structure",
                 "summary": "Get hall structure",
@@ -242,7 +275,7 @@ var doc = `{
                 }
             }
         },
-        "/movie/": {
+        "/api/movie/": {
             "get": {
                 "description": "Get movie list",
                 "summary": "GetMovieList",
@@ -288,7 +321,7 @@ var doc = `{
                 }
             }
         },
-        "/movie/actual/": {
+        "/api/movie/actual/": {
             "get": {
                 "description": "Returns movie that in the cinema",
                 "summary": "Get movies in cinema",
@@ -340,7 +373,7 @@ var doc = `{
                 }
             }
         },
-        "/movie/rate/": {
+        "/api/movie/rate/": {
             "post": {
                 "description": "Rate movie",
                 "consumes": [
@@ -382,7 +415,7 @@ var doc = `{
                 }
             }
         },
-        "/movie/{id}/": {
+        "/api/movie/{id}/": {
             "get": {
                 "description": "Get movie",
                 "summary": "GetMovie",
@@ -418,7 +451,7 @@ var doc = `{
                 }
             }
         },
-        "/profile/": {
+        "/api/profile/": {
             "get": {
                 "description": "Get Profile",
                 "summary": "GetProfile",
@@ -503,7 +536,7 @@ var doc = `{
                 }
             }
         },
-        "/schedule/": {
+        "/api/schedule/": {
             "get": {
                 "description": "Returns movie schedule by getting movie id, cinema id and day(date) in format schedule.TimeStandard",
                 "summary": "Get movie schedule",
@@ -511,22 +544,22 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "schedule.MovieIDQueryParamName",
-                        "name": "schedule.MovieIDQueryParamName",
+                        "description": "movie_id",
+                        "name": "movie_id",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "schedule.CinemaIDQueryParamName",
-                        "name": "schedule.CinemaIDQueryParamName",
+                        "description": "cinema_id",
+                        "name": "cinema_id",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "schedule.DateQueryParamName",
-                        "name": "schedule.DateQueryParamName",
+                        "description": "date",
+                        "name": "date",
                         "in": "query",
                         "required": true
                     }
@@ -562,7 +595,49 @@ var doc = `{
                 }
             }
         },
-        "/ticket/": {
+        "/api/schedule/{id}": {
+            "get": {
+                "description": "Returns movie schedule by ID",
+                "summary": "Get schedule by id",
+                "operationId": "schedule-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "schedule id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Schedule"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad body",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "internal error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/ticket/": {
             "get": {
                 "description": "Get user ticket list",
                 "summary": "Get user ticket list",
@@ -604,7 +679,7 @@ var doc = `{
                 }
             }
         },
-        "/ticket/buy/": {
+        "/api/ticket/buy/": {
             "post": {
                 "description": "Buys ticket by schedule ID and place to authenticated user or by e-mail",
                 "consumes": [
@@ -640,7 +715,7 @@ var doc = `{
                 }
             }
         },
-        "/ticket/schedule/{id}/": {
+        "/api/ticket/schedule/{id}/": {
             "get": {
                 "description": "Get schedule hall ticket list by id",
                 "summary": "Get schedule hall ticket list",
@@ -648,7 +723,7 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ticketservice.ScheduleIDName",
+                        "description": "schedule_id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -685,7 +760,7 @@ var doc = `{
                 }
             }
         },
-        "/ticket/{id}/": {
+        "/api/ticket/{id}/": {
             "get": {
                 "description": "Get user ticket by id",
                 "summary": "Get user ticket",
@@ -735,6 +810,14 @@ var doc = `{
         }
     },
     "definitions": {
+        "csrf.Response": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "models.AuthInput": {
             "type": "object",
             "required": [
@@ -766,6 +849,9 @@ var doc = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "pathToAvatar": {
+                    "type": "string"
                 }
             }
         },
@@ -779,13 +865,38 @@ var doc = `{
                     "type": "integer"
                 },
                 "placeConfig": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.HallConfig"
+                }
+            }
+        },
+        "models.HallConfig": {
+            "type": "object",
+            "properties": {
+                "levels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.HallPlace"
+                    }
+                }
+            }
+        },
+        "models.HallPlace": {
+            "type": "object",
+            "properties": {
+                "place": {
+                    "type": "integer"
+                },
+                "row": {
+                    "type": "integer"
                 }
             }
         },
         "models.Movie": {
             "type": "object",
             "properties": {
+                "actors": {
+                    "type": "string"
+                },
                 "ageGroup": {
                     "type": "integer"
                 },
@@ -808,6 +919,9 @@ var doc = `{
                     "type": "string"
                 },
                 "pathToAvatar": {
+                    "type": "string"
+                },
+                "pathToSliderAvatar": {
                     "type": "string"
                 },
                 "personalRating": {
@@ -830,6 +944,9 @@ var doc = `{
         "models.MovieList": {
             "type": "object",
             "properties": {
+                "actors": {
+                    "type": "string"
+                },
                 "ageGroup": {
                     "type": "integer"
                 },
@@ -852,6 +969,9 @@ var doc = `{
                     "type": "string"
                 },
                 "pathToAvatar": {
+                    "type": "string"
+                },
+                "pathToSliderAvatar": {
                     "type": "string"
                 },
                 "producer": {
@@ -879,6 +999,9 @@ var doc = `{
                 },
                 "surname": {
                     "type": "string"
+                },
+                "userCredentials": {
+                    "$ref": "#/definitions/models.User"
                 }
             }
         },
@@ -917,6 +1040,9 @@ var doc = `{
             "type": "object",
             "properties": {
                 "cinemaID": {
+                    "type": "integer"
+                },
+                "cost": {
                     "type": "integer"
                 },
                 "hallID": {
@@ -973,9 +1099,6 @@ var doc = `{
                 "login"
             ],
             "properties": {
-                "hallID": {
-                    "type": "integer"
-                },
                 "login": {
                     "type": "string"
                 },
@@ -995,6 +1118,17 @@ var doc = `{
                 },
                 "row": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "required": [
+                "login"
+            ],
+            "properties": {
+                "login": {
+                    "type": "string"
                 }
             }
         }

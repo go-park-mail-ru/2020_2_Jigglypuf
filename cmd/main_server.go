@@ -1,26 +1,28 @@
 package main
 
 import (
-	_ "backend/docs"
-	authService "backend/internal/app/authserver"
-	cinemaService "backend/internal/app/cinemaserver"
-	cookieService "backend/internal/app/cookieserver"
-	hallService "backend/internal/app/hallserver"
-	movieService "backend/internal/app/movieserver"
-	profileService "backend/internal/app/profileserver"
-	scheduleService "backend/internal/app/scheduleserver"
-	"backend/internal/app/ticketservice"
-	authConfig "backend/internal/pkg/authentication"
-	cinemaConfig "backend/internal/pkg/cinemaservice"
-	hallConfig "backend/internal/pkg/hallservice"
-	"backend/internal/pkg/middleware/cookie"
-	"backend/internal/pkg/middleware/cookie/middleware"
-	"backend/internal/pkg/middleware/cors"
-	"backend/internal/pkg/models"
-	movieConfig "backend/internal/pkg/movieservice"
-	profileConfig "backend/internal/pkg/profile"
-	scheduleConfig "backend/internal/pkg/schedule"
-	ticketConfig "backend/internal/pkg/ticketservice"
+	_ "github.com/go-park-mail-ru/2020_2_Jigglypuf/docs"
+	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/authserver"
+	cinemaService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/cinemaserver"
+	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/cookieserver"
+	hallService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/hallserver"
+	movieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/movieserver"
+	profileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/profileserver"
+	scheduleService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/scheduleserver"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/ticketservice"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/configs"
+	cinemaConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice"
+	hallConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie/middleware"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cors"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/csrf"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/logger"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	movieConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
+	profileConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
+	scheduleConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
+	ticketConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -42,6 +44,7 @@ type ServerStruct struct {
 	ticketService   *ticketservice.TicketService
 	hallService     *hallService.HallService
 	httpServer      *http.Server
+	csrfMiddleware  *csrf.HashCSRFToken
 }
 
 func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sql.DB) (*ServerStruct, error) {
@@ -67,9 +70,13 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 	newCinemaService, cinemaErr := cinemaService.Start(mainDBConnection)
 	newMovieService, movieErr := movieService.Start(mainDBConnection, newAuthService.AuthenticationRepository)
 	newScheduleService, scheduleErr := scheduleService.Start(mainDBConnection)
-	newTicketService, ticketErr := ticketservice.Start(mainDBConnection, newAuthService.AuthenticationRepository, newHallService.Repository)
-
-	if cinemaErr != nil || movieErr != nil || scheduleErr != nil || ticketErr != nil {
+	if scheduleErr != nil{
+		log.Println(scheduleErr)
+		return nil, models.ErrFooInitFail
+	}
+	newTicketService, ticketErr := ticketservice.Start(mainDBConnection, newAuthService.AuthenticationRepository, newHallService.Repository,newScheduleService.Repository)
+	newHashCSRFMiddleware, csrfErr := csrf.NewHashCSRFToken(models.RandStringRunes(7),time.Hour*24)
+	if cinemaErr != nil || movieErr != nil || ticketErr != nil || csrfErr != nil{
 		log.Println(models.ErrFooInitFail)
 		return nil, models.ErrFooInitFail
 	}
@@ -82,6 +89,7 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 		scheduleService: newScheduleService,
 		ticketService:   newTicketService,
 		hallService:     newHallService,
+		csrfMiddleware: newHashCSRFMiddleware,
 	}, nil
 }
 
@@ -90,19 +98,21 @@ func configureRouter(application *ServerStruct) http.Handler {
 
 	handler.Handle(movieConfig.URLPattern, application.movieService.MovieRouter)
 	handler.Handle(cinemaConfig.URLPattern, application.cinemaService.CinemaRouter)
-	handler.Handle(authConfig.URLPattern, application.authService.AuthRouter)
+	handler.Handle(configs.URLPattern, application.authService.AuthRouter)
 	handler.Handle(profileConfig.URLPattern, application.profileService.ProfileRouter)
 	handler.Handle(scheduleConfig.URLPattern, application.scheduleService.Router)
 	handler.Handle(hallConfig.URLPattern, application.hallService.Router)
 	handler.Handle(ticketConfig.URLPattern, application.ticketService.Router)
+	handler.HandleFunc("/api/csrf/", application.csrfMiddleware.GenerateCSRFToken)
 
 	handler.HandleFunc("/media/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, r.RequestURI, http.StatusMovedPermanently)
 	})
-	handler.HandleFunc("/docs/", httpSwagger.WrapHandler)
-	middlewareHandler := middleware.CookieMiddleware(handler, application.cookieService)
+	handler.HandleFunc("/api/docs/", httpSwagger.WrapHandler)
+	middlewareHandler := application.csrfMiddleware.CSRFMiddleware(handler)
+	middlewareHandler = middleware.CookieMiddleware(middlewareHandler, application.cookieService.CookieDelivery)
 	middlewareHandler = cors.MiddlewareCORS(middlewareHandler)
-
+	middlewareHandler = logger.AccessLogMiddleware(middlewareHandler)
 	return middlewareHandler
 }
 
@@ -117,7 +127,7 @@ func configureServer(port string, funcHandler http.Handler) *http.Server {
 
 func startDBWork() (*sql.DB, *tarantool.Connection, error) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		authConfig.Host, authConfig.Port, authConfig.User, authConfig.Password, authConfig.DBName)
+		configs.Host, configs.Port, configs.User, configs.Password, configs.DBName)
 
 	PostgreSQLConnection, DBErr := sql.Open("postgres", psqlInfo)
 	if DBErr != nil {

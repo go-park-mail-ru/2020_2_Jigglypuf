@@ -2,26 +2,27 @@ version: "3.7"
 services:
  nginx:
   image: felixgreen/cinema-interface-nginx-docker
+  restart: on-failure
   ports:
   - 80:80
   - 443:443
   volumes:
-  - ../media:/media
-  - ../static:/static
-  - /etc/letsencrypt:/etc/letsencrypt
+  - /home/ubuntu/media:/media
+  - /home/ubuntu/static:/static
+  - /home/ubuntu/etc/letsencrypt:/etc/letsencrypt
  tarantool:
   image: felixgreen/teamproject_tarantool_image
   ports:
    - 3301:3301
   volumes:
-   - ~/data/tarantool:/var/lib/tarantool
+   - /home/ubuntu/data/tarantool:/var/lib/tarantool
  app:
   image: felixgreen/cinema_interfaceservice_image
   restart: on-failure
   ports:
    - 8080:8080
   volumes:
-   - ../media:/media
+   - /home/ubuntu/media:/media
  postgresql:
   image: postgres
   ports:
@@ -33,7 +34,7 @@ services:
    test: CMD pg_isready -U $POSTGRES_USER
   volumes:
    - ./init/:/docker-entrypoint-initdb.d/
-   - ~/etc/postgresql:/etc/postgresql
-   - ~/var/log/postgresql:/var/log/postgresql
-   - ~/var/lib/postgresql:/var/lib/postgresql
-   - ~/var/lib/postgresql/data:/var/lib/postgresql/data/:rw
+   - /home/ubuntu/etc/postgresql:/etc/postgresql
+   - /home/ubuntu/var/log/postgresql:/var/log/postgresql
+   - /home/ubuntu/var/lib/postgresql:/var/lib/postgresql
+   - /home/ubuntu/var/lib/postgresql/data:/var/lib/postgresql/data/:rw

@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"backend/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"database/sql"
+	"encoding/json"
 )
 
 type SQLRepository struct {
@@ -40,10 +41,15 @@ func (t *SQLRepository) GetHallStructure(hallID uint64) (*models.CinemaHall, err
 	}
 
 	hallItem := new(models.CinemaHall)
+	placeConfig := ""
 	hallItem.ID = hallID
-	ScanErr := SQLResult.Scan(&hallItem.PlaceAmount, &hallItem.PlaceConfig)
+	ScanErr := SQLResult.Scan(&hallItem.PlaceAmount, &placeConfig)
 	if ScanErr != nil {
 		return nil, models.ErrFooIncorrectSQLQuery
+	}
+	decodeErr := json.Unmarshal([]byte(placeConfig), &hallItem.PlaceConfig)
+	if decodeErr != nil {
+		return nil, models.ErrFooCastErr
 	}
 
 	return hallItem, nil
