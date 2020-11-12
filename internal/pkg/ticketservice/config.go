@@ -5,4 +5,5 @@ const (
 	TicketIDQuery    = "ticket_id"
 	ScheduleIDName   = "schedule_id"
 	URLPattern       = "/api/ticket/"
+	ScheduleURLPattern = "/api/ticket/schedule/"
 )
