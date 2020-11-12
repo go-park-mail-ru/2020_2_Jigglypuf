@@ -39,6 +39,7 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 
 	buff := make([]byte, 512)
 	_, err := image.Read(buff)
+	_, _ = image.Seek(int64(0),0)
 	if err != nil{
 		return "",SavingError{}
 	}
