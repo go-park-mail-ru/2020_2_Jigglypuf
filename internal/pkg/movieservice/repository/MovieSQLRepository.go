@@ -139,22 +139,19 @@ func (t *MovieSQLRepository) UpdateMovieRating(movieID uint64, ratingScore int64
 	if t.DBConnection == nil {
 		return models.ErrFooNoDBConnection
 	}
-
-	resultSQL := t.DBConnection.QueryRow("SELECT ID,Rating,Rating_count FROM movie WHERE ID = $1", movieID)
+	resultSQL := t.DBConnection.QueryRow("SELECT sum(movie_rating),count(user_id) FROM rating_history WHERE movie_id = $1", movieID)
 	if resultSQL.Err() != nil {
 		return resultSQL.Err()
 	}
 	var (
-		ID          uint64  = 0
 		rating      float64 = 0
 		RatingCount         = 0
 	)
-	ScanErr := resultSQL.Scan(&ID, &rating, &RatingCount)
+	ScanErr := resultSQL.Scan(&rating, &RatingCount)
 	if ScanErr != nil {
 		return ScanErr
 	}
 
-	RatingCount++
 	var newRating float64 = (rating + float64(ratingScore)) / float64(RatingCount)
 	_, RatingDBErr := t.DBConnection.Exec("UPDATE movie SET Rating = $1, Rating_count = $2 WHERE ID = $3",
 		newRating, RatingCount, movieID)
