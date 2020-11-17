@@ -1,16 +1,16 @@
 package usecase
 
 import (
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"net/http"
 	"time"
 )
 
 type CookieUseCase struct {
-	Repository cookie.Repository
+	Repository session.Repository
 }
 
-func NewCookieUseCase(repository cookie.Repository) *CookieUseCase {
+func NewCookieUseCase(repository session.Repository) *CookieUseCase {
 	return &CookieUseCase{
 		repository,
 	}

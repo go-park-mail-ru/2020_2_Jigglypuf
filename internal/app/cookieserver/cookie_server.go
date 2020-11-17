@@ -1,17 +1,17 @@
 package cookieserver
 
 import (
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
-	cookieDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie/delivery"
-	cookieRepository "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie/repository"
-	cookieUseCase "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie/usecase"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
+	cookieDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session/delivery"
+	cookieRepository "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session/repository"
+	cookieUseCase "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session/usecase"
 	"github.com/tarantool/go-tarantool"
 )
 
 type CookieService struct {
 	CookieDelivery   *cookieDelivery.CookieHandler
-	CookieUseCase    cookie.UseCase
-	CookieRepository cookie.Repository
+	CookieUseCase    session.UseCase
+	CookieRepository session.Repository
 	DBConnection     *tarantool.Connection
 }
 

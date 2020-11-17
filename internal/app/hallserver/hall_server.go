@@ -1,13 +1,13 @@
 package hallserver
 
 import (
+	"database/sql"
+	"fmt"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice/delivery"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice/repository"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice/usecase"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
-	"database/sql"
-	"fmt"
 	"github.com/gorilla/mux"
 )
 

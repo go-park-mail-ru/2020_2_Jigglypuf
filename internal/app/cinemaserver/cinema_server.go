@@ -1,12 +1,12 @@
 package cinemaserver
 
 import (
+	"database/sql"
 	cinemaConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice"
 	cinemaDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice/delivery"
 	cinemaRepository "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice/repository"
 	cinemaUseCase "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice/usecase"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
-	"database/sql"
 	"github.com/julienschmidt/httprouter"
 )
 

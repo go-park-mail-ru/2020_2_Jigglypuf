@@ -1,12 +1,12 @@
 package usecase
 
 import (
+	"fmt"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/utils"
-	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/microcosm-cc/bluemonday"
 	"golang.org/x/crypto/bcrypt"
@@ -19,12 +19,12 @@ type UserUseCase struct {
 	sanitizer         *bluemonday.Policy
 	validator         *validator.Validate
 	repository        interfaces.AuthRepository
-	cookieDBConn      cookie.Repository
+	cookieDBConn      session.Repository
 	profileRepository profile.Repository
 	salt              string
 }
 
-func NewUserUseCase(repository interfaces.AuthRepository, profileRepository profile.Repository, cookieConn cookie.Repository, salt string) *UserUseCase {
+func NewUserUseCase(repository interfaces.AuthRepository, profileRepository profile.Repository, cookieConn session.Repository, salt string) *UserUseCase {
 	return &UserUseCase{
 		sanitizer:         bluemonday.UGCPolicy(),
 		validator:         validator.New(),
@@ -47,7 +47,7 @@ func compareHashAndPassword(password, hash, salt string) bool {
 
 func createUserCookie() http.Cookie {
 	return http.Cookie{
-		Name:     cookie.SessionCookieName,
+		Name:     session.SessionCookieName,
 		Value:    models.RandStringRunes(32),
 		Expires:  time.Now().Add(96 * time.Hour),
 		Path:     "/",
@@ -95,7 +95,7 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 		return nil, profileErr
 	}
 
-	// creating cookie for user
+	// creating session for user
 	cookieValue := createUserCookie()
 	cookieErr := t.cookieDBConn.SetCookie(&cookieValue, user.ID)
 	if cookieErr != nil {

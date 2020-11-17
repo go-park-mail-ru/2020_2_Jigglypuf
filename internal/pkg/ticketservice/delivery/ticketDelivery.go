@@ -1,10 +1,10 @@
 package delivery
 
 import (
-	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice"
 	"encoding/json"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice"
 	"github.com/gorilla/mux"
 	"net/http"
 )

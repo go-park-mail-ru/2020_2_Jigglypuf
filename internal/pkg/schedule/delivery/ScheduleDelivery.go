@@ -1,9 +1,9 @@
 package delivery
 
 import (
+	"encoding/json"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
-	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -50,7 +50,6 @@ func (t *ScheduleDelivery) GetMovieSchedule(w http.ResponseWriter, r *http.Reque
 	_, _ = w.Write(outputBuf)
 }
 
-
 // Schedule godoc
 // @Summary Get schedule by id
 // @Description Returns movie schedule by ID
@@ -61,7 +60,7 @@ func (t *ScheduleDelivery) GetMovieSchedule(w http.ResponseWriter, r *http.Reque
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
 // @Failure 500 {object} models.ServerResponse "internal error"
 // @Router /api/schedule/{id} [get]
-func (t *ScheduleDelivery) GetSchedule(w http.ResponseWriter, r *http.Request){
+func (t *ScheduleDelivery) GetSchedule(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return

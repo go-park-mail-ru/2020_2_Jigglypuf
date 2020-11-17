@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"database/sql"
 	"errors"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"log"
 )
 
@@ -72,7 +72,7 @@ func (t *CinemaSQLRepository) GetCinemaList(limit, page int) (*[]models.Cinema, 
 	cinemaList := make([]models.Cinema, 0)
 	for resultList.Next() {
 		cinemaItem := new(models.Cinema)
-		cinemaItemScanError := resultList.Scan(&cinemaItem.ID, &cinemaItem.Name, &cinemaItem.Address, &cinemaItem.HallCount,&cinemaItem.PathToAvatar)
+		cinemaItemScanError := resultList.Scan(&cinemaItem.ID, &cinemaItem.Name, &cinemaItem.Address, &cinemaItem.HallCount, &cinemaItem.PathToAvatar)
 		if cinemaItemScanError != nil {
 			log.Println(cinemaItemScanError)
 			return nil, cinemaItemScanError

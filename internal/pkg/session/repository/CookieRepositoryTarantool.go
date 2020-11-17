@@ -1,10 +1,10 @@
 package repository
 
 import (
-	tarantoolConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"encoding/json"
 	"errors"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	tarantoolConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/tarantool/go-tarantool"
 	"log"
 	"net/http"
@@ -29,7 +29,7 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (*models.DBRe
 		return nil, errors.New("incorrect session")
 	}
 	if resp.Data[0] == nil {
-		return nil, errors.New("cookie not found")
+		return nil, errors.New("session not found")
 	}
 
 	data := resp.Data[0].([]interface{})
@@ -39,25 +39,25 @@ func (t *CookieTarantoolRepository) GetCookie(cookie *http.Cookie) (*models.DBRe
 		rawUserID, ok := data[1].(uint64)
 		if !ok {
 			log.Println("cast err")
-			return nil, errors.New("bad cookie")
+			return nil, errors.New("bad session")
 		}
 		tarantoolRes.UserID = rawUserID
 		rawCookie := data[2].(string)
 		translationErr := json.Unmarshal([]byte(rawCookie), &tarantoolRes.Cookie)
 		if translationErr != nil {
 			log.Println("translation err")
-			return nil, errors.New("bad cookie")
+			return nil, errors.New("bad session")
 		}
 		log.Println(tarantoolRes)
 		return tarantoolRes, nil
 	}
-	return nil, errors.New("cookie not found")
+	return nil, errors.New("session not found")
 }
 
 func (t *CookieTarantoolRepository) SetCookie(cookie *http.Cookie, userID uint64) error {
 	stringCookie, cookieErr := json.Marshal(cookie)
 	if cookieErr != nil {
-		return errors.New("incorrect cookie structure")
+		return errors.New("incorrect session structure")
 	}
 	resp, err := t.connectionDB.Eval("return create_session(...)", []interface{}{cookie.Value, string(stringCookie), userID})
 

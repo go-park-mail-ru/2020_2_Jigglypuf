@@ -26,7 +26,7 @@ var doc = `{
     "paths": {
         "/api/auth/login/": {
             "post": {
-                "description": "login user and get cookie",
+                "description": "login user and get session",
                 "consumes": [
                     "application/json"
                 ],
@@ -84,7 +84,7 @@ var doc = `{
         },
         "/api/auth/register/": {
             "post": {
-                "description": "register user and get cookie",
+                "description": "register user and get session",
                 "consumes": [
                     "application/json"
                 ],
@@ -203,7 +203,7 @@ var doc = `{
         "/api/csrf/": {
             "get": {
                 "description": "Returns movie schedule by ID",
-                "summary": "Get CSRF by cookie",
+                "summary": "Get CSRF by session",
                 "operationId": "csrf-id",
                 "responses": {
                     "200": {

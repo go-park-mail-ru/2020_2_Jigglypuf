@@ -22,7 +22,7 @@ func configureRouter(handler *delivery.ScheduleDelivery) *mux.Router {
 	router := mux.NewRouter()
 
 	router.HandleFunc(schedule.URLPattern, handler.GetMovieSchedule)
-	router.HandleFunc(schedule.URLPattern + fmt.Sprintf("{%s:[0-9]+}/", schedule.ScheduleID),handler.GetSchedule)
+	router.HandleFunc(schedule.URLPattern+fmt.Sprintf("{%s:[0-9]+}/", schedule.ScheduleID), handler.GetSchedule)
 	return router
 }
 

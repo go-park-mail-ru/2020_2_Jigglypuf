@@ -1,15 +1,15 @@
 package authserver
 
 import (
+	"database/sql"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/configs"
 	authDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/delivery"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
 	authRepository "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/repository"
 	authUseCase "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/usecase"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
-	"database/sql"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -30,7 +30,7 @@ func configureAuthRouter(authHandler *authDelivery.UserHandler) *httprouter.Rout
 	return authAPIHandler
 }
 
-func Start(cookieRepository cookie.Repository, profileRepository profile.Repository, connection *sql.DB) (*AuthService, error) {
+func Start(cookieRepository session.Repository, profileRepository profile.Repository, connection *sql.DB) (*AuthService, error) {
 	if connection == nil {
 		return nil, models.ErrFooNoDBConnection
 	}

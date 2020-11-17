@@ -3,12 +3,12 @@ package models
 import "time"
 
 type Cinema struct {
-	ID        uint64
-	Name      string
-	Address   string
-	HallCount int
+	ID           uint64
+	Name         string
+	Address      string
+	HallCount    int
 	PathToAvatar string
-	AuthorID  uint64
+	AuthorID     uint64
 }
 
 type SearchCinema struct {
@@ -20,13 +20,13 @@ type GetCinemaList struct {
 	Page  int
 }
 
-type HallConfig struct{
+type HallConfig struct {
 	Levels []HallPlace
 }
 
-type HallPlace struct{
+type HallPlace struct {
 	Place int
-	Row int
+	Row   int
 }
 
 type CinemaHall struct {
@@ -34,7 +34,6 @@ type CinemaHall struct {
 	PlaceAmount int
 	PlaceConfig HallConfig
 }
-
 
 type Ticket struct {
 	ID              uint64

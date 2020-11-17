@@ -1,17 +1,14 @@
 package cors
 
-import(
+import (
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"github.com/stretchr/testify/assert"
 )
 
-
-
-func TestCORSSuccessGet(t *testing.T){
-	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-		return
+func TestCORSSuccessGet(t *testing.T) {
+	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	})
 
 	testFunc := MiddlewareCORS(testHandler)
@@ -22,9 +19,8 @@ func TestCORSSuccessGet(t *testing.T){
 	assert.Equal(t, http.StatusOK, testRec.Code)
 }
 
-func TestCORSSuccessOption(t *testing.T){
-	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-		return
+func TestCORSSuccessOption(t *testing.T) {
+	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	})
 
 	testFunc := MiddlewareCORS(testHandler)

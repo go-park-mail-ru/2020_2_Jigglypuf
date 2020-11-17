@@ -1,15 +1,15 @@
 package delivery
 
 import (
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"net/http"
 )
 
 type CookieHandler struct {
-	useCase cookie.UseCase
+	useCase session.UseCase
 }
 
-func NewCookieHandler(uc cookie.UseCase) *CookieHandler {
+func NewCookieHandler(uc session.UseCase) *CookieHandler {
 	return &CookieHandler{
 		useCase: uc,
 	}

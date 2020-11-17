@@ -8,16 +8,17 @@ import (
 	"testing"
 )
 
-type HallTesting struct{
+type HallTesting struct {
 	goMockController *gomock.Controller
-	DBMock *mock.MockRepository
-	useCase *HallUseCase
+	DBMock           *mock.MockRepository
+	useCase          *HallUseCase
 }
-var(
+
+var (
 	testingStruct *HallTesting = nil
 )
 
-func setup(t *testing.T){
+func setup(t *testing.T) {
 	testingStruct = new(HallTesting)
 
 	testingStruct.goMockController = gomock.NewController(t)
@@ -25,28 +26,28 @@ func setup(t *testing.T){
 	testingStruct.useCase = NewHallUseCase(testingStruct.DBMock)
 }
 
-func tearDown(){
+func tearDown() {
 	testingStruct.goMockController.Finish()
 }
 
-func TestCheckAvailabilitySuccess( t *testing.T){
+func TestCheckAvailabilitySuccess(t *testing.T) {
 	setup(t)
 
 	testingStruct.DBMock.EXPECT().CheckAvailability(gomock.Any(), gomock.Any()).Return(true, nil)
 	boolean, _ := testingStruct.useCase.CheckAvailability("1", new(models.TicketPlace))
-	assert.Equal(t,boolean, true)
+	assert.Equal(t, boolean, true)
 	tearDown()
 }
-func TestCheckAvailabilityNotSuccess( t *testing.T){
+func TestCheckAvailabilityNotSuccess(t *testing.T) {
 	setup(t)
 
-	//testingStruct.DBMock.EXPECT().CheckAvailability(gomock.Any(), gomock.Any()).Return(true, nil)
+	// testingStruct.DBMock.EXPECT().CheckAvailability(gomock.Any(), gomock.Any()).Return(true, nil)
 	boolean, _ := testingStruct.useCase.CheckAvailability("asd", new(models.TicketPlace))
-	assert.Equal(t,boolean, false)
+	assert.Equal(t, boolean, false)
 	tearDown()
 }
 
-func TestGetHallSuccess( t *testing.T){
+func TestGetHallSuccess(t *testing.T) {
 	setup(t)
 
 	testingStruct.DBMock.EXPECT().GetHallStructure(gomock.Any()).Return(nil, nil)
@@ -54,10 +55,10 @@ func TestGetHallSuccess( t *testing.T){
 	tearDown()
 }
 
-func TestGetHallNotSuccess( t *testing.T){
+func TestGetHallNotSuccess(t *testing.T) {
 	setup(t)
 
-	//testingStruct.DBMock.EXPECT().GetHallStructure(gomock.Any()).Return(nil, nil)
+	// testingStruct.DBMock.EXPECT().GetHallStructure(gomock.Any()).Return(nil, nil)
 	_, _ = testingStruct.useCase.GetHallStructure("asd")
 	tearDown()
 }

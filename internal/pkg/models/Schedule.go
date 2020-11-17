@@ -8,5 +8,5 @@ type Schedule struct {
 	CinemaID    uint64
 	HallID      uint64
 	PremierTime time.Time
-	Cost 		int
+	Cost        int
 }

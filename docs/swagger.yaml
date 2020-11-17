@@ -220,7 +220,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: login user and get cookie
+      description: login user and get session
       operationId: login-user-by-login-data
       parameters:
       - description: Login information
@@ -259,7 +259,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: register user and get cookie
+      description: register user and get session
       operationId: register-user-by-register-data
       parameters:
       - description: Register information
@@ -355,7 +355,7 @@ paths:
           description: internal error
           schema:
             $ref: '#/definitions/models.ServerResponse'
-      summary: Get CSRF by cookie
+      summary: Get CSRF by session
   /api/hall/{id}/:
     get:
       description: Get cinema hall placement structure

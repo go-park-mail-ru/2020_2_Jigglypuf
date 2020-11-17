@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"context"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie/delivery"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session/delivery"
 	"net/http"
 )
 
@@ -15,8 +15,8 @@ func CookieMiddleware(next http.Handler, cookieManager *delivery.CookieHandler) 
 		if !ok {
 			isAuth = false
 		}
-		ctx = context.WithValue(ctx, cookie.ContextIsAuthName, isAuth)
-		ctx = context.WithValue(ctx, cookie.ContextUserIDName, val)
+		ctx = context.WithValue(ctx, session.ContextIsAuthName, isAuth)
+		ctx = context.WithValue(ctx, session.ContextUserIDName, val)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

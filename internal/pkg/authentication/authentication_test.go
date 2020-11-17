@@ -9,10 +9,10 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/repository"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/usecase"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
-	cookieMock "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie/mock"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	profileMock "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/mock"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
+	cookieMock "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/julienschmidt/httprouter"
 	"golang.org/x/crypto/bcrypt"
@@ -106,7 +106,7 @@ func TestSignUpSuccessCase(t *testing.T) {
 			"handler returned wrong status code: got %v want %v", value.TestResponseWriter.Code, value.TestResponse.StatusCode)
 	}
 	if value.TestResponse.StatusCode == http.StatusOK && value.TestResponseWriter.Header()["Set-Cookie"][0] == "" {
-		t.Errorf("handler doesn`t returned cookie")
+		t.Errorf("handler doesn`t returned session")
 	}
 
 	tearDown()
@@ -225,7 +225,7 @@ func TestSignUpProfileError(t *testing.T) {
 	tearDown()
 }
 
-func TestSignUpCookieErr(t *testing.T){
+func TestSignUpCookieErr(t *testing.T) {
 	setUp(t)
 	correctRegistrationModel := models.RegistrationInput{
 		Login:    "Aydar@mail.ru",
@@ -242,7 +242,7 @@ func TestSignUpCookieErr(t *testing.T){
 		testingStruct.Handler.RegisterHandler,
 	}
 
-	// check if cookie service returned error
+	// check if session service returned error
 	resultRows := []string{"ID"}
 	testingStruct.DBMock.ExpectQuery("INSERT INTO users .*").WillReturnRows(sqlmock.NewRows(resultRows).AddRow(1))
 	testingStruct.DBMock.ExpectCommit()
@@ -257,7 +257,7 @@ func TestSignUpCookieErr(t *testing.T){
 	tearDown()
 }
 
-func TestSignUpDeliveryError(t *testing.T){
+func TestSignUpDeliveryError(t *testing.T) {
 	setUp(t)
 	correctRegistrationModel := models.RegistrationInput{
 		Login:    "Aydar@mail.ru",
@@ -274,7 +274,7 @@ func TestSignUpDeliveryError(t *testing.T){
 		testingStruct.Handler.RegisterHandler,
 	}
 	// check if method not allowed
-	value.TestRequest =  httptest.NewRequest(http.MethodGet,"/signup/",strings.NewReader("sinaoifnoisd"))
+	value.TestRequest = httptest.NewRequest(http.MethodGet, "/signup/", strings.NewReader("sinaoifnoisd"))
 	value.TestResponseWriter = httptest.NewRecorder()
 	value.TestHandler(value.TestResponseWriter, value.TestRequest, httprouter.Params{})
 	if value.TestResponseWriter.Code != http.StatusMethodNotAllowed {
@@ -282,8 +282,8 @@ func TestSignUpDeliveryError(t *testing.T){
 			"handler returned wrong status code: got %v want %v", value.TestResponseWriter.Code, http.StatusMethodNotAllowed)
 	}
 
-	//check if input body is trash
-	value.TestRequest = httptest.NewRequest("POST","/signup/",strings.NewReader("sinaoifnoisd"))
+	// check if input body is trash
+	value.TestRequest = httptest.NewRequest("POST", "/signup/", strings.NewReader("sinaoifnoisd"))
 	value.TestResponseWriter = httptest.NewRecorder()
 	value.TestHandler(value.TestResponseWriter, value.TestRequest, httprouter.Params{})
 	if value.TestResponseWriter.Code != http.StatusBadRequest {
@@ -296,7 +296,7 @@ func TestSignUpDeliveryError(t *testing.T){
 func TestSignInSuccessCase(t *testing.T) {
 	setUp(t)
 	correctAuthenticationModel := models.AuthInput{
-		Login: "someone@somene.ru",
+		Login:    "someone@somene.ru",
 		Password: "voasndoiasndqw",
 	}
 
@@ -309,13 +309,12 @@ func TestSignInSuccessCase(t *testing.T) {
 		testingStruct.Handler.AuthHandler,
 	}
 
-
-	resultRows := []string{"ID","Login","Password"}
-	hashPassword,_ := bcrypt.GenerateFromPassword([]byte(correctAuthenticationModel.Password + "testing_salt"),7)
-	testingStruct.DBMock.ExpectQuery("SELECT .* FROM users .*").WillReturnRows(sqlmock.NewRows(resultRows).AddRow(1,correctAuthenticationModel.Login,
+	resultRows := []string{"ID", "Login", "Password"}
+	hashPassword, _ := bcrypt.GenerateFromPassword([]byte(correctAuthenticationModel.Password+"testing_salt"), 7)
+	testingStruct.DBMock.ExpectQuery("SELECT .* FROM users .*").WillReturnRows(sqlmock.NewRows(resultRows).AddRow(1, correctAuthenticationModel.Login,
 		string(hashPassword)))
 	testingStruct.DBMock.ExpectCommit()
-	
+
 	testingStruct.CookieRepMock.EXPECT().SetCookie(gomock.Any(), gomock.Any()).Return(nil)
 
 	testCase.TestHandler(testCase.TestResponseWriter, testCase.TestRequest, httprouter.Params{})
@@ -324,15 +323,15 @@ func TestSignInSuccessCase(t *testing.T) {
 			"handler returned wrong status code: got %v want %v", testCase.TestResponseWriter.Code, testCase.TestResponse.StatusCode)
 	}
 	if testCase.TestResponse.StatusCode == http.StatusOK && testCase.TestResponseWriter.Header()["Set-Cookie"][0] == "" {
-		t.Errorf("handler doesn`t returned cookie")
+		t.Errorf("handler doesn`t returned session")
 	}
 	tearDown()
 }
 
-func TestSignInValidator(t *testing.T){
+func TestSignInValidator(t *testing.T) {
 	setUp(t)
 	incorrectAuthenticationModel := models.AuthInput{
-		Login: "someone",
+		Login:    "someone",
 		Password: "voasndoiasndqw",
 	}
 
@@ -370,7 +369,7 @@ func TestSignInErrors(t *testing.T) {
 			"handler returned wrong status code: got %v want %v", testRecorder.Code, http.StatusMethodNotAllowed)
 	}
 
-	//check if input is incorrect
+	// check if input is incorrect
 	testReq = httptest.NewRequest("POST", "/signin/", strings.NewReader("incorrect input"))
 	testRecorder = httptest.NewRecorder()
 	testingStruct.Handler.AuthHandler(testRecorder, testReq, httprouter.Params{})
@@ -379,7 +378,7 @@ func TestSignInErrors(t *testing.T) {
 			"handler returned wrong status code: got %v want %v", testRecorder.Code, http.StatusMethodNotAllowed)
 	}
 
-	//check if input is empty
+	// check if input is empty
 	emptyModel := models.AuthInput{}
 	emptyBody, _ := json.Marshal(emptyModel)
 	testReq = httptest.NewRequest("POST", "/signin/", strings.NewReader(string(emptyBody)))
@@ -419,7 +418,7 @@ func TestSignInPasswordIncorrect(t *testing.T) {
 		Password: "voasndoiasndqw",
 	}
 	authenticationBody, _ := json.Marshal(authenticationModel)
-	//check if password is incorrect
+	// check if password is incorrect
 	resultRows := []string{"ID", "Login", "Password"}
 	testingStruct.DBMock.ExpectQuery("SELECT .* FROM users .*").WillReturnRows(sqlmock.NewRows(resultRows).AddRow(1,
 		authenticationModel.Login, "another_password"))
@@ -433,17 +432,17 @@ func TestSignInPasswordIncorrect(t *testing.T) {
 	}
 	tearDown()
 }
-func TestSignInHandlingCookieErr(t *testing.T){
+func TestSignInHandlingCookieErr(t *testing.T) {
 	setUp(t)
 	authenticationModel := models.AuthInput{
 		Login:    "iasndia@ansoia.ru",
 		Password: "voasndoiasndqw",
 	}
 	authenticationBody, _ := json.Marshal(authenticationModel)
-	// check if cookie service returned error
-	resultRows := []string{"ID","Login","Password"}
-	hashPassword,_ := bcrypt.GenerateFromPassword([]byte(authenticationModel.Password + "testing_salt"),7)
-	testingStruct.DBMock.ExpectQuery("SELECT .* FROM users .*").WillReturnRows(sqlmock.NewRows(resultRows).AddRow(1,authenticationModel.Login,
+	// check if session service returned error
+	resultRows := []string{"ID", "Login", "Password"}
+	hashPassword, _ := bcrypt.GenerateFromPassword([]byte(authenticationModel.Password+"testing_salt"), 7)
+	testingStruct.DBMock.ExpectQuery("SELECT .* FROM users .*").WillReturnRows(sqlmock.NewRows(resultRows).AddRow(1, authenticationModel.Login,
 		string(hashPassword)))
 	testingStruct.DBMock.ExpectCommit()
 
@@ -451,19 +450,19 @@ func TestSignInHandlingCookieErr(t *testing.T){
 	testReq := httptest.NewRequest("POST", "/signin/", strings.NewReader(string(authenticationBody)))
 	testRecorder := httptest.NewRecorder()
 	testingStruct.Handler.AuthHandler(testRecorder, testReq, httprouter.Params{})
-	if testRecorder.Code != http.StatusBadRequest{
-		t.Fatalf("TEST: handling cookie service error "+
+	if testRecorder.Code != http.StatusBadRequest {
+		t.Fatalf("TEST: handling session service error "+
 			"handler returned wrong status code: got %v want %v", testRecorder.Code, http.StatusMethodNotAllowed)
 	}
 	tearDown()
 }
 
-func TestLogOutSuccessCase(t *testing.T){
+func TestLogOutSuccessCase(t *testing.T) {
 	setUp(t)
 	testReq := httptest.NewRequest(http.MethodPost, "/logout/", nil)
 	testResponseRecorder := httptest.NewRecorder()
 	testCookie := http.Cookie{
-		Name:     cookie.SessionCookieName,
+		Name:     session.SessionCookieName,
 		Value:    models.RandStringRunes(32),
 		Expires:  time.Now().Add(96 * time.Hour),
 		Path:     "/",
@@ -471,44 +470,44 @@ func TestLogOutSuccessCase(t *testing.T){
 		Secure:   true,
 		HttpOnly: true,
 	}
-	ctx:= testReq.Context()
-	ctx = context.WithValue(ctx,cookie.ContextIsAuthName, true)
-	ctx = context.WithValue(ctx,cookie.ContextUserIDName, 1)
+	ctx := testReq.Context()
+	ctx = context.WithValue(ctx, session.ContextIsAuthName, true)
+	ctx = context.WithValue(ctx, session.ContextUserIDName, 1)
 	testReq.AddCookie(&testCookie)
 	testingStruct.CookieRepMock.EXPECT().RemoveCookie(gomock.Any()).Return(nil)
 
 	testingStruct.Handler.SignOutHandler(testResponseRecorder, testReq.WithContext(ctx), httprouter.Params{})
-	if testResponseRecorder.Code != http.StatusOK{
+	if testResponseRecorder.Code != http.StatusOK {
 		t.Fatalf("TEST: success logout status code "+
-			"handler returned wrong status code: got %v want %v",testResponseRecorder.Code, http.StatusOK)
+			"handler returned wrong status code: got %v want %v", testResponseRecorder.Code, http.StatusOK)
 	}
 	tearDown()
 }
 
-func TestLogOutErrors(t *testing.T){
+func TestLogOutErrors(t *testing.T) {
 	setUp(t)
 
-	//check if method is invalid
+	// check if method is invalid
 	testReq := httptest.NewRequest(http.MethodGet, "/logout", nil)
 	testRecorder := httptest.NewRecorder()
 	testingStruct.Handler.SignOutHandler(testRecorder, testReq, httprouter.Params{})
-	if testRecorder.Code != http.StatusMethodNotAllowed{
+	if testRecorder.Code != http.StatusMethodNotAllowed {
 		t.Fatalf("TEST: method not allowed logout status code "+
-			"handler returned wrong status code: got %v want %v",testRecorder.Code, http.StatusMethodNotAllowed)
+			"handler returned wrong status code: got %v want %v", testRecorder.Code, http.StatusMethodNotAllowed)
 	}
 
 	// check if no authorization
 	testReq = httptest.NewRequest(http.MethodPost, "/logout", nil)
 	testRecorder = httptest.NewRecorder()
 	testingStruct.Handler.SignOutHandler(testRecorder, testReq, httprouter.Params{})
-	if testRecorder.Code != http.StatusUnauthorized{
+	if testRecorder.Code != http.StatusUnauthorized {
 		t.Fatalf("TEST: unauthorized logout status code "+
-			"handler returned wrong status code: got %v want %v",testRecorder.Code, http.StatusUnauthorized)
+			"handler returned wrong status code: got %v want %v", testRecorder.Code, http.StatusUnauthorized)
 	}
 
-	// check if handles cookie repository error
+	// check if handles session repository error
 	testCookie := http.Cookie{
-		Name:     cookie.SessionCookieName,
+		Name:     session.SessionCookieName,
 		Value:    models.RandStringRunes(32),
 		Expires:  time.Now().Add(96 * time.Hour),
 		Path:     "/",
@@ -517,16 +516,16 @@ func TestLogOutErrors(t *testing.T){
 		HttpOnly: true,
 	}
 	testReq = httptest.NewRequest(http.MethodPost, "/logout", nil)
-	ctx:= testReq.Context()
-	ctx = context.WithValue(ctx,cookie.ContextIsAuthName, true)
-	ctx = context.WithValue(ctx,cookie.ContextUserIDName, 1)
+	ctx := testReq.Context()
+	ctx = context.WithValue(ctx, session.ContextIsAuthName, true)
+	ctx = context.WithValue(ctx, session.ContextUserIDName, 1)
 	testReq.AddCookie(&testCookie)
 	testRecorder = httptest.NewRecorder()
-	testingStruct.CookieRepMock.EXPECT().RemoveCookie(gomock.Any()).Return(errors.New("test cookie error"))
+	testingStruct.CookieRepMock.EXPECT().RemoveCookie(gomock.Any()).Return(errors.New("test session error"))
 	testingStruct.Handler.SignOutHandler(testRecorder, testReq.WithContext(ctx), httprouter.Params{})
-	if testRecorder.Code != http.StatusUnauthorized{
-		t.Fatalf("TEST: cookie error logout status code "+
-			"handler returned wrong status code: got %v want %v",testRecorder.Code, http.StatusUnauthorized)
+	if testRecorder.Code != http.StatusUnauthorized {
+		t.Fatalf("TEST: session error logout status code "+
+			"handler returned wrong status code: got %v want %v", testRecorder.Code, http.StatusUnauthorized)
 	}
 	tearDown()
 }

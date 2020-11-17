@@ -3,9 +3,9 @@ package delivery
 import (
 	"context"
 	"encoding/json"
-	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
@@ -16,17 +16,17 @@ import (
 	"testing"
 )
 
-type TicketTesting struct{
-	handler *TicketDelivery
-	useCaseMock *mock.MockUseCase
+type TicketTesting struct {
+	handler          *TicketDelivery
+	useCaseMock      *mock.MockUseCase
 	goMockController *gomock.Controller
 }
 
-var(
+var (
 	testingStruct *TicketTesting = nil
 )
 
-func setup(t *testing.T ){
+func setup(t *testing.T) {
 	testingStruct = new(TicketTesting)
 	testingStruct.goMockController = gomock.NewController(t)
 
@@ -34,12 +34,12 @@ func setup(t *testing.T ){
 	testingStruct.handler = NewTicketDelivery(testingStruct.useCaseMock)
 }
 
-func teardown(){
+func teardown() {
 	testingStruct.goMockController.Finish()
 }
 
-func TestBuyTicketSuccess(t *testing.T){
-	setup(t )
+func TestBuyTicketSuccess(t *testing.T) {
+	setup(t)
 
 	ticketInput := new(models.TicketInput)
 	ticketInput.Login = "somelogin"
@@ -49,11 +49,11 @@ func TestBuyTicketSuccess(t *testing.T){
 
 	testRec := httptest.NewRecorder()
 	testingStruct.handler.BuyTicket(testRec, testReq)
-	assert.Equal(t, testRec.Code,http.StatusOK)
+	assert.Equal(t, testRec.Code, http.StatusOK)
 	teardown()
 }
 
-func TestGetUserTicketsSuccess(t *testing.T){
+func TestGetUserTicketsSuccess(t *testing.T) {
 	setup(t)
 
 	testReq := httptest.NewRequest(http.MethodGet, "/ticket/user", nil)
@@ -62,15 +62,15 @@ func TestGetUserTicketsSuccess(t *testing.T){
 	ctx = context.WithValue(ctx, cookieService.ContextIsAuthName, true)
 
 	ticketList := new([]models.Ticket)
-	testingStruct.useCaseMock.EXPECT().GetUserTickets(gomock.Any()).Return(ticketList,nil)
+	testingStruct.useCaseMock.EXPECT().GetUserTickets(gomock.Any()).Return(ticketList, nil)
 	testRec := httptest.NewRecorder()
 
 	testingStruct.handler.GetUserTickets(testRec, testReq.WithContext(ctx))
-	assert.Equal(t,testRec.Code,http.StatusOK)
+	assert.Equal(t, testRec.Code, http.StatusOK)
 	teardown()
 }
 
-func TestGetUserSimpleTicketSuccess( t *testing.T){
+func TestGetUserSimpleTicketSuccess(t *testing.T) {
 	setup(t)
 
 	testReq := httptest.NewRequest(http.MethodGet, "/ticket/1", nil)
@@ -84,21 +84,20 @@ func TestGetUserSimpleTicketSuccess( t *testing.T){
 	testingStruct.useCaseMock.EXPECT().GetSimpleTicket(gomock.Any(), gomock.Any()).Return(ticketList, nil)
 	testRec := httptest.NewRecorder()
 
-
 	testingStruct.handler.GetUsersSimpleTicket(testRec, testReq.WithContext(ctx))
 	assert.Equal(t, testRec.Code, http.StatusOK)
 
 	teardown()
 }
 
-func TestGetHallScheduleTickets( t *testing.T ){
+func TestGetHallScheduleTickets(t *testing.T) {
 	setup(t)
 
 	testReq := httptest.NewRequest(http.MethodGet, "/ticket/1", nil)
 	mux.SetURLVars(testReq, map[string]string{
 		ticketservice.ScheduleIDName: "1",
 	})
-	testingStruct.useCaseMock.EXPECT().GetHallScheduleTickets(gomock.Any()).Return(new([]models.TicketPlace),nil)
+	testingStruct.useCaseMock.EXPECT().GetHallScheduleTickets(gomock.Any()).Return(new([]models.TicketPlace), nil)
 	testRec := httptest.NewRecorder()
 
 	testingStruct.handler.GetHallScheduleTickets(testRec, testReq)
@@ -107,10 +106,10 @@ func TestGetHallScheduleTickets( t *testing.T ){
 	teardown()
 }
 
-func TestTicketHandlersInvalidMethod(t *testing.T){
+func TestTicketHandlersInvalidMethod(t *testing.T) {
 	setup(t)
 
-	var testCases = []struct{
+	var testCases = []struct {
 		handler func(w http.ResponseWriter, r *http.Request)
 		request *http.Request
 	}{
@@ -132,7 +131,7 @@ func TestTicketHandlersInvalidMethod(t *testing.T){
 		},
 	}
 
-	for _,val := range testCases{
+	for _, val := range testCases {
 		testRec := httptest.NewRecorder()
 		val.handler(testRec, val.request)
 		assert.Equal(t, http.StatusMethodNotAllowed, testRec.Code)
@@ -141,14 +140,13 @@ func TestTicketHandlersInvalidMethod(t *testing.T){
 	teardown()
 }
 
-
-func TestUnAuthorizedTicketHandlers(t *testing.T){
+func TestUnAuthorizedTicketHandlers(t *testing.T) {
 	setup(t)
 	ticketInput := new(models.TicketInput)
 	ticketBody, _ := json.Marshal(ticketInput)
-	var testCases = []struct{
-		handler func(w http.ResponseWriter, r *http.Request)
-		request *http.Request
+	var testCases = []struct {
+		handler    func(w http.ResponseWriter, r *http.Request)
+		request    *http.Request
 		statusCode int
 	}{
 		{
@@ -168,7 +166,7 @@ func TestUnAuthorizedTicketHandlers(t *testing.T){
 		},
 	}
 
-	for _, val := range testCases{
+	for _, val := range testCases {
 		testRec := httptest.NewRecorder()
 		val.handler(testRec, val.request)
 		assert.Equal(t, testRec.Code, val.statusCode)

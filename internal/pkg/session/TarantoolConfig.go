@@ -1,4 +1,4 @@
-package cookie
+package session
 
 const (
 	Host     = "tarantool"

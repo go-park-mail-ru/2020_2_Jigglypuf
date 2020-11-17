@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"database/sql"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"log"
 )
 
@@ -54,7 +54,7 @@ func (t *MovieSQLRepository) GetMovie(id uint64) (*models.Movie, error) {
 	}
 	resultMovie := new(models.Movie)
 	resultErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description, &resultMovie.Genre, &resultMovie.Duration, &resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear, &resultMovie.AgeGroup, &resultMovie.Rating,
-		&resultMovie.RatingCount,&resultMovie.Actors, &resultMovie.PathToAvatar,&resultMovie.PathToSliderAvatar)
+		&resultMovie.RatingCount, &resultMovie.Actors, &resultMovie.PathToAvatar, &resultMovie.PathToSliderAvatar)
 	if resultErr != nil {
 		log.Println(resultErr)
 		return nil, resultErr
@@ -86,8 +86,8 @@ func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.MovieList,
 		ScanErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description,
 			&resultMovie.Genre, &resultMovie.Duration,
 			&resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear,
-			&resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount,&resultMovie.Actors,
-			&resultMovie.PathToAvatar,&resultMovie.PathToSliderAvatar)
+			&resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount, &resultMovie.Actors,
+			&resultMovie.PathToAvatar, &resultMovie.PathToSliderAvatar)
 		if ScanErr != nil {
 			log.Println(ScanErr)
 			return nil, ScanErr

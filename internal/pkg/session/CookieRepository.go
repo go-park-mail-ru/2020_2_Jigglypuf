@@ -1,5 +1,5 @@
 //go:generate mockgen -source CookieRepository.go -destination mock/CookieRep_mock.go -package mock
-package cookie
+package session
 
 import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"

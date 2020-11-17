@@ -1,4 +1,4 @@
-package cookie
+package session
 
 type isAuth int
 type UserID string

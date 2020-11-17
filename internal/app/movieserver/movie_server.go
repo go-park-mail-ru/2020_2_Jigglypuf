@@ -1,14 +1,14 @@
 package movieserver
 
 import (
+	"database/sql"
+	"fmt"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	movieConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
 	movieDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice/delivery"
 	movieRepository "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice/repository"
 	movieUseCase "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice/usecase"
-	"database/sql"
-	"fmt"
 	"github.com/gorilla/mux"
 )
 

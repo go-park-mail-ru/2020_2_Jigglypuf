@@ -1,5 +1,5 @@
 //go:generate mockgen -source CookieUseCase.go -destination mock/cookieUC_mock.go -package mock
-package cookie
+package session
 
 import "net/http"
 

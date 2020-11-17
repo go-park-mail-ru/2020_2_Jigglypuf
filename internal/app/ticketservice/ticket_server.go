@@ -1,6 +1,8 @@
 package ticketservice
 
 import (
+	"database/sql"
+	"fmt"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
@@ -9,8 +11,6 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice/delivery"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice/repository"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice/usecase"
-	"database/sql"
-	"fmt"
 	"github.com/gorilla/mux"
 )
 
@@ -28,7 +28,7 @@ func configureAPI(handler *delivery.TicketDelivery) *mux.Router {
 	router.HandleFunc(ticketservice.URLPattern, handler.GetUserTickets).Methods("GET")
 	router.HandleFunc(ticketservice.URLPattern+fmt.Sprintf("{%s:[0-9]+}/", ticketservice.TicketIDQuery),
 		handler.GetUsersSimpleTicket).Methods("GET")
-	router.HandleFunc(ticketservice.ScheduleURLPattern +fmt.Sprintf("{%s:[0-9]+}/", ticketservice.ScheduleIDName),
+	router.HandleFunc(ticketservice.ScheduleURLPattern+fmt.Sprintf("{%s:[0-9]+}/", ticketservice.ScheduleIDName),
 		handler.GetHallScheduleTickets).Methods("GET")
 
 	return router
@@ -39,7 +39,7 @@ func Start(connection *sql.DB, authRep interfaces.AuthRepository, hallRep hallse
 		return nil, models.ErrFooArgsMismatch
 	}
 	rep := repository.NewTicketSQLRepository(connection)
-	uc := usecase.NewTicketUseCase(rep, authRep, hallRep,scheduleRep)
+	uc := usecase.NewTicketUseCase(rep, authRep, hallRep, scheduleRep)
 	handler := delivery.NewTicketDelivery(uc)
 	router := configureAPI(handler)
 

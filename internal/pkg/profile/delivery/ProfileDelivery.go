@@ -1,10 +1,10 @@
 package delivery
 
 import (
-	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"encoding/json"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
-	"encoding/json"
+	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/julienschmidt/httprouter"
 	"io"
 	"log"
@@ -39,17 +39,17 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 
 	buff := make([]byte, 512)
 	_, err := image.Read(buff)
-	_, _ = image.Seek(int64(0),0)
-	if err != nil{
-		return "",SavingError{}
+	_, _ = image.Seek(int64(0), 0)
+	if err != nil {
+		return "", SavingError{}
 	}
 	filetype := http.DetectContentType(buff)
-	if matched, regexErr := regexp.Match("image/.*", []byte(filetype)); !matched || regexErr != nil{
-		return "",SavingError{}
+	if matched, regexErr := regexp.Match("image/.*", []byte(filetype)); !matched || regexErr != nil {
+		return "", SavingError{}
 	}
 	defer image.Close()
 	uniqueName := models.RandStringRunes(25)
-	fileName := uniqueName + "." + strings.Split(filetype,"/")[1]
+	fileName := uniqueName + "." + strings.Split(filetype, "/")[1]
 	f, saveErr := os.OpenFile(profile.SavingPath+fileName, os.O_WRONLY|os.O_CREATE, 0666)
 	if saveErr != nil {
 		return "", SavingError{}
@@ -150,6 +150,6 @@ func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request, p
 		return
 	}
 
-	// http.SetCookie(w, cookie)
+	// http.SetCookie(w, session)
 	w.WriteHeader(http.StatusOK)
 }

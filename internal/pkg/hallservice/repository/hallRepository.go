@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"database/sql"
 	"encoding/json"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 )
 
 type SQLRepository struct {

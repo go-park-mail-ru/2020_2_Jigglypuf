@@ -1,10 +1,10 @@
 package delivery
 
 import (
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
-	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"encoding/json"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
@@ -22,7 +22,7 @@ func NewUserHandler(useCase interfaces.UserUseCase) *UserHandler {
 
 // Login godoc
 // @Summary login
-// @Description login user and get cookie
+// @Description login user and get session
 // @ID login-user-by-login-data
 // @Accept  json
 // @Param Login_info body models.AuthInput true "Login information"
@@ -58,7 +58,7 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request, params
 
 // Register godoc
 // @Summary Register
-// @Description register user and get cookie
+// @Description register user and get session
 // @ID register-user-by-register-data
 // @Accept  json
 // @Param Register_info body models.RegistrationInput true "Register information"

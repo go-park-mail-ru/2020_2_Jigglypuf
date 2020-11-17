@@ -12,21 +12,21 @@ import (
 )
 
 type TicketUseCase struct {
-	validator      *validator.Validate
-	sanitizer      bluemonday.Policy
-	repository     ticketservice.Repository
-	userRepository interfaces.AuthRepository
-	hallRepository hallservice.Repository
+	validator          *validator.Validate
+	sanitizer          bluemonday.Policy
+	repository         ticketservice.Repository
+	userRepository     interfaces.AuthRepository
+	hallRepository     hallservice.Repository
 	scheduleRepository schedule.TimeTableRepository
 }
 
-func NewTicketUseCase(repository ticketservice.Repository, authRepository interfaces.AuthRepository, hallRepository hallservice.Repository,scheduleRepository schedule.TimeTableRepository) *TicketUseCase {
+func NewTicketUseCase(repository ticketservice.Repository, authRepository interfaces.AuthRepository, hallRepository hallservice.Repository, scheduleRepository schedule.TimeTableRepository) *TicketUseCase {
 	return &TicketUseCase{
-		validator:      validator.New(),
-		repository:     repository,
-		sanitizer:      *bluemonday.UGCPolicy(),
-		userRepository: authRepository,
-		hallRepository: hallRepository,
+		validator:          validator.New(),
+		repository:         repository,
+		sanitizer:          *bluemonday.UGCPolicy(),
+		userRepository:     authRepository,
+		hallRepository:     hallRepository,
 		scheduleRepository: scheduleRepository,
 	}
 }
@@ -61,10 +61,10 @@ func (t *TicketUseCase) GetHallScheduleTickets(scheduleID string) (*[]models.Tic
 
 func (t *TicketUseCase) BuyTicket(ticket *models.TicketInput, userID interface{}) error {
 	if ticket.Login == "" {
-		if userID == nil{
+		if userID == nil {
 			return models.ErrFooNoAuthorization
 		}
-		if _,ok := userID.(uint64); !ok{
+		if _, ok := userID.(uint64); !ok {
 			return models.ErrFooNoAuthorization
 		}
 		user, getUserErr := t.userRepository.GetUserByID(userID.(uint64))
@@ -75,7 +75,7 @@ func (t *TicketUseCase) BuyTicket(ticket *models.TicketInput, userID interface{}
 	}
 
 	HallID, HallErr := t.scheduleRepository.GetScheduleHallID(ticket.ScheduleID)
-	if HallErr != nil{
+	if HallErr != nil {
 		return models.ErrFooIncorrectInputInfo
 	}
 

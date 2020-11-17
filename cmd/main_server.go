@@ -1,6 +1,9 @@
 package main
 
 import (
+	"database/sql"
+	"errors"
+	"fmt"
 	_ "github.com/go-park-mail-ru/2020_2_Jigglypuf/docs"
 	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/authserver"
 	cinemaService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/cinemaserver"
@@ -13,8 +16,6 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/configs"
 	cinemaConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice"
 	hallConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie/middleware"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cors"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/csrf"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/logger"
@@ -22,10 +23,9 @@ import (
 	movieConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
 	profileConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
 	scheduleConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session/middleware"
 	ticketConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice"
-	"database/sql"
-	"errors"
-	"fmt"
 	_ "github.com/lib/pq"
 	"github.com/swaggo/http-swagger"
 	"github.com/tarantool/go-tarantool"
@@ -70,13 +70,13 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 	newCinemaService, cinemaErr := cinemaService.Start(mainDBConnection)
 	newMovieService, movieErr := movieService.Start(mainDBConnection, newAuthService.AuthenticationRepository)
 	newScheduleService, scheduleErr := scheduleService.Start(mainDBConnection)
-	if scheduleErr != nil{
+	if scheduleErr != nil {
 		log.Println(scheduleErr)
 		return nil, models.ErrFooInitFail
 	}
-	newTicketService, ticketErr := ticketservice.Start(mainDBConnection, newAuthService.AuthenticationRepository, newHallService.Repository,newScheduleService.Repository)
-	newHashCSRFMiddleware, csrfErr := csrf.NewHashCSRFToken(models.RandStringRunes(7),time.Hour*24)
-	if cinemaErr != nil || movieErr != nil || ticketErr != nil || csrfErr != nil{
+	newTicketService, ticketErr := ticketservice.Start(mainDBConnection, newAuthService.AuthenticationRepository, newHallService.Repository, newScheduleService.Repository)
+	newHashCSRFMiddleware, csrfErr := csrf.NewHashCSRFToken(models.RandStringRunes(7), time.Hour*24)
+	if cinemaErr != nil || movieErr != nil || ticketErr != nil || csrfErr != nil {
 		log.Println(models.ErrFooInitFail)
 		return nil, models.ErrFooInitFail
 	}
@@ -89,7 +89,7 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 		scheduleService: newScheduleService,
 		ticketService:   newTicketService,
 		hallService:     newHallService,
-		csrfMiddleware: newHashCSRFMiddleware,
+		csrfMiddleware:  newHashCSRFMiddleware,
 	}, nil
 }
 
@@ -134,9 +134,9 @@ func startDBWork() (*sql.DB, *tarantool.Connection, error) {
 		return nil, nil, errors.New("no postgresql connection")
 	}
 
-	TarantoolConnection, DBConnectionErr := tarantool.Connect(cookie.Host+cookie.Port, tarantool.Opts{
-		User: cookie.User,
-		Pass: cookie.Password,
+	TarantoolConnection, DBConnectionErr := tarantool.Connect(session.Host+session.Port, tarantool.Opts{
+		User: session.User,
+		Pass: session.Password,
 	})
 	if DBConnectionErr != nil {
 		return nil, nil, errors.New("no tarantool connection")
