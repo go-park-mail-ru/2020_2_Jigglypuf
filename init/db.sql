@@ -31,12 +31,17 @@ CREATE TABLE cinema
 
 /* movie table */
 
+CREATE TABLE genre
+(
+    ID serial not null primary key,
+    Name varchar(64)
+);
+
 CREATE TABLE movie
 (
     ID serial NOT NULL PRIMARY KEY,
     MovieName TEXT NOT NULL UNIQUE,
     Description TEXT,
-    Genre VARCHAR(64),
     Duration integer,
     Producer VARCHAR(64),
     Country VARCHAR(64),
@@ -47,6 +52,30 @@ CREATE TABLE movie
     Rating_count INTEGER DEFAULT 0,
     PathToAvatar VARCHAR(64),
     pathToSliderAvatar VARCHAR(64) default ''
+);
+
+CREATE TABLE movie_genre
+(
+    ID serial not null primary key,
+    movie_id integer not null references movie(ID),
+    genre_id integer not null references genre(ID),
+    UNIQUE (movie_id,genre_id)
+);
+
+CREATE TABLE actor
+(
+    ID serial not null primary key,
+    Name varchar(64),
+    Surname varchar(64),
+    Patronymic varchar(64)
+);
+
+CREATE TABLE movie_actors
+(
+    ID serial not null primary key,
+    movie_id integer not null references movie(id),
+    actor_id integer not null references actor(id),
+    unique(movie_id, actor_id)
 );
 
 /* rating table */
