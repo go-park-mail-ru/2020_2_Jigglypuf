@@ -1,3 +1,4 @@
+
 SET timezone ='+3';
 CREATE DATABASE BackendCinemaInterface;
 /* users table */
@@ -239,3 +240,4 @@ VALUES (1,2,2,now() + interval '1 hour', 400),
        (11,1,2,now() + interval '6 hours',228),
        (11,2,2,now() + interval '5 hours',228),
        (11,3,2,now() + interval '5 hours',228);
+

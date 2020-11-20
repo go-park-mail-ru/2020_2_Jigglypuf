@@ -818,6 +818,26 @@ var doc = `{
                 }
             }
         },
+        "models.Actor": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "patronymic": {
+                    "type": "string"
+                },
+                "surname": {
+                    "type": "string"
+                }
+            }
+        },
         "models.AuthInput": {
             "type": "object",
             "required": [
@@ -869,6 +889,17 @@ var doc = `{
                 }
             }
         },
+        "models.Genre": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.HallConfig": {
             "type": "object",
             "properties": {
@@ -894,8 +925,11 @@ var doc = `{
         "models.Movie": {
             "type": "object",
             "properties": {
-                "actors": {
-                    "type": "string"
+                "actorList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Actor"
+                    }
                 },
                 "ageGroup": {
                     "type": "integer"
@@ -909,8 +943,11 @@ var doc = `{
                 "duration": {
                     "type": "integer"
                 },
-                "genre": {
-                    "type": "string"
+                "genreList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Genre"
+                    }
                 },
                 "id": {
                     "type": "integer"
@@ -944,8 +981,11 @@ var doc = `{
         "models.MovieList": {
             "type": "object",
             "properties": {
-                "actors": {
-                    "type": "string"
+                "actorList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Actor"
+                    }
                 },
                 "ageGroup": {
                     "type": "integer"
@@ -959,8 +999,11 @@ var doc = `{
                 "duration": {
                     "type": "integer"
                 },
-                "genre": {
-                    "type": "string"
+                "genreList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Genre"
+                    }
                 },
                 "id": {
                     "type": "integer"

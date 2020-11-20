@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
-	"github.com/lib/pq"
 	"log"
 )
 
@@ -46,14 +45,13 @@ func (t *MovieSQLRepository) GetMovie(id uint64) (*models.Movie, error) {
 	if t.DBConnection == nil {
 		return nil, models.ErrFooNoDBConnection
 	}
-	resultSQL := t.DBConnection.QueryRow("SELECT v1.ID, v1.MovieName, v1.Description, array_agg((v3.id,v3.genre_name)), v1.Duration, v1.Producer, v1.Country, "+
-		"v1.Release_Year, v1.Age_group, v1.Rating, v1.Rating_count, "+
-		"array_agg((v5.ID, v5.Name, v5.Surname, v5.Patronymic, v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar "+
-		"FROM movie v1 join movie_genre v2 on (v2.movie_id = v1.id) "+
-		"join genre v3 on (v3.id = v2.genre_id) "+
-		"join movie_actors v4 on (v4.movie_id = v1.id) "+
-		"join actor v5 on (v5.id = v4.actor_id) "+
-		"WHERE ID = $1 " +
+	resultSQL := t.DBConnection.QueryRow("SELECT DISTINCT v1.ID, v1.MovieName, v1.Description, JSONB_AGG(jsonb_build_object('ID',v3.id,'Name',v3.genre_name)), v1.Duration, v1.Producer, v1.Country,v1.Release_Year, v1.Age_group, v1.Rating, " +
+		"v1.Rating_count,JSONB_AGG(jsonb_build_object('ID',v5.ID,'Name', v5.Name, 'Surname', v5.Surname, 'Patronymic', v5.Patronymic, 'Description', v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar FROM movie v1 " +
+		"join movie_genre v2 on v1.id = v2.movie_id " +
+		"join genre v3 on (v3.id = v2.genre_id) " +
+		"join movie_actors v4 on (v4.movie_id = v1.id) " +
+		"join actor v5 on (v5.id = v4.actor_id) " +
+		"WHERE v1.ID = $1 " +
 		"GROUP BY v1.ID", id)
 	rowsErr := resultSQL.Err()
 	if rowsErr != nil {
@@ -62,8 +60,8 @@ func (t *MovieSQLRepository) GetMovie(id uint64) (*models.Movie, error) {
 	}
 	resultMovie := new(models.Movie)
 
-	resultErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description, pq.Array(&resultMovie.GenreList), &resultMovie.Duration, &resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear, &resultMovie.AgeGroup, &resultMovie.Rating,
-		&resultMovie.RatingCount, pq.Array(&resultMovie.ActorList), &resultMovie.PathToAvatar, &resultMovie.PathToSliderAvatar)
+	resultErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description, &resultMovie.GenreList, &resultMovie.Duration, &resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear, &resultMovie.AgeGroup, &resultMovie.Rating,
+		&resultMovie.RatingCount, &resultMovie.ActorList, &resultMovie.PathToAvatar, &resultMovie.PathToSliderAvatar)
 	if resultErr != nil {
 		log.Println(resultErr)
 		return nil, resultErr
@@ -77,15 +75,14 @@ func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.MovieList,
 		return nil, models.ErrFooNoDBConnection
 	}
 
-	resultSQL, DBErr := t.DBConnection.Query("SELECT v1.ID, v1.MovieName, v1.Description, array_agg((v3.id,v3.genre_name)), v1.Duration, v1.Producer, v1.Country, "+
-		"v1.Release_Year, v1.Age_group, v1.Rating, v1.Rating_count, "+
-		"array_agg((v5.ID, v5.Name, v5.Surname, v5.Patronymic, v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar "+
-		"FROM movie v1 join movie_genre v2 on (v2.movie_id = v1.id) "+
-		"join genre v3 on (v3.id = v2.genre_id) "+
-		"join movie_actors v4 on (v4.movie_id = v1.id) "+
-		"join actor v5 on (v5.id = v4.actor_id) "+
-		"LIMIT $1 OFFSET $2 " +
-		"GROUP BY v1.ID", limit, page*limit)
+	resultSQL, DBErr := t.DBConnection.Query("SELECT v1.ID, v1.MovieName, v1.Description, JSONB_AGG(jsonb_build_object('ID',v3.id,'Name',v3.genre_name)), v1.Duration, v1.Producer, v1.Country,v1.Release_Year, v1.Age_group, v1.Rating, " +
+		"v1.Rating_count,JSONB_AGG(jsonb_build_object('ID',v5.ID,'Name', v5.Name, 'Surname', v5.Surname, 'Patronymic', v5.Patronymic, 'Description', v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar FROM movie v1 " +
+		"join movie_genre v2 on v1.id = v2.movie_id " +
+		"join genre v3 on (v3.id = v2.genre_id) " +
+		"join movie_actors v4 on (v4.movie_id = v1.id) " +
+		"join actor v5 on (v5.id = v4.actor_id) " +
+		"GROUP BY v1.ID " +
+		"LIMIT $1 OFFSET $2", limit, page*limit)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr
@@ -101,9 +98,9 @@ func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.MovieList,
 	for resultSQL.Next() {
 		resultMovie := new(models.MovieList)
 		ScanErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description,
-			pq.Array(&resultMovie.GenreList), &resultMovie.Duration,
+			&resultMovie.GenreList, &resultMovie.Duration,
 			&resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear,
-			&resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount,pq.Array(&resultMovie.ActorList),
+			&resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount,&resultMovie.ActorList,
 			&resultMovie.PathToAvatar, &resultMovie.PathToSliderAvatar)
 		if ScanErr != nil {
 			log.Println(ScanErr)
@@ -180,15 +177,14 @@ func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int) (*[]models.Movie
 		return nil, models.ErrFooNoDBConnection
 	}
 
-	DBRows, DBErr := t.DBConnection.Query("SELECT DISTINCT v1.ID, v1.MovieName, v1.Description, array_agg((v3.id,v3.genre_name)), v1.Duration, v1.Producer, v1.Country,v1.Release_Year, v1.Age_group, " +
-		"v1.Rating, v1.Rating_count, array_agg((v5.ID, v5.Name, v5.Surname, v5.Patronymic, v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar  FROM schedule v6 " +
-		"join movie v1 on (v6.movie_id = v1.id)" +
-		"join movie_genre v2 on (v2.movie_id = v1.id) "+
-		"join genre v3 on (v3.id = v2.genre_id) "+
-		"join movie_actors v4 on (v4.movie_id = v1.id) "+
-		"join actor v5 on (v5.id = v4.actor_id) "+
-		"WHERE v1.Premiere_time > now() " +
-		"GROUP BY v1.ID")
+	DBRows, DBErr := t.DBConnection.Query("SELECT DISTINCT v1.ID, v1.MovieName, v1.Description, JSONB_AGG(jsonb_build_object('ID',v3.id,'Name',v3.genre_name)), v1.Duration, v1.Producer, v1.Country,v1.Release_Year, v1.Age_group, v1.Rating, " +
+		"v1.Rating_count,JSONB_AGG(jsonb_build_object('ID',v5.ID,'Name', v5.Name, 'Surname', v5.Surname, 'Patronymic', v5.Patronymic, 'Description', v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar FROM movie v1 " +
+		"join movie_genre v2 on v1.id = v2.movie_id " +
+		"join genre v3 on (v3.id = v2.genre_id) " +
+		"join movie_actors v4 on (v4.movie_id = v1.id) " +
+		"join actor v5 on (v5.id = v4.actor_id) " +
+		"where exists(select 1 from schedule sh where v1.id = sh.movie_id and sh.premiere_time > now()) " +
+		"group by v1.ID;")
 	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr
@@ -206,13 +202,13 @@ func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int) (*[]models.Movie
 	}()
 
 	movieList := make([]models.MovieList, 0)
-	resultMovie := new(models.MovieList)
 	for DBRows.Next() {
+		resultMovie := new(models.MovieList)
 		ScanErr := DBRows.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description,
-			pq.Array(&resultMovie.GenreList), &resultMovie.Duration,
+			&resultMovie.GenreList, &resultMovie.Duration,
 			&resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear,
-			&resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount,
-			&resultMovie.PathToAvatar, pq.Array(&resultMovie.ActorList), &resultMovie.PathToSliderAvatar)
+			&resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount,&resultMovie.ActorList,
+			&resultMovie.PathToAvatar, &resultMovie.PathToSliderAvatar)
 		if ScanErr != nil {
 			log.Println(ScanErr)
 			return nil, ScanErr
