@@ -30,8 +30,6 @@ services:
   restart: always
   env_file:
    - ./init/database.env
-  healthcheck:
-   test: CMD pg_isready -U $POSTGRES_USER
   volumes:
    - ./init/:/docker-entrypoint-initdb.d/
    - /home/ubuntu/etc/postgresql:/etc/postgresql

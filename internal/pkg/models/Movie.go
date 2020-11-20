@@ -4,7 +4,7 @@ type Movie struct {
 	ID                 uint64 `repository:"ID"`
 	Name               string
 	Description        string
-	Genre              string
+	GenreList          []string
 	Duration           int
 	Producer           string
 	Country            string
@@ -13,16 +13,24 @@ type Movie struct {
 	Rating             float64
 	RatingCount        int
 	PersonalRating     int64
-	Actors             string
+	ActorList          []Actor
 	PathToAvatar       string
 	PathToSliderAvatar string
+}
+
+type Actor struct{
+	ID uint64
+	Name string
+	Surname string
+	Patronymic string
+	Description string
 }
 
 type MovieList struct {
 	ID                 uint64 `repository:"ID"`
 	Name               string
 	Description        string
-	Genre              string
+	GenreList          []string
 	Duration           int
 	Producer           string
 	Country            string
@@ -30,7 +38,7 @@ type MovieList struct {
 	AgeGroup           int
 	Rating             float64
 	RatingCount        int
-	Actors             string
+	ActorList          []Actor
 	PathToAvatar       string
 	PathToSliderAvatar string
 }

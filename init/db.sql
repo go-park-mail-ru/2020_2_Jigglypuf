@@ -1,7 +1,7 @@
 SET timezone ='+3';
 CREATE DATABASE BackendCinemaInterface;
 /* users table */
-CREATE TABLE users
+CREATE TABLE if not exists users
 (
     ID serial NOT NULL PRIMARY KEY,
     Login VARCHAR(32) NOT NULL UNIQUE ,
@@ -10,7 +10,7 @@ CREATE TABLE users
 
 /* profile table */
 
-CREATE TABLE profile
+CREATE TABLE if not exists profile
 (
     user_id integer NOT NULL PRIMARY KEY REFERENCES users (ID),
     ProfileName VARCHAR(32),
@@ -20,7 +20,7 @@ CREATE TABLE profile
 
 /* cinema table */
 
-CREATE TABLE cinema
+CREATE TABLE if not exists cinema
 (
     ID serial NOT NULL PRIMARY KEY,
     CinemaName VARCHAR(32) NOT NULL,
@@ -31,13 +31,13 @@ CREATE TABLE cinema
 
 /* movie table */
 
-CREATE TABLE genre
+CREATE TABLE if not exists genre
 (
     ID serial not null primary key,
-    Name varchar(64)
+    Genre_Name varchar(64)
 );
 
-CREATE TABLE movie
+CREATE TABLE if not exists movie
 (
     ID serial NOT NULL PRIMARY KEY,
     MovieName TEXT NOT NULL UNIQUE,
@@ -48,13 +48,12 @@ CREATE TABLE movie
     Release_Year integer,
     Age_group integer,
     Rating FLOAT DEFAULT 0.0,
-    Actors VARCHAR(64) default '',
     Rating_count INTEGER DEFAULT 0,
     PathToAvatar VARCHAR(64),
     pathToSliderAvatar VARCHAR(64) default ''
 );
 
-CREATE TABLE movie_genre
+CREATE TABLE if not exists movie_genre
 (
     ID serial not null primary key,
     movie_id integer not null references movie(ID),
@@ -62,15 +61,16 @@ CREATE TABLE movie_genre
     UNIQUE (movie_id,genre_id)
 );
 
-CREATE TABLE actor
+CREATE TABLE if not exists actor
 (
     ID serial not null primary key,
-    Name varchar(64),
-    Surname varchar(64),
-    Patronymic varchar(64)
+    Name varchar(64) default '',
+    Surname varchar(64) default '',
+    Patronymic varchar(64) default '',
+    Description text default ''
 );
 
-CREATE TABLE movie_actors
+CREATE TABLE if not exists movie_actors
 (
     ID serial not null primary key,
     movie_id integer not null references movie(id),
@@ -80,7 +80,7 @@ CREATE TABLE movie_actors
 
 /* rating table */
 
-CREATE TABLE rating_history
+CREATE TABLE if not exists rating_history
 (
     ID serial NOT NULL PRIMARY KEY ,
     user_id integer references users (ID),
@@ -90,7 +90,7 @@ CREATE TABLE rating_history
 );
 
 /* cinema halls structure */
-CREATE TABLE cinema_hall
+CREATE TABLE if not exists cinema_hall
 (
     ID serial NOT NULL UNIQUE PRIMARY KEY,
     Place_amount integer not null,
@@ -99,7 +99,7 @@ CREATE TABLE cinema_hall
 
 /* schedule table */
 
-CREATE TABLE schedule
+CREATE TABLE if not exists schedule
 (
     ID serial NOT NULL UNIQUE PRIMARY KEY,
     Movie_ID INTEGER NOT NULL REFERENCES movie (ID),
@@ -111,7 +111,7 @@ CREATE TABLE schedule
 );
 
 /* tickets */
-CREATE TABLE ticket
+CREATE TABLE if not exists ticket
 (
     ID serial not null unique primary key,
     User_login VARCHAR(32) not null,
@@ -128,18 +128,67 @@ VALUES  ('CinemaScope1','Москва, Первая улица, д.1',1),
         ('CinemaScope3','Москва, Первая улица, д.3',3),
         ('CinemaScope4','Москва, Первая улица, д.4',4);
 
-INSERT INTO movie (MovieName,Actors,Description,Genre,Duration,Producer,Country,Release_Year,Age_group,PathToAvatar,pathToSliderAvatar)
-VALUES  ('Гренландия','Билл Кроун','Greenland description','Tragedy',112,'Tarantino','America',2016,16,'/media/greenland.jpg',''),
-        ('Антибеллум','Джейк Келлуа','Антибеллум description','Comedy',118,'Tarantino','America',2012,12,'/media/antibellum.jpg',''),
-        ('Довод','Роберт Паттинсон','Главный герой — секретный агент, который проходит жестокий тест на надежность и присоединяется к невероятной миссии. От ее выполнения зависит судьба мира, а для успеха необходимо отбросить все прежние представления о пространстве и времени.','Боевик',160,'Кристофер Нолан','America',2020,18,'/media/tenet_poster.jpg','/media/tenet_slider.png'),
-        ('Гнездо','Сара Коннор','Гнездо description','Drama',180,'No name','Canada',2006,10,'/media/gnezdo.jpg',''),
-        ('Сделано в Италии','Джордж Клуни','Италиан description','Comedy',100,'Zarukko','Italy',2020,12,'/media/italian.jpg',''),
-        ('Мулан','Лю Ифэй','История о бесстрашной молодой девушке, которая выдаёт себя за мужчину, чтобы вступить в ряды армии, противостоящей Северным захватчикам, надвигающимся на Китай. Старшая дочь храброго воина Хуа, Мулан — энергичная и решительная девушка. Когда Император издаёт указ о том, что один мужчина из каждой семьи должен вступить в ряды Имперской армии, Мулан занимает место своего больного отца, еще не зная о том, что ей предстоит прославиться как один из самых величайших воинов в истории Китая.','Tragedy',132,'Zue che ke','China',2020,18,'/media/mulan.jpg','/media/mulan_slider.png'),
-        ('Никогда всегда всегда никогда','Евгения Смолина','Никогда description','Fantastic',130,'Васильев','Russia',2018,18,'/media/nikogda.jpg',''),
-        ('После','Сьюзэн МакМартин','После description','Fantastic',180,'Rukko','Spain',2020,18,'/media/posle.jpg',''),
-        ('Стрельцов','Виталий Хлев','К 20 годам у кумира миллионов Эдуарда Стрельцова есть все, о чем только можно мечтать: талант, слава и любовь. Вся страна с замиранием сердца ждет от сборной и ее восходящей звезды победы на предстоящем Чемпионате мира по футболу. Но за два дня до отъезда команды против Стрельцова выдвигается обвинение, которое вмиг все перечеркивает. Вместо дуэли с гениальным бразильцем Пеле, которая могла стать самой зрелищной в истории футбола, Стрельцова ждет тюрьма. Неужели он и правда преступник? Сможет ли он после 5 лет лагерей вновь выйти на поле и доказать, что он — настоящий чемпион, достойный всенародной любви?','Drama',120,'Илья Алексеевич Учитель','Russia',2008,18,'/media/strelcov.jpg','/media/streltsov_slider.png'),
-        ('Ловец Снов','Рада Митчел', 'Совсем немного времени прошло после убийства жены Люка соседским мальчишкой в отдалённом лесном домике, но мужчина привозит туда свою новую пассию Гейл и сына Джоша. Ребёнка мучают страшные сны, в которых ему является мёртвая мама, а Гейл — детский психилог со стажем — изо всех сил пытается помочь мальчику. Однажды, наслушавшись рассказов соседки про ловцы снов, Джош крадёт у неё из сундука полезную, как он думал, для избавления от кошмаров вещь, но после этого его сны становятся ещё более реалистичными и пугающими.','Триллер',85,'Керри Харрис','США',2020,18,'/media/dream_catcher_poster.jpg','/media/dream_catcher_slider.png'),
-        ('Однажды в… Голливуде','Леонардно Ди Каприо','Фильм повествует о череде событий, произошедших в Голливуде в 1969 году, на закате его «золотого века». По сюжету, известный ТВ актер Рик Далтон и его дублер Клифф Бут пытаются найти свое место в стремительно меняющемся мире киноиндустрии.','Комедия',160,'Квентин Тарантино','США',2019,16,'/media/once_upon_a_time_in_hollywood_poster.jpg','');
+
+INSERT into genre(Genre_Name)
+values ('Трагедия'),
+       ('Комедия'),
+       ('Боевик'),
+       ('Драма'),
+       ('Фантастика'),
+       ('Триллер');
+
+INSERT INTO actor(Name, Surname)
+VALUES ('Билл', 'Кроун'),
+       ('Джейк','Келлуа'),
+       ('Роберт', 'Паттинсон'),
+       ('Сара', 'Коннор'),
+       ('Джордж', 'Клуни'),
+       ('Лю', 'Ифэй'),
+       ('Евгения', 'Смолина'),
+       ('Сьюзен', 'МакМартин'),
+       ('Виталий', 'Хлев'),
+       ('Рада', 'Митчел'),
+       ('Леонардо', 'Ди Каприо');
+
+INSERT INTO movie (MovieName,Description,Duration,Producer,Country,Release_Year,Age_group,PathToAvatar,pathToSliderAvatar)
+VALUES  ('Гренландия','Greenland description',112,'Tarantino','America',2016,16,'/media/greenland.jpg',''),
+        ('Антибеллум','Антибеллум description',118,'Tarantino','America',2012,12,'/media/antibellum.jpg',''),
+        ('Довод','Главный герой — секретный агент, который проходит жестокий тест на надежность и присоединяется к невероятной миссии. От ее выполнения зависит судьба мира, а для успеха необходимо отбросить все прежние представления о пространстве и времени.',160,'Кристофер Нолан','America',2020,18,'/media/tenet_poster.jpg','/media/tenet_slider.png'),
+        ('Гнездо','Гнездо description',180,'No name','Canada',2006,10,'/media/gnezdo.jpg',''),
+        ('Сделано в Италии','Италиан description',100,'Zarukko','Italy',2020,12,'/media/italian.jpg',''),
+        ('Мулан','История о бесстрашной молодой девушке, которая выдаёт себя за мужчину, чтобы вступить в ряды армии, противостоящей Северным захватчикам, надвигающимся на Китай. Старшая дочь храброго воина Хуа, Мулан — энергичная и решительная девушка. Когда Император издаёт указ о том, что один мужчина из каждой семьи должен вступить в ряды Имперской армии, Мулан занимает место своего больного отца, еще не зная о том, что ей предстоит прославиться как один из самых величайших воинов в истории Китая.',132,'Zue che ke','China',2020,18,'/media/mulan.jpg','/media/mulan_slider.png'),
+        ('Никогда всегда всегда никогда','Никогда description',130,'Васильев','Russia',2018,18,'/media/nikogda.jpg',''),
+        ('После','После description',180,'Rukko','Spain',2020,18,'/media/posle.jpg',''),
+        ('Стрельцов','К 20 годам у кумира миллионов Эдуарда Стрельцова есть все, о чем только можно мечтать: талант, слава и любовь. Вся страна с замиранием сердца ждет от сборной и ее восходящей звезды победы на предстоящем Чемпионате мира по футболу. Но за два дня до отъезда команды против Стрельцова выдвигается обвинение, которое вмиг все перечеркивает. Вместо дуэли с гениальным бразильцем Пеле, которая могла стать самой зрелищной в истории футбола, Стрельцова ждет тюрьма. Неужели он и правда преступник? Сможет ли он после 5 лет лагерей вновь выйти на поле и доказать, что он — настоящий чемпион, достойный всенародной любви?',120,'Илья Алексеевич Учитель','Russia',2008,18,'/media/strelcov.jpg','/media/streltsov_slider.png'),
+        ('Ловец Снов', 'Совсем немного времени прошло после убийства жены Люка соседским мальчишкой в отдалённом лесном домике, но мужчина привозит туда свою новую пассию Гейл и сына Джоша. Ребёнка мучают страшные сны, в которых ему является мёртвая мама, а Гейл — детский психилог со стажем — изо всех сил пытается помочь мальчику. Однажды, наслушавшись рассказов соседки про ловцы снов, Джош крадёт у неё из сундука полезную, как он думал, для избавления от кошмаров вещь, но после этого его сны становятся ещё более реалистичными и пугающими.',85,'Керри Харрис','США',2020,18,'/media/dream_catcher_poster.jpg','/media/dream_catcher_slider.png'),
+        ('Однажды в… Голливуде','Фильм повествует о череде событий, произошедших в Голливуде в 1969 году, на закате его «золотого века». По сюжету, известный ТВ актер Рик Далтон и его дублер Клифф Бут пытаются найти свое место в стремительно меняющемся мире киноиндустрии.',160,'Квентин Тарантино','США',2019,16,'/media/once_upon_a_time_in_hollywood_poster.jpg','');
+
+INSERT INTO movie_actors(movie_id, actor_id)
+VALUES (1,1),
+       (2,2),
+       (3,3),
+       (4,4),
+       (5,5),
+       (6,6),
+       (7,7),
+       (8,8),
+       (9,9),
+       (10,10),
+       (11,11);
+
+INSERT INTO movie_genre (movie_id, genre_id)
+VALUES (1,1),
+       (2,2),
+       (3,3),
+       (4,4),
+       (5,2),
+       (6,1),
+       (7,5),
+       (8,5),
+       (9,4),
+       (10,6),
+       (11,2);
+
 
 INSERT INTO cinema_hall (Place_amount,Hall_params)
 VALUES (15,'{"levels":[{"place":1,"row":1},{"place":2,"row":1},{"place":3,"row":1},{"place":4,"row":1},{"place":5,"row":1},{"place":6,"row":1},{"place":7,"row":1},{"place":8,"row":1},

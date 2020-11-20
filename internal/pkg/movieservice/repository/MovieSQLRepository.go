@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/lib/pq"
 	"log"
 )
 
@@ -45,16 +46,24 @@ func (t *MovieSQLRepository) GetMovie(id uint64) (*models.Movie, error) {
 	if t.DBConnection == nil {
 		return nil, models.ErrFooNoDBConnection
 	}
-
-	resultSQL := t.DBConnection.QueryRow("SELECT ID, MovieName, Description,Genre,Duration,Producer,Country,Release_Year,Age_group, Rating, Rating_count, Actors,PathToAvatar,pathToSliderAvatar FROM movie WHERE ID = $1", id)
+	resultSQL := t.DBConnection.QueryRow("SELECT v1.ID, v1.MovieName, v1.Description, array_agg((v3.id,v3.genre_name)), v1.Duration, v1.Producer, v1.Country, "+
+		"v1.Release_Year, v1.Age_group, v1.Rating, v1.Rating_count, "+
+		"array_agg((v5.ID, v5.Name, v5.Surname, v5.Patronymic, v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar "+
+		"FROM movie v1 join movie_genre v2 on (v2.movie_id = v1.id) "+
+		"join genre v3 on (v3.id = v2.genre_id) "+
+		"join movie_actors v4 on (v4.movie_id = v1.id) "+
+		"join actor v5 on (v5.id = v4.actor_id) "+
+		"WHERE ID = $1" +
+		"GROUP BY v1.ID", id)
 	rowsErr := resultSQL.Err()
 	if rowsErr != nil {
 		log.Println(rowsErr)
 		return nil, rowsErr
 	}
 	resultMovie := new(models.Movie)
-	resultErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description, &resultMovie.Genre, &resultMovie.Duration, &resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear, &resultMovie.AgeGroup, &resultMovie.Rating,
-		&resultMovie.RatingCount, &resultMovie.Actors, &resultMovie.PathToAvatar, &resultMovie.PathToSliderAvatar)
+
+	resultErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description, pq.Array(&resultMovie.GenreList), &resultMovie.Duration, &resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear, &resultMovie.AgeGroup, &resultMovie.Rating,
+		&resultMovie.RatingCount, pq.Array(&resultMovie.ActorList), &resultMovie.PathToAvatar, &resultMovie.PathToSliderAvatar)
 	if resultErr != nil {
 		log.Println(resultErr)
 		return nil, resultErr
@@ -68,7 +77,15 @@ func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.MovieList,
 		return nil, models.ErrFooNoDBConnection
 	}
 
-	resultSQL, DBErr := t.DBConnection.Query("SELECT ID, MovieName, Description,Genre,Duration,Producer,Country,Release_Year,Age_group, Rating, Rating_count, Actors,PathToAvatar,pathToSliderAvatar FROM movie LIMIT $1 OFFSET $2", limit, page*limit)
+	resultSQL, DBErr := t.DBConnection.Query("SELECT v1.ID, v1.MovieName, v1.Description, array_agg((v3.id,v3.genre_name)), v1.Duration, v1.Producer, v1.Country, "+
+		"v1.Release_Year, v1.Age_group, v1.Rating, v1.Rating_count, "+
+		"array_agg((v5.ID, v5.Name, v5.Surname, v5.Patronymic, v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar "+
+		"FROM movie v1 join movie_genre v2 on (v2.movie_id = v1.id) "+
+		"join genre v3 on (v3.id = v2.genre_id) "+
+		"join movie_actors v4 on (v4.movie_id = v1.id) "+
+		"join actor v5 on (v5.id = v4.actor_id) "+
+		"LIMIT $1 OFFSET $2" +
+		"GROUP BY v1.ID", limit, page*limit)
 	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr
@@ -84,9 +101,9 @@ func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.MovieList,
 	for resultSQL.Next() {
 		resultMovie := new(models.MovieList)
 		ScanErr := resultSQL.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description,
-			&resultMovie.Genre, &resultMovie.Duration,
+			pq.Array(&resultMovie.GenreList), &resultMovie.Duration,
 			&resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear,
-			&resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount, &resultMovie.Actors,
+			&resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount,pq.Array(&resultMovie.ActorList),
 			&resultMovie.PathToAvatar, &resultMovie.PathToSliderAvatar)
 		if ScanErr != nil {
 			log.Println(ScanErr)
@@ -163,7 +180,16 @@ func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int) (*[]models.Movie
 		return nil, models.ErrFooNoDBConnection
 	}
 
-	DBRows, DBErr := t.DBConnection.Query("SELECT DISTINCT v1.Movie_id,v2.MovieName, v2.Description,v2.Genre,v2.Duration,v2.Producer,v2.Country,v2.Release_Year,v2.Age_group, v2.Rating, v2.Rating_count, v2.PathToAvatar,v2.Actors,v2.pathToSliderAvatar FROM schedule v1 JOIN movie v2 on(v1.movie_id = v2.id) WHERE v1.Premiere_time > now()")
+	DBRows, DBErr := t.DBConnection.Query("SELECT DISTINCT v1.ID, v1.MovieName, v1.Description, array_agg((v3.id,v3.genre_name)), v1.Duration, v1.Producer, v1.Country,v1.Release_Year, v1.Age_group, " +
+		"v1.Rating, v1.Rating_count, array_agg((v5.ID, v5.Name, v5.Surname, v5.Patronymic, v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar  FROM schedule v6 " +
+		"join movie v1 on (v6.movie_id = v1.id)" +
+		"join movie_genre v2 on (v2.movie_id = v1.id) "+
+		"join genre v3 on (v3.id = v2.genre_id) "+
+		"join movie_actors v4 on (v4.movie_id = v1.id) "+
+		"join actor v5 on (v5.id = v4.actor_id) "+
+		"JOIN movie v2 on(v1.movie_id = v2.id) " +
+		"WHERE v1.Premiere_time > now() " +
+		"GROUP BY v1.ID")
 	if DBErr != nil {
 		log.Println(DBErr)
 		return nil, DBErr
@@ -184,10 +210,10 @@ func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int) (*[]models.Movie
 	resultMovie := new(models.MovieList)
 	for DBRows.Next() {
 		ScanErr := DBRows.Scan(&resultMovie.ID, &resultMovie.Name, &resultMovie.Description,
-			&resultMovie.Genre, &resultMovie.Duration,
+			pq.Array(&resultMovie.GenreList), &resultMovie.Duration,
 			&resultMovie.Producer, &resultMovie.Country, &resultMovie.ReleaseYear,
 			&resultMovie.AgeGroup, &resultMovie.Rating, &resultMovie.RatingCount,
-			&resultMovie.PathToAvatar, &resultMovie.Actors, &resultMovie.PathToSliderAvatar)
+			&resultMovie.PathToAvatar, pq.Array(&resultMovie.ActorList), &resultMovie.PathToSliderAvatar)
 		if ScanErr != nil {
 			log.Println(ScanErr)
 			return nil, ScanErr
