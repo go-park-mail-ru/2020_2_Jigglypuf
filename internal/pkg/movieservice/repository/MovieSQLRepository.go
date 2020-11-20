@@ -53,7 +53,7 @@ func (t *MovieSQLRepository) GetMovie(id uint64) (*models.Movie, error) {
 		"join genre v3 on (v3.id = v2.genre_id) "+
 		"join movie_actors v4 on (v4.movie_id = v1.id) "+
 		"join actor v5 on (v5.id = v4.actor_id) "+
-		"WHERE ID = $1" +
+		"WHERE ID = $1 " +
 		"GROUP BY v1.ID", id)
 	rowsErr := resultSQL.Err()
 	if rowsErr != nil {
@@ -84,7 +84,7 @@ func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.MovieList,
 		"join genre v3 on (v3.id = v2.genre_id) "+
 		"join movie_actors v4 on (v4.movie_id = v1.id) "+
 		"join actor v5 on (v5.id = v4.actor_id) "+
-		"LIMIT $1 OFFSET $2" +
+		"LIMIT $1 OFFSET $2 " +
 		"GROUP BY v1.ID", limit, page*limit)
 	if DBErr != nil {
 		log.Println(DBErr)
@@ -187,7 +187,6 @@ func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int) (*[]models.Movie
 		"join genre v3 on (v3.id = v2.genre_id) "+
 		"join movie_actors v4 on (v4.movie_id = v1.id) "+
 		"join actor v5 on (v5.id = v4.actor_id) "+
-		"JOIN movie v2 on(v1.movie_id = v2.id) " +
 		"WHERE v1.Premiere_time > now() " +
 		"GROUP BY v1.ID")
 	if DBErr != nil {
