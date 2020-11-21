@@ -22,15 +22,15 @@ func CookieMiddleware(next http.Handler, cookieManager *delivery.CookieHandler) 
 		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 
-		if cookieValue, ok := r.Context().Value(session.ContextCookieName).(http.Cookie); ok{
+		if cookieValue, ok := r.Context().Value(session.ContextCookieName).(http.Cookie); ok {
 			log.Println("setting cookie", cookieValue)
 			http.SetCookie(w, &cookieValue)
-			if time.Now().After(cookieValue.Expires){
+			if time.Now().After(cookieValue.Expires) {
 				cookieManager.RemoveCookie(&cookieValue)
 				return
 			}
 			userID, okUser := r.Context().Value(session.ContextUserIDName).(uint64)
-			if okUser{
+			if okUser {
 				cookieManager.SetCookie(&cookieValue, userID)
 			}
 		}

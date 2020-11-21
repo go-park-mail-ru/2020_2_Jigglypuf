@@ -60,7 +60,7 @@ func setUp(t *testing.T) {
 	profileRepFoo := profileMock.NewMockRepository(testingStruct.GoMockController)
 	cookieRepFoo := cookieMock.NewMockRepository(testingStruct.GoMockController)
 	authRep := repository.NewAuthSQLRepository(DBConnect)
-	authUC := usecase.NewUserUseCase(authRep, profileRepFoo, cookieRepFoo, "testing_salt")
+	authUC := usecase.NewUserUseCase(authRep, profileRepFoo, "testing_salt")
 	authHandler := delivery.NewUserHandler(authUC)
 	testingStruct.Repository = authRep
 	testingStruct.UseCase = authUC

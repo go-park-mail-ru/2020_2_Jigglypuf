@@ -28,12 +28,12 @@ func (t *CookieUseCase) CheckCookie(cookieValue *http.Cookie) (uint64, bool) {
 	return 0, false
 }
 
-func (t *CookieUseCase) SetCookie(cookieValue *http.Cookie, UserID uint64) error{
-	err := t.Repository.SetCookie(cookieValue, UserID)
+func (t *CookieUseCase) SetCookie(cookieValue *http.Cookie, userID uint64) error {
+	err := t.Repository.SetCookie(cookieValue, userID)
 	return errors.Wrap(err, "[USECASE SetCookieError]")
 }
 
-func (t *CookieUseCase) RemoveCookie(cookieValue *http.Cookie) error{
+func (t *CookieUseCase) RemoveCookie(cookieValue *http.Cookie) error {
 	err := t.Repository.RemoveCookie(cookieValue)
 	return errors.Wrap(err, "[USECASE RemoveCookie]")
 }

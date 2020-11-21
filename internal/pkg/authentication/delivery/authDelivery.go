@@ -34,7 +34,7 @@ func createUserCookie() *http.Cookie {
 	}
 }
 
-func setContextCookie(r *http.Request, userID uint64) context.Context{
+func setContextCookie(r *http.Request, userID uint64) context.Context {
 	sessionValue := createUserCookie()
 	ctx := r.Context()
 	ctx = context.WithValue(ctx, session.ContextCookieName, *sessionValue)
@@ -76,7 +76,6 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request, params
 		return
 	}
 	*r = *r.WithContext(setContextCookie(r, userID))
-
 }
 
 // Register godoc

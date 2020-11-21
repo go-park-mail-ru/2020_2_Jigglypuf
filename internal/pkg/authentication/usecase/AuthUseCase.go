@@ -44,20 +44,20 @@ func (t *UserUseCase) validateInput(input interface{}) error {
 	return t.validator.Struct(input)
 }
 
-func (t *UserUseCase) SignUp(input *models.RegistrationInput) (uint64,error) {
+func (t *UserUseCase) SignUp(input *models.RegistrationInput) (uint64, error) {
 	// input validation
 	if input.Login == "" || input.Password == "" || input.Name == "" || input.Surname == "" {
-		return 0,models.ErrFooIncorrectInputInfo
+		return 0, models.ErrFooIncorrectInputInfo
 	}
 	utils.SanitizeInput(t.sanitizer, &input.Login, &input.Password, &input.Name, &input.Surname)
 	validationErr := t.validateInput(input)
 	if validationErr != nil {
-		return 0,models.ErrFooIncorrectInputInfo
+		return 0, models.ErrFooIncorrectInputInfo
 	}
 	// creating user credentials
 	hashPassword, ok := createHashPassword(input.Password, t.salt)
 	if !ok {
-		return 0,models.ErrFooInternalServerError
+		return 0, models.ErrFooInternalServerError
 	}
 	user := models.User{
 		Login:    input.Login,
@@ -75,13 +75,13 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (uint64,error) {
 	prof.AvatarPath = profile.NoAvatarImage
 	profileErr := t.profileRepository.CreateProfile(prof)
 	if profileErr != nil {
-		return 0,profileErr
+		return 0, profileErr
 	}
 
 	return user.ID, nil
 }
 
-func (t *UserUseCase) SignIn(input *models.AuthInput) (uint64,error) {
+func (t *UserUseCase) SignIn(input *models.AuthInput) (uint64, error) {
 	if input.Login == "" || input.Password == "" {
 		return 0, models.ErrFooIncorrectInputInfo
 	}

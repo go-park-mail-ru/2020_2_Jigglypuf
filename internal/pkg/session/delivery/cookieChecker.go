@@ -24,12 +24,12 @@ func (t *CookieHandler) CheckCookie(r *http.Request) (uint64, bool) {
 	return t.useCase.CheckCookie(cookieValue)
 }
 
-func (t *CookieHandler) RemoveCookie(cookie *http.Cookie) bool{
+func (t *CookieHandler) RemoveCookie(cookie *http.Cookie) bool {
 	handledErr := t.useCase.RemoveCookie(cookie)
 	return handledErr == nil
 }
 
-func (t *CookieHandler) SetCookie(cookie *http.Cookie, UserID uint64) bool{
-	handledErr := t.useCase.SetCookie(cookie, UserID)
+func (t *CookieHandler) SetCookie(cookie *http.Cookie, userID uint64) bool {
+	handledErr := t.useCase.SetCookie(cookie, userID)
 	return handledErr == nil
 }

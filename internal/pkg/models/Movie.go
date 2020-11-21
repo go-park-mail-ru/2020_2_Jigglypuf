@@ -20,11 +20,11 @@ type Movie struct {
 	PathToSliderAvatar string
 }
 
-type Actor struct{
-	ID uint64
-	Name string
-	Surname string
-	Patronymic string
+type Actor struct {
+	ID          uint64
+	Name        string
+	Surname     string
+	Patronymic  string
 	Description string
 }
 
@@ -45,22 +45,23 @@ type MovieList struct {
 	PathToSliderAvatar string
 }
 
-type Genre struct{
-	ID uint64
+type Genre struct {
+	ID   uint64
 	Name string
 }
 
 type GenreList []Genre
 type ActorList []Actor
-func (t *GenreList) Scan(src interface{}) error{
-	if val, ok := src.([]byte); ok{
+
+func (t *GenreList) Scan(src interface{}) error {
+	if val, ok := src.([]byte); ok {
 		return json.Unmarshal(val, t)
 	}
 	return ErrFooCastErr
 }
 
-func (t *ActorList) Scan(src interface{})error{
-	if val, ok := src.([]byte); ok{
+func (t *ActorList) Scan(src interface{}) error {
+	if val, ok := src.([]byte); ok {
 		return json.Unmarshal(val, t)
 	}
 	return ErrFooCastErr
