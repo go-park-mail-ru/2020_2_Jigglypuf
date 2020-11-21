@@ -2,3 +2,4 @@ cmd/server
 cmd/cmd
 swagger
 docker-compose-local.yml
+main_server

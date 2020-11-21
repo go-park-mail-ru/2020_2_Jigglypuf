@@ -23,6 +23,7 @@ require (
 	github.com/ory/go-acc v0.2.6 // indirect
 	github.com/pborman/uuid v1.2.1 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
+	github.com/pkg/errors v0.8.1
 	github.com/rakyll/gotest v0.0.5 // indirect
 	github.com/sirupsen/logrus v1.7.0 // indirect
 	github.com/spf13/afero v1.4.1 // indirect

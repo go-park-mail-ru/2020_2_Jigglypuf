@@ -1,16 +1,13 @@
 package usecase
 
 import (
-	"fmt"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/utils"
 	"github.com/go-playground/validator/v10"
 	"github.com/microcosm-cc/bluemonday"
 	"golang.org/x/crypto/bcrypt"
-	"log"
 	"net/http"
 	"time"
 )
@@ -19,17 +16,15 @@ type UserUseCase struct {
 	sanitizer         *bluemonday.Policy
 	validator         *validator.Validate
 	repository        interfaces.AuthRepository
-	cookieDBConn      session.Repository
 	profileRepository profile.Repository
 	salt              string
 }
 
-func NewUserUseCase(repository interfaces.AuthRepository, profileRepository profile.Repository, cookieConn session.Repository, salt string) *UserUseCase {
+func NewUserUseCase(repository interfaces.AuthRepository, profileRepository profile.Repository, salt string) *UserUseCase {
 	return &UserUseCase{
 		sanitizer:         bluemonday.UGCPolicy(),
 		validator:         validator.New(),
 		repository:        repository,
-		cookieDBConn:      cookieConn,
 		profileRepository: profileRepository,
 		salt:              salt,
 	}
@@ -45,36 +40,24 @@ func compareHashAndPassword(password, hash, salt string) bool {
 	return err == nil
 }
 
-func createUserCookie() http.Cookie {
-	return http.Cookie{
-		Name:     session.SessionCookieName,
-		Value:    models.RandStringRunes(32),
-		Expires:  time.Now().Add(96 * time.Hour),
-		Path:     "/",
-		SameSite: http.SameSiteNoneMode,
-		Secure:   true,
-		HttpOnly: true,
-	}
-}
-
 func (t *UserUseCase) validateInput(input interface{}) error {
 	return t.validator.Struct(input)
 }
 
-func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, error) {
+func (t *UserUseCase) SignUp(input *models.RegistrationInput) (uint64,error) {
 	// input validation
 	if input.Login == "" || input.Password == "" || input.Name == "" || input.Surname == "" {
-		return new(http.Cookie), models.ErrFooIncorrectInputInfo
+		return 0,models.ErrFooIncorrectInputInfo
 	}
 	utils.SanitizeInput(t.sanitizer, &input.Login, &input.Password, &input.Name, &input.Surname)
 	validationErr := t.validateInput(input)
 	if validationErr != nil {
-		return nil, models.ErrFooIncorrectInputInfo
+		return 0,models.ErrFooIncorrectInputInfo
 	}
 	// creating user credentials
 	hashPassword, ok := createHashPassword(input.Password, t.salt)
 	if !ok {
-		return nil, models.ErrFooInternalServerError
+		return 0,models.ErrFooInternalServerError
 	}
 	user := models.User{
 		Login:    input.Login,
@@ -82,7 +65,7 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 	}
 	err := t.repository.CreateUser(&user)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 	// creating profile
 	prof := new(models.Profile)
@@ -92,51 +75,35 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, err
 	prof.AvatarPath = profile.NoAvatarImage
 	profileErr := t.profileRepository.CreateProfile(prof)
 	if profileErr != nil {
-		return nil, profileErr
+		return 0,profileErr
 	}
 
-	// creating session for user
-	cookieValue := createUserCookie()
-	cookieErr := t.cookieDBConn.SetCookie(&cookieValue, user.ID)
-	if cookieErr != nil {
-		return nil, cookieErr
-	}
-	return &cookieValue, nil
+	return user.ID, nil
 }
 
-func (t *UserUseCase) SignIn(input *models.AuthInput) (*http.Cookie, error) {
+func (t *UserUseCase) SignIn(input *models.AuthInput) (uint64,error) {
 	if input.Login == "" || input.Password == "" {
-		return nil, models.ErrFooIncorrectInputInfo
+		return 0, models.ErrFooIncorrectInputInfo
 	}
 	utils.SanitizeInput(t.sanitizer, &input.Login, &input.Password)
 	validationErr := t.validateInput(input)
 	if validationErr != nil {
-		return nil, models.ErrFooIncorrectInputInfo
+		return 0, models.ErrFooIncorrectInputInfo
 	}
 
 	user, err := t.repository.GetUser(input.Login)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
 	isAuth := compareHashAndPassword(input.Password, user.Password, t.salt)
 	if !isAuth {
-		return nil, models.ErrFooIncorrectInputInfo
+		return 0, models.ErrFooIncorrectInputInfo
 	}
-
-	cookieValue := createUserCookie()
-	cookieErr := t.cookieDBConn.SetCookie(&cookieValue, user.ID)
-	if cookieErr != nil {
-		return nil, cookieErr
-	}
-
-	log.Println(cookieValue)
-	return &cookieValue, nil
+	return user.ID, nil
 }
 
 func (t *UserUseCase) SignOut(cookie *http.Cookie) (*http.Cookie, error) {
 	cookie.Expires = time.Now().Add(-time.Hour)
-	fmt.Print(cookie)
-	cookieErr := t.cookieDBConn.RemoveCookie(cookie)
-	return cookie, cookieErr
+	return cookie, nil
 }

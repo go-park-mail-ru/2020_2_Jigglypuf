@@ -5,4 +5,6 @@ import "net/http"
 
 type UseCase interface {
 	CheckCookie(cookieValue *http.Cookie) (uint64, bool)
+	RemoveCookie(cookieValue *http.Cookie) error
+	SetCookie(cookieValue *http.Cookie, UserID uint64) error
 }
