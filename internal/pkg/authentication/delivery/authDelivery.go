@@ -22,8 +22,8 @@ func NewUserHandler(useCase interfaces.UserUseCase) *UserHandler {
 	}
 }
 
-func createUserCookie() http.Cookie {
-	return http.Cookie{
+func createUserCookie() *http.Cookie {
+	return &http.Cookie{
 		Name:     session.SessionCookieName,
 		Value:    models.RandStringRunes(32),
 		Expires:  time.Now().Add(96 * time.Hour),
@@ -34,13 +34,12 @@ func createUserCookie() http.Cookie {
 	}
 }
 
-func setContextCookie(r *http.Request, userID uint64) error{
+func setContextCookie(r *http.Request, userID uint64) context.Context{
 	sessionValue := createUserCookie()
 	ctx := r.Context()
-	ctx = context.WithValue(ctx, session.ContextCookieName, sessionValue)
+	ctx = context.WithValue(ctx, session.ContextCookieName, *sessionValue)
 	ctx = context.WithValue(ctx, session.ContextUserIDName, userID)
-	r = r.WithContext(ctx)
-	return nil
+	return ctx
 }
 
 // Login godoc
@@ -76,7 +75,8 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request, params
 		models.BadBodyHTTPResponse(&w, err)
 		return
 	}
-	_ = setContextCookie(r, userID)
+	*r = *r.WithContext(setContextCookie(r, userID))
+
 }
 
 // Register godoc
@@ -115,7 +115,7 @@ func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request, pa
 		return
 	}
 
-	_ = setContextCookie(r, userID)
+	*r = *r.WithContext(setContextCookie(r, userID))
 }
 
 // SignOut godoc
@@ -145,6 +145,6 @@ func (t *UserHandler) SignOutHandler(w http.ResponseWriter, r *http.Request, par
 	}
 
 	ctx := r.Context()
-	ctx = context.WithValue(ctx, session.ContextCookieName, expiredCookie)
-	r = r.WithContext(ctx)
+	ctx = context.WithValue(ctx, session.ContextCookieName, *expiredCookie)
+	*r = *r.WithContext(ctx)
 }
