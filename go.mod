@@ -12,6 +12,9 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/golang/go v0.0.0-20201108121955-7307e86afda3 // indirect
 	github.com/golang/mock v1.4.4
+	github.com/gonum/blas v0.0.0-20181208220705-f22b278b28ac // indirect
+	github.com/gonum/lapack v0.0.0-20181123203213-e4cdc5a0bff9 // indirect
+	github.com/gonum/matrix v0.0.0-20181209220409-c518dec07be9 // indirect
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/julienschmidt/httprouter v1.3.0
@@ -23,10 +26,10 @@ require (
 	github.com/ory/go-acc v0.2.6 // indirect
 	github.com/pborman/uuid v1.2.1 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
-	github.com/pkg/errors v0.8.1
+	github.com/pkg/errors v0.9.1
 	github.com/rakyll/gotest v0.0.5 // indirect
+	github.com/rocketlaunchr/dataframe-go v0.0.0-20201007021539-67b046771f0b // indirect
 	github.com/sirupsen/logrus v1.7.0 // indirect
-	github.com/sjwhitworth/golearn v0.0.0-20201122214608-9ed5a13fbad3 // indirect
 	github.com/spf13/afero v1.4.1 // indirect
 	github.com/spf13/cobra v1.1.1 // indirect
 	github.com/stretchr/testify v1.6.1
@@ -37,7 +40,7 @@ require (
 	golang.org/x/net v0.0.0-20201024042810-be3efd7ff127 // indirect
 	golang.org/x/sys v0.0.0-20201109165425-215b40eba54c // indirect
 	golang.org/x/text v0.3.4 // indirect
-	golang.org/x/tools v0.0.0-20201023174141-c8cfbd0f21e6
+	gonum.org/v1/gonum v0.8.1 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0
 	gopkg.in/ini.v1 v1.62.0 // indirect
 )
