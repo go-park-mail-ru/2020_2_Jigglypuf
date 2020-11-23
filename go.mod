@@ -26,6 +26,7 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/rakyll/gotest v0.0.5 // indirect
 	github.com/sirupsen/logrus v1.7.0 // indirect
+	github.com/sjwhitworth/golearn v0.0.0-20201122214608-9ed5a13fbad3 // indirect
 	github.com/spf13/afero v1.4.1 // indirect
 	github.com/spf13/cobra v1.1.1 // indirect
 	github.com/stretchr/testify v1.6.1
