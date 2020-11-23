@@ -49,28 +49,15 @@ func TestSignUpSuccessCase(t *testing.T) {
 		Surname:  "kekov",
 	}
 	RegistrationBody, _ := json.Marshal(correctRegistrationModel)
-	// проверка работы регистрации
-	cookieValue := http.Cookie{
-		Name:     session.SessionCookieName,
-		Value:    models.RandStringRunes(32),
-		Expires:  time.Now().Add(96 * time.Hour),
-		Path:     "/",
-		SameSite: http.SameSiteNoneMode,
-		Secure:   true,
-		HttpOnly: true,
-	}
 
 	testReq := httptest.NewRequest(http.MethodPost, "/auth/", strings.NewReader(string(RegistrationBody)))
 	testRecorder := httptest.NewRecorder()
 
-	testingStruct.UseCaseMock.EXPECT().SignUp(gomock.Any()).Return(&cookieValue, nil)
+	testingStruct.UseCaseMock.EXPECT().SignUp(gomock.Any()).Return(uint64(0), nil)
 	testingStruct.Handler.RegisterHandler(testRecorder, testReq, httprouter.Params{})
 	if testRecorder.Code != http.StatusOK {
 		t.Fatalf("TEST: Success sign up "+
 			"handler returned wrong status code: got %v want %v", testRecorder.Code, http.StatusOK)
-	}
-	if testRecorder.Code == http.StatusOK && testRecorder.Header()["Set-Cookie"][0] == "" {
-		t.Errorf("handler doesn`t returned session")
 	}
 	tearDown()
 }
@@ -112,7 +99,7 @@ func TestSignUpUseCaseErrorHandling(t *testing.T) {
 
 	TestRequest := httptest.NewRequest(http.MethodPost, "/signup/", strings.NewReader(string(RegistrationBody)))
 	TestResponseWriter := httptest.NewRecorder()
-	testingStruct.UseCaseMock.EXPECT().SignUp(gomock.Any()).Return(nil, errors.New("test err"))
+	testingStruct.UseCaseMock.EXPECT().SignUp(gomock.Any()).Return(uint64(0), errors.New("test err"))
 	testingStruct.Handler.RegisterHandler(TestResponseWriter, TestRequest, httprouter.Params{})
 	if TestResponseWriter.Code != http.StatusBadRequest {
 		t.Fatalf("TEST: invalid body error handling "+
@@ -129,29 +116,17 @@ func TestSignInSuccessCase(t *testing.T) {
 		Login:    "someone@somene.ru",
 		Password: "voasndoiasndqw",
 	}
-	cookieValue := http.Cookie{
-		Name:     session.SessionCookieName,
-		Value:    models.RandStringRunes(32),
-		Expires:  time.Now().Add(96 * time.Hour),
-		Path:     "/",
-		SameSite: http.SameSiteNoneMode,
-		Secure:   true,
-		HttpOnly: true,
-	}
 
 	authenticationBody, _ := json.Marshal(correctAuthenticationModel)
 
 	testReq := httptest.NewRequest(http.MethodPost, "/login/", strings.NewReader(string(authenticationBody)))
 	testRecorder := httptest.NewRecorder()
 
-	testingStruct.UseCaseMock.EXPECT().SignIn(gomock.Any()).Return(&cookieValue, nil)
+	testingStruct.UseCaseMock.EXPECT().SignIn(gomock.Any()).Return(uint64(0), nil)
 	testingStruct.Handler.AuthHandler(testRecorder, testReq, httprouter.Params{})
 	if testRecorder.Code != http.StatusOK {
 		t.Fatalf("TEST: Success log in test case "+
 			"handler returned wrong status code: got %v want %v", testRecorder.Code, http.StatusOK)
-	}
-	if testRecorder.Code == http.StatusOK && testRecorder.Header()["Set-Cookie"][0] == "" {
-		t.Errorf("handler doesn`t returned session")
 	}
 
 	tearDown()
@@ -198,7 +173,7 @@ func TestLogInUCErrorHandling(t *testing.T) {
 	testReq := httptest.NewRequest(http.MethodPost, "/login/", strings.NewReader(string(authenticationBody)))
 	testRecorder := httptest.NewRecorder()
 
-	testingStruct.UseCaseMock.EXPECT().SignIn(gomock.Any()).Return(nil, errors.New("test error"))
+	testingStruct.UseCaseMock.EXPECT().SignIn(gomock.Any()).Return(uint64(0), errors.New("test error"))
 	testingStruct.Handler.AuthHandler(testRecorder, testReq, httprouter.Params{})
 	if testRecorder.Code != http.StatusBadRequest {
 		t.Fatalf("TEST: Use case error log in test case "+

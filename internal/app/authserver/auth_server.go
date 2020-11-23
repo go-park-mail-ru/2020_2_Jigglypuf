@@ -9,7 +9,6 @@ import (
 	authUseCase "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/usecase"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -30,12 +29,12 @@ func configureAuthRouter(authHandler *authDelivery.UserHandler) *httprouter.Rout
 	return authAPIHandler
 }
 
-func Start(cookieRepository session.Repository, profileRepository profile.Repository, connection *sql.DB) (*AuthService, error) {
+func Start(profileRepository profile.Repository, connection *sql.DB) (*AuthService, error) {
 	if connection == nil {
 		return nil, models.ErrFooNoDBConnection
 	}
 	authRep := authRepository.NewAuthSQLRepository(connection)
-	authCase := authUseCase.NewUserUseCase(authRep, profileRepository, cookieRepository, configs.Salt)
+	authCase := authUseCase.NewUserUseCase(authRep, profileRepository, configs.Salt)
 	authHandler := authDelivery.NewUserHandler(authCase)
 
 	router := configureAuthRouter(authHandler)

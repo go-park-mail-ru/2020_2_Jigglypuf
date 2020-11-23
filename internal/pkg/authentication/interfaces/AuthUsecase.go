@@ -7,7 +7,7 @@ import (
 )
 
 type UserUseCase interface {
-	SignUp(input *models.RegistrationInput) (*http.Cookie, error)
-	SignIn(input *models.AuthInput) (*http.Cookie, error)
+	SignUp(input *models.RegistrationInput) (uint64, error)
+	SignIn(input *models.AuthInput) (uint64, error)
 	SignOut(cookie *http.Cookie) (*http.Cookie, error)
 }

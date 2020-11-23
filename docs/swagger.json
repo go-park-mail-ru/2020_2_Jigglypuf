@@ -11,7 +11,7 @@
     "paths": {
         "/api/auth/login/": {
             "post": {
-                "description": "login user and get cookie",
+                "description": "login user and get session",
                 "consumes": [
                     "application/json"
                 ],
@@ -69,7 +69,7 @@
         },
         "/api/auth/register/": {
             "post": {
-                "description": "register user and get cookie",
+                "description": "register user and get session",
                 "consumes": [
                     "application/json"
                 ],
@@ -188,7 +188,7 @@
         "/api/csrf/": {
             "get": {
                 "description": "Returns movie schedule by ID",
-                "summary": "Get CSRF by cookie",
+                "summary": "Get CSRF by session",
                 "operationId": "csrf-id",
                 "responses": {
                     "200": {
@@ -803,6 +803,26 @@
                 }
             }
         },
+        "models.Actor": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "patronymic": {
+                    "type": "string"
+                },
+                "surname": {
+                    "type": "string"
+                }
+            }
+        },
         "models.AuthInput": {
             "type": "object",
             "required": [
@@ -854,6 +874,17 @@
                 }
             }
         },
+        "models.Genre": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.HallConfig": {
             "type": "object",
             "properties": {
@@ -879,8 +910,11 @@
         "models.Movie": {
             "type": "object",
             "properties": {
-                "actors": {
-                    "type": "string"
+                "actorList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Actor"
+                    }
                 },
                 "ageGroup": {
                     "type": "integer"
@@ -894,8 +928,11 @@
                 "duration": {
                     "type": "integer"
                 },
-                "genre": {
-                    "type": "string"
+                "genreList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Genre"
+                    }
                 },
                 "id": {
                     "type": "integer"
@@ -929,8 +966,11 @@
         "models.MovieList": {
             "type": "object",
             "properties": {
-                "actors": {
-                    "type": "string"
+                "actorList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Actor"
+                    }
                 },
                 "ageGroup": {
                     "type": "integer"
@@ -944,8 +984,11 @@
                 "duration": {
                     "type": "integer"
                 },
-                "genre": {
-                    "type": "string"
+                "genreList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Genre"
+                    }
                 },
                 "id": {
                     "type": "integer"

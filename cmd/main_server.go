@@ -57,7 +57,7 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 	if profileErr != nil {
 		return nil, profileErr
 	}
-	newAuthService, authErr := authService.Start(NewCookieService.CookieRepository, newProfileService.ProfileRepository, mainDBConnection)
+	newAuthService, authErr := authService.Start(newProfileService.ProfileRepository, mainDBConnection)
 	if authErr != nil {
 		log.Println(authErr)
 		return nil, authErr

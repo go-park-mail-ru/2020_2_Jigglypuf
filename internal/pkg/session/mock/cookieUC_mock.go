@@ -47,3 +47,31 @@ func (mr *MockUseCaseMockRecorder) CheckCookie(cookieValue interface{}) *gomock.
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckCookie", reflect.TypeOf((*MockUseCase)(nil).CheckCookie), cookieValue)
 }
+
+// RemoveCookie mocks base method
+func (m *MockUseCase) RemoveCookie(cookieValue *http.Cookie) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveCookie", cookieValue)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RemoveCookie indicates an expected call of RemoveCookie
+func (mr *MockUseCaseMockRecorder) RemoveCookie(cookieValue interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveCookie", reflect.TypeOf((*MockUseCase)(nil).RemoveCookie), cookieValue)
+}
+
+// SetCookie mocks base method
+func (m *MockUseCase) SetCookie(cookieValue *http.Cookie, UserID uint64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetCookie", cookieValue, UserID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetCookie indicates an expected call of SetCookie
+func (mr *MockUseCaseMockRecorder) SetCookie(cookieValue, UserID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetCookie", reflect.TypeOf((*MockUseCase)(nil).SetCookie), cookieValue, UserID)
+}
