@@ -7,7 +7,6 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/dgraph-io/ristretto v0.0.3 // indirect
 	github.com/fatih/color v1.10.0 // indirect
-	github.com/go-gota/gota v0.10.1 // indirect
 	github.com/go-openapi/spec v0.19.11 // indirect
 	github.com/go-openapi/swag v0.19.11 // indirect
 	github.com/go-playground/validator/v10 v10.4.1
@@ -37,6 +36,7 @@ require (
 	github.com/swaggo/http-swagger v0.0.0-20200308142732-58ac5e232fba
 	github.com/swaggo/swag v1.6.9
 	github.com/tarantool/go-tarantool v0.0.0-20200816172506-a535b8e0224a
+	github.com/tobgu/qframe v0.3.5 // indirect
 	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897
 	golang.org/x/net v0.0.0-20201024042810-be3efd7ff127 // indirect
 	golang.org/x/sys v0.0.0-20201109165425-215b40eba54c // indirect
