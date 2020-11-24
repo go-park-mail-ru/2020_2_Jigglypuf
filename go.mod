@@ -36,7 +36,6 @@ require (
 	github.com/swaggo/http-swagger v0.0.0-20200308142732-58ac5e232fba
 	github.com/swaggo/swag v1.6.9
 	github.com/tarantool/go-tarantool v0.0.0-20200816172506-a535b8e0224a
-	github.com/tobgu/qframe v0.3.5 // indirect
 	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897
 	golang.org/x/net v0.0.0-20201024042810-be3efd7ff127 // indirect
 	golang.org/x/sys v0.0.0-20201109165425-215b40eba54c // indirect

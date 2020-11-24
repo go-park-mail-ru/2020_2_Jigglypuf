@@ -1,11 +1,9 @@
 package usecase
 
 import (
-	"fmt"
-	"github.com/tobgu/qframe"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/recommendation"
-	"github.com/tobgu/qframe/types"
+	"golang.org/x/tools/go/analysis/passes/stringintconv/testdata/src/a"
 )
 
 type RecommendationSystemUseCase struct{
@@ -28,9 +26,8 @@ func (t *RecommendationSystemUseCase) makeRecommendations() (*[]models.Movie, er
 	dataframeMap := make(map[string]interface{})
 	for _,val := range *dataset{
 		dataframeMap["UserID"] = val.UserID
-		
+
 
 	}
-	qframe.New()
 	return nil, nil
 }
