@@ -4,7 +4,9 @@ import(
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/recommendation/mock"
 	"github.com/golang/mock/gomock"
+	"sync"
 	"testing"
+	"time"
 )
 
 
@@ -12,7 +14,6 @@ import(
 func TestFirstExample(t *testing.T){
 	controller := gomock.NewController(t)
 	repMock := mock.NewMockRepository(controller)
-	sys := NewRecommendationSystemUseCase(repMock)
 	RepositoryResponse := []models.RecommendationDataFrame{
 		{
 			uint64(1),
@@ -71,6 +72,9 @@ func TestFirstExample(t *testing.T){
 			10,
 		},
 	}
-	repMock.EXPECT().GetMovieRatingsDataset().Return(&RepositoryResponse, nil)
-	_, _ = sys.makeRecommendations()
+
+
+	repMock.EXPECT().GetMovieRatingsDataset().AnyTimes().Return(&RepositoryResponse, nil)
+	sys := NewRecommendationSystemUseCase(repMock, time.Minute*10, &sync.RWMutex{})
+	_, _ = sys.MakeRecommendations(uint64(1))
 }

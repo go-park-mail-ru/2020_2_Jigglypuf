@@ -40,7 +40,7 @@ require (
 	golang.org/x/net v0.0.0-20201024042810-be3efd7ff127 // indirect
 	golang.org/x/sys v0.0.0-20201109165425-215b40eba54c // indirect
 	golang.org/x/text v0.3.4 // indirect
-	gonum.org/v1/gonum v0.8.1 // indirect
+	gonum.org/v1/gonum v0.8.1
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0
 	gopkg.in/ini.v1 v1.62.0 // indirect
 )
