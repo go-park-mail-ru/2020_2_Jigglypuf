@@ -76,5 +76,6 @@ func TestFirstExample(t *testing.T){
 
 	repMock.EXPECT().GetMovieRatingsDataset().AnyTimes().Return(&RepositoryResponse, nil)
 	sys := NewRecommendationSystemUseCase(repMock, time.Minute*10, &sync.RWMutex{})
-	_, _ = sys.MakeRecommendations(uint64(1))
+	_, _ = sys.MakeMovieRecommendations(uint64(1))
+
 }

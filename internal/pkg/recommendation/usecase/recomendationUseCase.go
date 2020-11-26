@@ -1,54 +1,57 @@
 package usecase
 
 import (
+	"context"
 	"fmt"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/recommendation"
 	dataframe "github.com/rocketlaunchr/dataframe-go"
-	"sync"
-
 	"gonum.org/v1/gonum/stat"
+	"sync"
 	"time"
 )
 
-type RecommendationSystemUseCase struct{
+type RecommendationSystemUseCase struct {
 	RecommendationRepository recommendation.Repository
-	UserDataframe *dataframe.DataFrame
-	UserIDRowContainer map[uint64]int
-	Mu *sync.RWMutex
-	IsReady bool
+	UserDataframe            *dataframe.DataFrame
+	UserIDRowContainer       map[uint64]int
+	MovieNameContainer		 []string
+	CorralationUserMap		 map[uint64]map[uint64]float64
+	Mu                       *sync.RWMutex
 }
 
 type DataframeUserRatingRow map[interface{}]interface{}
 
-func (t DataframeUserRatingRow) Values() (*[]float64,error){
-	resultArr := make([]float64,0)
-	for _,val := range t{
-		if flVal, ok := val.(float64); ok{
-			resultArr = append(resultArr, flVal)
+func (t DataframeUserRatingRow) Values(keys []string) (*[]float64, error) {
+	resultArr := make([]float64, 0)
+	for _, val := range keys{
+		keyValue, ok := t[val]
+		if !ok {
 			continue
 		}
-		return nil,models.ErrFooCastErr
+		flVal, _ := keyValue.(float64)
+		resultArr = append(resultArr, flVal)
 	}
 	return &resultArr, nil
 }
 
-
-func NewRecommendationSystemUseCase(rep recommendation.Repository, SleepTime time.Duration, mutex *sync.RWMutex) * RecommendationSystemUseCase{
-	sys :=  &RecommendationSystemUseCase{
+func NewRecommendationSystemUseCase(rep recommendation.Repository, SleepTime time.Duration, mutex *sync.RWMutex) *RecommendationSystemUseCase {
+	sys := &RecommendationSystemUseCase{
 		rep,
 		nil,
-		make	(map[uint64]int),
+		make(map[uint64]int),
+		make([]string,0),
+		make(map[uint64]map[uint64]float64),
 		mutex,
-		false,
 	}
-	//sys.SetUpDataframe(SleepTime)
-	go sys.SetUpDataframe(SleepTime)
+	readyChan := make(chan bool)
+	go sys.UpdateDataframe(SleepTime, readyChan)
+	<-readyChan
 	return sys
 }
 
-
-func (t *RecommendationSystemUseCase) SetUpDataframe(SleepTime time.Duration){
+func (t *RecommendationSystemUseCase) UpdateDataframe(SleepTime time.Duration, ch chan bool) {
+	firstInit := true
 	for {
 		dataset, getDatasetErr := t.RecommendationRepository.GetMovieRatingsDataset()
 		if getDatasetErr != nil {
@@ -59,11 +62,14 @@ func (t *RecommendationSystemUseCase) SetUpDataframe(SleepTime time.Duration){
 		userRowCounter := 0
 		movieSeriesMap := make(map[uint64]dataframe.Series)
 		UserIDRowContainer := make(map[uint64]int)
+		MovieNameContainer := make([]string,0)
 
 		for _, val := range *dataset {
 			if movieSeriesMap[val.MovieID] == nil {
 				movieSeriesMap[val.MovieID] = dataframe.NewSeriesFloat64(val.MovieName, nil)
+				MovieNameContainer = append(MovieNameContainer, val.MovieName)
 			}
+
 			if userRow, ok := UserIDRowContainer[val.UserID]; ok {
 				for movieSeriesMap[val.MovieID].NRows() <= userRow {
 					movieSeriesMap[val.MovieID].Append(nil)
@@ -91,54 +97,86 @@ func (t *RecommendationSystemUseCase) SetUpDataframe(SleepTime time.Duration){
 		t.Mu.Lock()
 		t.UserIDRowContainer = UserIDRowContainer
 		t.UserDataframe = UserDataframe
-		t.IsReady = true
+		t.MovieNameContainer = MovieNameContainer
 		t.Mu.Unlock()
+
+		if firstInit {
+			ch <- true
+			firstInit = false
+		}
 
 		time.Sleep(SleepTime)
 	}
 }
 
-
-func (t *RecommendationSystemUseCase) MakeRecommendations(userID uint64) (*[]models.Movie, error) {
-	// waiting for dataframe initialization
-	for !t.IsReady{}
-
+func (t *RecommendationSystemUseCase) CreateCorrelationArray(userID uint64) (error) {
 	t.Mu.RLock()
 	userRatingsDataframe := t.UserDataframe
 	userIDRowContainer := t.UserIDRowContainer
 	t.Mu.RUnlock()
 
 	userIDRatingsRow := userRatingsDataframe.Row(userIDRowContainer[userID], false)
-	userValuesMap, ok := interface{}(userIDRatingsRow).(DataframeUserRatingRow)
-	if !ok{
-		return nil,models.ErrFooCastErr
-	}
-
-	userValuesArr, err := userValuesMap.Values()
-	if err != nil{
-		return nil, models.ErrFooCastErr
+	userValuesMap := DataframeUserRatingRow(userIDRatingsRow)
+	userValuesArr, err := userValuesMap.Values(t.MovieNameContainer)
+	if err != nil {
+		return models.ErrFooCastErr
 	}
 	delete(userIDRowContainer, userID)
-
-
 	resultCorrelationArray := make(map[uint64]float64)
-	for key, val := range userIDRowContainer{
+
+	for key, val := range userIDRowContainer {
 		cmpUserRow := userRatingsDataframe.Row(val, false)
-		cmpUserValuesMap, ok := interface{}(cmpUserRow).(DataframeUserRatingRow)
-		if !ok {
-			return nil, models.ErrFooCastErr
-		}
-		cmpUserValuesArr, err := cmpUserValuesMap.Values()
-		if err!= nil{
-			return nil, models.ErrFooCastErr
+		cmpUserValuesMap := DataframeUserRatingRow(cmpUserRow)
+		cmpUserValuesArr, err := cmpUserValuesMap.Values(t.MovieNameContainer)
+		if err != nil {
+			return models.ErrFooCastErr
 		}
 
-		corr := stat.Correlation(*userValuesArr, *cmpUserValuesArr,nil)
+		corr := stat.Correlation(*userValuesArr, *cmpUserValuesArr, nil)
 		resultCorrelationArray[key] = corr
-		fmt.Println(corr)
 	}
 
+	t.Mu.Lock()
+	t.CorralationUserMap[userID] = resultCorrelationArray
+	t.Mu.Unlock()
 
-	fmt.Println(resultCorrelationArray, "kek")
+	return nil
+}
+
+
+func (t *RecommendationSystemUseCase) MakeMovieRecommendations(userID uint64) (*[]models.Movie, error){
+	t.Mu.RLock()
+	userCorrelation, ok := t.CorralationUserMap[userID]
+	t.Mu.RUnlock()
+	if !ok{
+		err := t.CreateCorrelationArray(userID)
+		if err != nil{
+			return nil, models.ErrFooIncorrectInputInfo
+		}
+	}
+
+	correlationUser := dataframe.NewSeriesInt64("UserID", nil)
+	correlationSeries := dataframe.NewSeriesFloat64("Correlation", nil)
+	for key,val := range userCorrelation{
+		correlationUser.Append(key)
+		correlationSeries.Append(val)
+	}
+	newCorrelationDataframe := dataframe.NewDataFrame(correlationUser, correlationSeries)
+	newCorrelationDataframe.Sort(context.Background(), []dataframe.SortKey{
+		{
+			Key:"Correlation", Desc: true,
+		},
+	})
+
+	fmt.Println(newCorrelationDataframe.Table())
 	return nil, nil
 }
+
+
+
+
+
+
+
+
+
