@@ -5,6 +5,7 @@ go 1.15
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
+	github.com/deckarep/golang-set v1.7.1
 	github.com/dgraph-io/ristretto v0.0.3 // indirect
 	github.com/fatih/color v1.10.0 // indirect
 	github.com/go-openapi/spec v0.19.11 // indirect
