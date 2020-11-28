@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 	set "github.com/deckarep/golang-set"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	config "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/recommendation"
@@ -16,18 +15,18 @@ type RecommendationSystemUseCase struct {
 	RecommendationRepository config.Repository
 	UserDataframe            *dataframe.DataFrame
 	UserIDRowContainer       map[uint64]int
-	MovieNameContainer       map[string]uint64
+	MovieNameContainer       []models.Movie
 	CorrelationUserMap       map[uint64]map[uint64]float64
 	Mu                       *sync.RWMutex
 }
 
 type DataframeUserRatingRow map[interface{}]interface{}
 
-func (t DataframeUserRatingRow) ValuesAndWeights(keys map[string]uint64) (*[]float64, *[]float64) {
-	resultArr := make([]float64, len(keys))
-	weightsArr := make([]float64, len(keys))
-	for val, _ := range keys {
-		keyValue, ok := t[val]
+func (t DataframeUserRatingRow) ValuesAndWeights(keys []models.Movie) (*[]float64, *[]float64) {
+	resultArr := make([]float64, 0)
+	weightsArr := make([]float64, 0)
+	for _, val := range keys {
+		keyValue, ok := t[val.Name]
 		if !ok {
 			continue
 		}
@@ -43,10 +42,10 @@ func (t DataframeUserRatingRow) ValuesAndWeights(keys map[string]uint64) (*[]flo
 	return &resultArr, &weightsArr
 }
 
-func (t DataframeUserRatingRow) Values(keys map[string]uint64) *[]float64 {
-	resultArr := make([]float64, len(keys))
-	for val, _ := range keys {
-		keyValue, ok := t[val]
+func (t DataframeUserRatingRow) Values(keys []models.Movie) *[]float64 {
+	resultArr := make([]float64, 0)
+	for _, val := range keys {
+		keyValue, ok := t[val.Name]
 		if !ok {
 			continue
 		}
@@ -61,7 +60,7 @@ func NewRecommendationSystemUseCase(rep config.Repository, SleepTime time.Durati
 		rep,
 		nil,
 		make(map[uint64]int),
-		make(map[string]uint64, 0),
+		make([]models.Movie, 0),
 		make(map[uint64]map[uint64]float64),
 		mutex,
 	}
@@ -79,9 +78,9 @@ func (t *RecommendationSystemUseCase) getUsersMovies(cmpUser, userID uint64, arr
 	t.Mu.RUnlock()
 	cmpDfRow := t.UserDataframe.Row(cmpUserRow, false)
 	userDfRow := t.UserDataframe.Row(mainUserRow, false)
-	for key, val := range movieNameContainer {
-		if userDfRow[key] == nil && cmpDfRow[key] != nil {
-			(*arr).Add(val)
+	for _, val := range movieNameContainer {
+		if userDfRow[val.Name] == nil && cmpDfRow[val.Name] != nil {
+			(*arr).Add(val.ID)
 		}
 	}
 }
@@ -98,12 +97,12 @@ func (t *RecommendationSystemUseCase) UpdateDataframe(SleepTime time.Duration, c
 		userRowCounter := 0
 		movieSeriesMap := make(map[uint64]dataframe.Series)
 		UserIDRowContainer := make(map[uint64]int)
-		MovieNameContainer := make(map[string]uint64, 0)
+		MovieNameContainer := make([]models.Movie, 0)
 
 		for _, val := range *dataset {
 			if movieSeriesMap[val.MovieID] == nil {
 				movieSeriesMap[val.MovieID] = dataframe.NewSeriesFloat64(val.MovieName, nil)
-				MovieNameContainer[val.MovieName] = val.MovieID
+				MovieNameContainer = append(MovieNameContainer, models.Movie{ID: val.MovieID, Name: val.MovieName})
 			}
 
 			if userRow, ok := UserIDRowContainer[val.UserID]; ok {
@@ -148,6 +147,9 @@ func (t *RecommendationSystemUseCase) CreateCorrelationArray(userID uint64) erro
 	userIDRowContainer := t.UserIDRowContainer
 	MovieNameContainer := t.MovieNameContainer
 	t.Mu.RUnlock()
+	if _, ok := userIDRowContainer[userID]; !ok {
+		return models.ErrFooNoRatingInfo
+	}
 
 	userIDRatingsRow := t.UserDataframe.Row(userIDRowContainer[userID], false)
 	userValuesMap := DataframeUserRatingRow(userIDRatingsRow)
@@ -159,7 +161,8 @@ func (t *RecommendationSystemUseCase) CreateCorrelationArray(userID uint64) erro
 	for key, val := range userIDRowContainer {
 		cmpUserRow := t.UserDataframe.Row(val, false)
 		cmpUserValuesMap := DataframeUserRatingRow(cmpUserRow)
-		cmpUserValuesArr := cmpUserValuesMap.Values(t.MovieNameContainer)
+		cmpUserValuesArr := cmpUserValuesMap.Values(MovieNameContainer)
+
 		corr := stat.Correlation(*userValuesArr, *cmpUserValuesArr, *weightsArr)
 		resultCorrelationArray[key] = corr
 	}
@@ -171,18 +174,21 @@ func (t *RecommendationSystemUseCase) CreateCorrelationArray(userID uint64) erro
 	return nil
 }
 
-func (t *RecommendationSystemUseCase) MakeMovieRecommendations(userID uint64) (*[]models.Movie, error) {
+func (t *RecommendationSystemUseCase) MakeMovieRecommendations(userID uint64) (set.Set, error) {
 	t.Mu.RLock()
 	userCorrelation, ok := t.CorrelationUserMap[userID]
 	t.Mu.RUnlock()
 	if !ok {
 		err := t.CreateCorrelationArray(userID)
 		if err != nil {
-			return nil, models.ErrFooIncorrectInputInfo
+			return nil, models.ErrFooNoRatingInfo
 		}
 		t.Mu.RLock()
 		userCorrelation, ok = t.CorrelationUserMap[userID]
 		t.Mu.RUnlock()
+	}
+	if !ok {
+		return nil, models.ErrFooNoRatingInfo
 	}
 
 	correlationUser := dataframe.NewSeriesInt64(config.PrimaryUserColumnName, nil)
@@ -200,28 +206,39 @@ func (t *RecommendationSystemUseCase) MakeMovieRecommendations(userID uint64) (*
 
 	FilterFunc := dataframe.FilterDataFrameFn(func(values map[interface{}]interface{}, row, nRows int) (dataframe.FilterAction, error) {
 		fl, ok := values[config.PrimaryCorrelationColumnName].(float64)
-		if !ok || fl < 0.5 {
+		if !ok || fl < config.RecommendationCorrelationBorder {
 			return dataframe.DROP, nil
 		}
 		return dataframe.KEEP, nil
 	})
-	fmt.Println(t.UserDataframe)
-	fmt.Println(newCorrelationDataframe.Table())
-
 	TmpDF, FilteringErr := dataframe.Filter(context.Background(), newCorrelationDataframe, FilterFunc)
 	if FilteringErr != nil {
 		return nil, models.ErrFooIncorrectInputInfo
 	}
 	CastedDataFrame, _ := TmpDF.(*dataframe.DataFrame)
 
-	fmt.Println(CastedDataFrame.Table())
-
 	MovieSet := set.NewSet()
 	for i := 0; i < CastedDataFrame.NRows(); i++ {
 		dfRow := CastedDataFrame.Row(i, false)
 		t.getUsersMovies(uint64(dfRow[config.PrimaryUserColumnName].(int64)), userID, &MovieSet)
 	}
+	return MovieSet, nil
+}
 
-	fmt.Println(MovieSet)
-	return nil, nil
+func (t *RecommendationSystemUseCase) GetRecommendedMovieList(userID uint64) (*[]models.Movie, error) {
+	MovieIDSet, recommendationErr := t.MakeMovieRecommendations(userID)
+	if recommendationErr != nil {
+		return t.GetPopularMovies()
+	}
+
+	MovieList, GetMovieErr := t.RecommendationRepository.GetRecommendedMovieList(&MovieIDSet)
+	if GetMovieErr != nil {
+		return nil, models.ErrFooInternalDBErr
+	}
+
+	return MovieList, nil
+}
+
+func (t *RecommendationSystemUseCase) GetPopularMovies()(*[]models.Movie, error){
+	return t.RecommendationRepository.GetPopularMovies()
 }
