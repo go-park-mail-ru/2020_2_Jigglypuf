@@ -4,6 +4,8 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
+	"time"
 )
 
 type MovieUseCase struct {
@@ -66,10 +68,19 @@ func (t *MovieUseCase) GetRating(user *models.User, id uint64) (int64, error) {
 	return t.DBConn.GetRating(user.ID, id)
 }
 
-func (t *MovieUseCase) GetMoviesInCinema(limit, page int) (*[]models.MovieList, error) {
+func (t *MovieUseCase) GetActualMovies(limit, page int, date []string) (*[]models.MovieList, error) {
 	page--
 	if page < 0 || limit < 0 {
 		return nil, models.ErrFooIncorrectInputInfo
 	}
-	return t.DBConn.GetMoviesInCinema(limit, page)
+	castedDate := time.Now().Format(schedule.TimeStandard)
+	allTime := true
+	if len(date) != 0 {
+		_, castErr := time.Parse(schedule.TimeStandard, date[0])
+		if castErr == nil {
+			castedDate = date[0]
+			allTime = false
+		}
+	}
+	return t.DBConn.GetMoviesInCinema(limit, page, castedDate, allTime)
 }

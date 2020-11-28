@@ -46,7 +46,6 @@ func (t *ScheduleSQLRepository) GetMovieSchedule(movieID uint64, date string) (*
 	if t.DBConnection == nil {
 		return nil, models.ErrFooNoDBConnection
 	}
-
 	DBRows, DBErr := t.DBConnection.Query("SELECT ID,Movie_id,Cinema_ID,Hall_ID,Premiere_time, Cost FROM schedule "+
 		"WHERE Movie_ID = $1 AND DATE(Premiere_time) = DATE($2)", movieID, date)
 	if DBErr != nil || DBRows != nil && DBRows.Err() != nil {

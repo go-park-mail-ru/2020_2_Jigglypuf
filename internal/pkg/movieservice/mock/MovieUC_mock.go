@@ -120,17 +120,17 @@ func (mr *MockMovieUseCaseMockRecorder) GetRating(user, id interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRating", reflect.TypeOf((*MockMovieUseCase)(nil).GetRating), user, id)
 }
 
-// GetMoviesInCinema mocks base method
-func (m *MockMovieUseCase) GetMoviesInCinema(limit, page int) (*[]models.MovieList, error) {
+// GetActualMovies mocks base method
+func (m *MockMovieUseCase) GetActualMovies(limit, page int, date []string) (*[]models.MovieList, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMoviesInCinema", limit, page)
+	ret := m.ctrl.Call(m, "GetActualMovies", limit, page, date)
 	ret0, _ := ret[0].(*[]models.MovieList)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetMoviesInCinema indicates an expected call of GetMoviesInCinema
-func (mr *MockMovieUseCaseMockRecorder) GetMoviesInCinema(limit, page interface{}) *gomock.Call {
+// GetActualMovies indicates an expected call of GetActualMovies
+func (mr *MockMovieUseCaseMockRecorder) GetActualMovies(limit, page, date interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMoviesInCinema", reflect.TypeOf((*MockMovieUseCase)(nil).GetMoviesInCinema), limit, page)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetActualMovies", reflect.TypeOf((*MockMovieUseCase)(nil).GetActualMovies), limit, page, date)
 }
