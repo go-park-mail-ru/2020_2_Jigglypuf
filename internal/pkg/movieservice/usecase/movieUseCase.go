@@ -76,7 +76,7 @@ func (t *MovieUseCase) GetActualMovies(limit, page int, date []string) (*[]model
 	castedDate := time.Now().Format(schedule.TimeStandard)
 	if len(date) != 0 {
 		_, castErr := time.Parse(schedule.TimeStandard, date[0])
-		if castErr == nil{
+		if castErr == nil {
 			castedDate = date[0]
 		}
 	}

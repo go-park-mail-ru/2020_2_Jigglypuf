@@ -185,7 +185,7 @@ func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int, date string) (*[
 		"where exists(select 1 from schedule sh where v1.id = sh.movie_id and DATE(sh.premiere_time) > $1) " +
 		"group by v1.ID order by v1.Rating_count DESC LIMIT $2 OFFSET $3"
 	DBRows, DBErr := t.DBConnection.Query(query, date, limit, page*limit)
-	if DBErr != nil || DBRows.Err() != nil{
+	if DBErr != nil || DBRows.Err() != nil {
 		log.Println(DBErr)
 		return nil, DBErr
 	}

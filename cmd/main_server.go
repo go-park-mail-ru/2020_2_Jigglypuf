@@ -38,16 +38,16 @@ import (
 )
 
 type ServerStruct struct {
-	authService     *authService.AuthService
-	cinemaService   *cinemaService.CinemaService
-	movieService    *movieService.MovieService
-	profileService  *profileService.ProfileService
-	cookieService   *cookieService.CookieService
-	scheduleService *scheduleService.ScheduleService
-	ticketService   *ticketservice.TicketService
-	hallService     *hallService.HallService
-	httpServer      *http.Server
-	csrfMiddleware  *csrf.HashCSRFToken
+	authService           *authService.AuthService
+	cinemaService         *cinemaService.CinemaService
+	movieService          *movieService.MovieService
+	profileService        *profileService.ProfileService
+	cookieService         *cookieService.CookieService
+	scheduleService       *scheduleService.ScheduleService
+	ticketService         *ticketservice.TicketService
+	hallService           *hallService.HallService
+	httpServer            *http.Server
+	csrfMiddleware        *csrf.HashCSRFToken
 	recommendationService *recserver.RecommendationService
 }
 
@@ -86,19 +86,19 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 		return nil, models.ErrFooInitFail
 	}
 	recommendationService, recErr := recserver.Start(mainDBConnection, &mutex, time.Minute*10)
-	if recErr != nil{
-		return nil,models.ErrFooInitFail
+	if recErr != nil {
+		return nil, models.ErrFooInitFail
 	}
 	return &ServerStruct{
-		authService:     newAuthService,
-		cinemaService:   newCinemaService,
-		movieService:    newMovieService,
-		profileService:  newProfileService,
-		cookieService:   NewCookieService,
-		scheduleService: newScheduleService,
-		ticketService:   newTicketService,
-		hallService:     newHallService,
-		csrfMiddleware:  newHashCSRFMiddleware,
+		authService:           newAuthService,
+		cinemaService:         newCinemaService,
+		movieService:          newMovieService,
+		profileService:        newProfileService,
+		cookieService:         NewCookieService,
+		scheduleService:       newScheduleService,
+		ticketService:         newTicketService,
+		hallService:           newHallService,
+		csrfMiddleware:        newHashCSRFMiddleware,
 		recommendationService: recommendationService,
 	}, nil
 }

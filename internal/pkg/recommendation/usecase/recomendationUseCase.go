@@ -55,7 +55,7 @@ func (t DataframeUserRatingRow) Values(keys []models.Movie) *[]float64 {
 	return &resultArr
 }
 
-func NewRecommendationSystemUseCase(rep config.Repository, SleepTime time.Duration, mutex *sync.RWMutex) *RecommendationSystemUseCase {
+func NewRecommendationSystemUseCase(rep config.Repository, sleepTime time.Duration, mutex *sync.RWMutex) *RecommendationSystemUseCase {
 	sys := &RecommendationSystemUseCase{
 		rep,
 		nil,
@@ -65,7 +65,7 @@ func NewRecommendationSystemUseCase(rep config.Repository, SleepTime time.Durati
 		mutex,
 	}
 	readyChan := make(chan bool)
-	go sys.UpdateDataframe(SleepTime, readyChan)
+	go sys.UpdateDataframe(sleepTime, readyChan)
 	<-readyChan
 	return sys
 }
@@ -79,13 +79,13 @@ func (t *RecommendationSystemUseCase) getUsersMovies(cmpUser, userID uint64, arr
 	cmpDfRow := t.UserDataframe.Row(cmpUserRow, false)
 	userDfRow := t.UserDataframe.Row(mainUserRow, false)
 	for _, val := range movieNameContainer {
-		if userDfRow[val.Name] == nil && cmpDfRow[val.Name] != nil && cmpDfRow[val.Name].(float64) > config.RatingBorder{
+		if userDfRow[val.Name] == nil && cmpDfRow[val.Name] != nil && cmpDfRow[val.Name].(float64) > config.RatingBorder {
 			(*arr).Add(val.ID)
 		}
 	}
 }
 
-func (t *RecommendationSystemUseCase) UpdateDataframe(SleepTime time.Duration, ch chan bool) {
+func (t *RecommendationSystemUseCase) UpdateDataframe(sleepTime time.Duration, ch chan bool) {
 	firstInit := true
 	for {
 		dataset, getDatasetErr := t.RecommendationRepository.GetMovieRatingsDataset()
@@ -138,7 +138,7 @@ func (t *RecommendationSystemUseCase) UpdateDataframe(SleepTime time.Duration, c
 			firstInit = false
 		}
 
-		time.Sleep(SleepTime)
+		time.Sleep(sleepTime)
 	}
 }
 
@@ -239,6 +239,6 @@ func (t *RecommendationSystemUseCase) GetRecommendedMovieList(userID uint64) (*[
 	return MovieList, nil
 }
 
-func (t *RecommendationSystemUseCase) GetPopularMovies()(*[]models.Movie, error){
+func (t *RecommendationSystemUseCase) GetPopularMovies() (*[]models.Movie, error) {
 	return t.RecommendationRepository.GetPopularMovies()
 }

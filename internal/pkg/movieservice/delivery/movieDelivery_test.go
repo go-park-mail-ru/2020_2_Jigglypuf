@@ -102,7 +102,7 @@ func TestGetMoviesInCinema(t *testing.T) {
 	}
 	testReq := httptest.NewRequest(http.MethodGet, "/movie/actual/?limit=10&page=1", nil)
 	testRecorder := httptest.NewRecorder()
-	TestingStruct.useCaseMock.EXPECT().GetActualMovies(gomock.Any(),gomock.Any(), gomock.Any()).Return(&inputArr, nil)
+	TestingStruct.useCaseMock.EXPECT().GetActualMovies(gomock.Any(), gomock.Any(), gomock.Any()).Return(&inputArr, nil)
 	TestingStruct.handler.GetActualMovies(testRecorder, testReq)
 
 	if testRecorder.Code != http.StatusOK {

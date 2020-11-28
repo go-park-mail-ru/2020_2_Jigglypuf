@@ -1,6 +1,6 @@
 package recserver
 
-import(
+import (
 	"database/sql"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	config "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/recommendation"
@@ -12,15 +12,14 @@ import(
 	"time"
 )
 
-type RecommendationService struct{
-	RecommendationDelivery *delivery.RecommendationDelivery
-	RecommendationUseCase *usecase.RecommendationSystemUseCase
+type RecommendationService struct {
+	RecommendationDelivery   *delivery.RecommendationDelivery
+	RecommendationUseCase    *usecase.RecommendationSystemUseCase
 	RecommendationRepository *repository.RecommendationSystemRepository
-	RecommendationRouter *mux.Router
+	RecommendationRouter     *mux.Router
 }
 
-
-func configureRecommendationRouter(handler *delivery.RecommendationDelivery) *mux.Router{
+func configureRecommendationRouter(handler *delivery.RecommendationDelivery) *mux.Router {
 	router := mux.NewRouter()
 
 	router.HandleFunc(config.URLPattern, handler.GetRecommendedMovieList)
@@ -28,9 +27,8 @@ func configureRecommendationRouter(handler *delivery.RecommendationDelivery) *mu
 	return router
 }
 
-
-func Start(connection *sql.DB, mutex *sync.RWMutex, sleepTime time.Duration) (*RecommendationService, error){
-	if connection == nil{
+func Start(connection *sql.DB, mutex *sync.RWMutex, sleepTime time.Duration) (*RecommendationService, error) {
+	if connection == nil {
 		return nil, models.ErrFooNoDBConnection
 	}
 
@@ -40,9 +38,9 @@ func Start(connection *sql.DB, mutex *sync.RWMutex, sleepTime time.Duration) (*R
 	router := configureRecommendationRouter(recommendationDelivery)
 
 	return &RecommendationService{
-		RecommendationDelivery: recommendationDelivery,
-		RecommendationUseCase: recommendationUC,
+		RecommendationDelivery:   recommendationDelivery,
+		RecommendationUseCase:    recommendationUC,
 		RecommendationRepository: recommendationRep,
-		RecommendationRouter: router,
+		RecommendationRouter:     router,
 	}, nil
 }
