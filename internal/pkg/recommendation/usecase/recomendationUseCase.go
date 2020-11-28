@@ -175,18 +175,13 @@ func (t *RecommendationSystemUseCase) CreateCorrelationArray(userID uint64) erro
 }
 
 func (t *RecommendationSystemUseCase) MakeMovieRecommendations(userID uint64) (set.Set, error) {
+	err := t.CreateCorrelationArray(userID)
+	if err != nil {
+		return nil, models.ErrFooNoRatingInfo
+	}
 	t.Mu.RLock()
 	userCorrelation, ok := t.CorrelationUserMap[userID]
 	t.Mu.RUnlock()
-	if !ok {
-		err := t.CreateCorrelationArray(userID)
-		if err != nil {
-			return nil, models.ErrFooNoRatingInfo
-		}
-		t.Mu.RLock()
-		userCorrelation, ok = t.CorrelationUserMap[userID]
-		t.Mu.RUnlock()
-	}
 	if !ok {
 		return nil, models.ErrFooNoRatingInfo
 	}
