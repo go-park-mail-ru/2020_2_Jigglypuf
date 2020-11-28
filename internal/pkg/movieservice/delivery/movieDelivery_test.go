@@ -102,8 +102,8 @@ func TestGetMoviesInCinema(t *testing.T) {
 	}
 	testReq := httptest.NewRequest(http.MethodGet, "/movie/actual/?limit=10&page=1", nil)
 	testRecorder := httptest.NewRecorder()
-	TestingStruct.useCaseMock.EXPECT().GetMoviesInCinema(gomock.Any(), gomock.Any()).Return(&inputArr, nil)
-	TestingStruct.handler.GetMoviesInCinema(testRecorder, testReq)
+	TestingStruct.useCaseMock.EXPECT().GetActualMovies(gomock.Any(),gomock.Any(), gomock.Any()).Return(&inputArr, nil)
+	TestingStruct.handler.GetActualMovies(testRecorder, testReq)
 
 	if testRecorder.Code != http.StatusOK {
 		t.Fatalf("TEST: Get cinema success "+
@@ -148,7 +148,7 @@ func TestHandlerOnInvalidMethod(t *testing.T) {
 			http.MethodGet,
 		},
 		{
-			TestingStruct.handler.GetMoviesInCinema,
+			TestingStruct.handler.GetActualMovies,
 			http.MethodPost,
 		},
 		{
@@ -190,11 +190,11 @@ func TestIncorrectGetParametersMovie(t *testing.T) {
 			"/cinema/",
 		},
 		{
-			TestingStruct.handler.GetMoviesInCinema,
+			TestingStruct.handler.GetActualMovies,
 			"/cinema/?limit=asdas&page=qwewqe",
 		},
 		{
-			TestingStruct.handler.GetMoviesInCinema,
+			TestingStruct.handler.GetActualMovies,
 			"/cinema/",
 		},
 	}

@@ -340,6 +340,12 @@ var doc = `{
                         "name": "page",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "date in format 2006-01-02",
+                        "name": "date",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -529,6 +535,36 @@ var doc = `{
                     },
                     "405": {
                         "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/recommendations/": {
+            "get": {
+                "description": "get user recommendations",
+                "summary": "recommendations",
+                "operationId": "get-user-recommendations",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Movie"
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method Not Allowed",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/models.ServerResponse"
                         }

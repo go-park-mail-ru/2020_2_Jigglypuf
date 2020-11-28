@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
 	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -28,9 +29,9 @@ func getQueryLimitPageArgs(r *http.Request) (int, int, error) {
 	return limit, page, nil
 }
 
-func NewMovieHandler(usecase movieservice.MovieUseCase) *MovieHandler {
+func NewMovieHandler(useCase movieservice.MovieUseCase) *MovieHandler {
 	return &MovieHandler{
-		movieUseCase: usecase,
+		movieUseCase: useCase,
 	}
 }
 
@@ -166,12 +167,13 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 // @ID movie-in-cinema-id
 // @Param limit query int true "limit"
 // @Param page query int true "page"
+// @Param date query int false "date in format 2006-01-02"
 // @Success 200 {array} models.MovieList
 // @Failure 400 {object} models.ServerResponse "Bad body"
 // @Failure 401 {object} models.ServerResponse "No authorization"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
 // @Router /api/movie/actual/ [get]
-func (t *MovieHandler) GetMoviesInCinema(w http.ResponseWriter, r *http.Request) {
+func (t *MovieHandler) GetActualMovies(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
@@ -183,8 +185,9 @@ func (t *MovieHandler) GetMoviesInCinema(w http.ResponseWriter, r *http.Request)
 		models.BadBodyHTTPResponse(&w, models.IncorrectGetParameters{})
 		return
 	}
+	date := r.URL.Query()[schedule.DateQueryParamName]
 
-	movieList, movieErr := t.movieUseCase.GetMoviesInCinema(limit, page)
+	movieList, movieErr := t.movieUseCase.GetActualMovies(limit, page, date)
 	if movieErr != nil {
 		models.BadBodyHTTPResponse(&w, movieErr)
 		return

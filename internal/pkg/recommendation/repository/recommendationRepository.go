@@ -39,6 +39,12 @@ func (t *RecommendationSystemRepository) GetMovieRatingsDataset() (*[]models.Rec
 		resultModelList = append(resultModelList, *resultModel)
 	}
 
+	defer func() {
+		if resultSQL != nil {
+			resultSQL.Close()
+		}
+	}()
+
 	return &resultModelList, nil
 }
 
@@ -71,6 +77,12 @@ func (t *RecommendationSystemRepository) GetRecommendedMovieList(movieIDSet *map
 		}
 		resultMovieList = append(resultMovieList, *movieModel)
 	}
+
+	defer func() {
+		if rows != nil {
+			rows.Close()
+		}
+	}()
 
 	return &resultMovieList, nil
 }
@@ -105,6 +117,12 @@ func (t *RecommendationSystemRepository) GetPopularMovies() (*[]models.Movie, er
 		}
 		resultMovieList = append(resultMovieList, *movieModel)
 	}
+
+	defer func() {
+		if rows != nil {
+			rows.Close()
+		}
+	}()
 
 	return &resultMovieList, nil
 }

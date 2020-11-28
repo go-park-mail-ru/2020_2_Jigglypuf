@@ -482,6 +482,10 @@ paths:
         name: page
         required: true
         type: integer
+      - description: date in format 2006-01-02
+        in: query
+        name: date
+        type: integer
       responses:
         "200":
           description: OK
@@ -586,6 +590,26 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: GetProfile
+  /api/recommendations/:
+    get:
+      description: get user recommendations
+      operationId: get-user-recommendations
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Movie'
+            type: array
+        "405":
+          description: Method Not Allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: recommendations
   /api/schedule/:
     get:
       description: Returns movie schedule by getting movie id, cinema id and day(date) in format schedule.TimeStandard

@@ -19,7 +19,14 @@ func NewRecommendationDelivery(useCase recommendation.UseCase) *RecommendationDe
 	}
 }
 
-
+// recommendations godoc
+// @Summary recommendations
+// @Description get user recommendations
+// @ID get-user-recommendations
+// @Success 200 {array} models.Movie
+// @Failure 405 {object} models.ServerResponse
+// @Failure 500 {object} models.ServerResponse
+// @Router /api/recommendations/ [get]
 func (t *RecommendationDelivery) GetRecommendedMovieList(w http.ResponseWriter, r *http.Request){
 	if r.Method != http.MethodGet{
 		models.BadMethodHTTPResponse(&w)

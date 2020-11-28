@@ -23,7 +23,7 @@ func configureMovieRouter(handler *movieDelivery.MovieHandler) *mux.Router {
 	movieRouter := mux.NewRouter()
 	movieRouter.HandleFunc(movieConfig.URLPattern, handler.GetMovieList)
 	movieRouter.HandleFunc(movieConfig.URLPattern+"rate/", handler.RateMovie)
-	movieRouter.HandleFunc(movieConfig.URLPattern+"actual/", handler.GetMoviesInCinema)
+	movieRouter.HandleFunc(movieConfig.URLPattern+"actual/", handler.GetActualMovies)
 	movieRouter.HandleFunc(movieConfig.URLPattern+fmt.Sprintf("{%s:[0-9]+}/", movieConfig.MovieIDQuery), handler.GetMovie)
 
 	return movieRouter
