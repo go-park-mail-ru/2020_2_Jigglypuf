@@ -12,6 +12,13 @@ type RecommendationSystemRepository struct {
 	DBConn *sql.DB
 }
 
+func NewRecommendationRepository(connection *sql.DB) *RecommendationSystemRepository{
+	return &RecommendationSystemRepository{
+		connection,
+	}
+}
+
+
 func (t *RecommendationSystemRepository) GetMovieRatingsDataset() (*[]models.RecommendationDataFrame, error) {
 	sqlQuery := "SELECT user_id, movie_id, movie_rating,m.moviename, m.rating, m.rating_count FROM rating_history JOIN movie m on m.id = rating_history.movie_id "
 	resultSQL, resultErr := t.DBConn.Query(sqlQuery)

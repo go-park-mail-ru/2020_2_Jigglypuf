@@ -1,8 +1,9 @@
 package recommendation
 
 const (
-	PrimaryUserColumnName           = "UserID"
-	PrimaryCorrelationColumnName    = "Correlation"
-	RecommendationRatingBorder      = 6.0
-	RecommendationCorrelationBorder = 0.5
+	PrimaryUserColumnName        = "UserID"
+	PrimaryCorrelationColumnName = "Correlation"
+	RatingBorder                 = 6.0
+	CorrelationBorder            = 0.5
+	URLPattern					 = "/recommendations/"
 )

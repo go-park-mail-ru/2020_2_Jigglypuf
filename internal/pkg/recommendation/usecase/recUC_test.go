@@ -5,7 +5,6 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/recommendation/mock"
 	"github.com/golang/mock/gomock"
-	"github.com/lib/pq"
 	"sync"
 	"testing"
 	"time"
@@ -92,7 +91,6 @@ func TestFirstExample(t *testing.T) {
 
 	repMock.EXPECT().GetMovieRatingsDataset().AnyTimes().Return(&RepositoryResponse, nil)
 	sys := NewRecommendationSystemUseCase(repMock, time.Minute*10, &sync.RWMutex{})
-	some, another := sys.MakeMovieRecommendations(uint64(8))
-	_, err := pq.Array(some.ToSlice()).Value()
-	fmt.Println(another, err)
+	some, another := sys.MakeMovieRecommendations(uint64(1))
+	fmt.Println(another, some)
 }

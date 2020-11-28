@@ -79,7 +79,7 @@ func (t *RecommendationSystemUseCase) getUsersMovies(cmpUser, userID uint64, arr
 	cmpDfRow := t.UserDataframe.Row(cmpUserRow, false)
 	userDfRow := t.UserDataframe.Row(mainUserRow, false)
 	for _, val := range movieNameContainer {
-		if userDfRow[val.Name] == nil && cmpDfRow[val.Name] != nil {
+		if userDfRow[val.Name] == nil && cmpDfRow[val.Name] != nil && cmpDfRow[val.Name].(float64) > config.RatingBorder{
 			(*arr).Add(val.ID)
 		}
 	}
@@ -206,7 +206,7 @@ func (t *RecommendationSystemUseCase) MakeMovieRecommendations(userID uint64) (s
 
 	FilterFunc := dataframe.FilterDataFrameFn(func(values map[interface{}]interface{}, row, nRows int) (dataframe.FilterAction, error) {
 		fl, ok := values[config.PrimaryCorrelationColumnName].(float64)
-		if !ok || fl < config.RecommendationCorrelationBorder {
+		if !ok || fl < config.CorrelationBorder {
 			return dataframe.DROP, nil
 		}
 		return dataframe.KEEP, nil

@@ -11,6 +11,7 @@ import (
 	hallService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/hallserver"
 	movieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/movieserver"
 	profileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/profileserver"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/recserver"
 	scheduleService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/scheduleserver"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/ticketservice"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/configs"
@@ -22,6 +23,7 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	movieConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
 	profileConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
+	config "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/recommendation"
 	scheduleConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session/middleware"
@@ -31,6 +33,7 @@ import (
 	"github.com/tarantool/go-tarantool"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -45,9 +48,11 @@ type ServerStruct struct {
 	hallService     *hallService.HallService
 	httpServer      *http.Server
 	csrfMiddleware  *csrf.HashCSRFToken
+	recommendationService *recserver.RecommendationService
 }
 
 func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sql.DB) (*ServerStruct, error) {
+	mutex := sync.RWMutex{}
 	NewCookieService, cookieErr := cookieService.Start(cookieDBConnection)
 	if cookieErr != nil {
 		log.Println("No Tarantool Cookie DB connection")
@@ -80,6 +85,10 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 		log.Println(models.ErrFooInitFail)
 		return nil, models.ErrFooInitFail
 	}
+	recommendationService, recErr := recserver.Start(mainDBConnection, &mutex, time.Minute*10)
+	if recErr != nil{
+		return nil,models.ErrFooInitFail
+	}
 	return &ServerStruct{
 		authService:     newAuthService,
 		cinemaService:   newCinemaService,
@@ -90,6 +99,7 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 		ticketService:   newTicketService,
 		hallService:     newHallService,
 		csrfMiddleware:  newHashCSRFMiddleware,
+		recommendationService: recommendationService,
 	}, nil
 }
 
@@ -103,6 +113,7 @@ func configureRouter(application *ServerStruct) http.Handler {
 	handler.Handle(scheduleConfig.URLPattern, application.scheduleService.Router)
 	handler.Handle(hallConfig.URLPattern, application.hallService.Router)
 	handler.Handle(ticketConfig.URLPattern, application.ticketService.Router)
+	handler.Handle(config.URLPattern, application.recommendationService.RecommendationRouter)
 	handler.HandleFunc("/api/csrf/", application.csrfMiddleware.GenerateCSRFToken)
 
 	handler.HandleFunc("/media/", func(w http.ResponseWriter, r *http.Request) {
