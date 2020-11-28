@@ -172,7 +172,7 @@ func (t *MovieSQLRepository) UpdateMovieRating(movieID uint64, ratingScore int64
 	return RatingDBErr
 }
 
-func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int, date string) (*[]models.MovieList, error) {
+func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int, date string, allTime bool) (*[]models.MovieList, error) {
 	if t.DBConnection == nil {
 		return nil, models.ErrFooNoDBConnection
 	}
@@ -181,9 +181,15 @@ func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int, date string) (*[
 		"join movie_genre v2 on v1.id = v2.movie_id " +
 		"join genre v3 on (v3.id = v2.genre_id) " +
 		"join movie_actors v4 on (v4.movie_id = v1.id) " +
-		"join actor v5 on (v5.id = v4.actor_id) " +
-		"where exists(select 1 from schedule sh where v1.id = sh.movie_id and DATE(sh.premiere_time) > $1) " +
-		"group by v1.ID order by v1.Rating_count DESC LIMIT $2 OFFSET $3"
+		"join actor v5 on (v5.id = v4.actor_id) "
+	if allTime {
+		query += "where exists(select 1 from schedule sh where v1.id = sh.movie_id and DATE(sh.premiere_time) > $1) " +
+			"group by v1.ID order by v1.Rating_count DESC LIMIT $2 OFFSET $3"
+	} else {
+		query += "where exists(select 1 from schedule sh where v1.id = sh.movie_id and DATE(sh.premiere_time) = $1) " +
+			"group by v1.ID order by v1.Rating_count DESC LIMIT $2 OFFSET $3"
+	}
+
 	DBRows, DBErr := t.DBConnection.Query(query, date, limit, page*limit)
 	if DBErr != nil || DBRows.Err() != nil {
 		log.Println(DBErr)

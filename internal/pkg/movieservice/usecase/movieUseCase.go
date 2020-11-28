@@ -74,11 +74,13 @@ func (t *MovieUseCase) GetActualMovies(limit, page int, date []string) (*[]model
 		return nil, models.ErrFooIncorrectInputInfo
 	}
 	castedDate := time.Now().Format(schedule.TimeStandard)
+	allTime := true
 	if len(date) != 0 {
 		_, castErr := time.Parse(schedule.TimeStandard, date[0])
 		if castErr == nil {
 			castedDate = date[0]
+			allTime = false
 		}
 	}
-	return t.DBConn.GetMoviesInCinema(limit, page, castedDate)
+	return t.DBConn.GetMoviesInCinema(limit, page, castedDate, allTime)
 }
