@@ -1,0 +1,58 @@
+syntax = "proto3";
+package authentication;
+option go_package = ".;codegen";
+
+
+// authentication service
+
+service AuthenticationService {
+  rpc SignIn(SignInRequest) returns (SignInResponse);
+  rpc SignUp(SignUpRequest) returns (SignUpResponse);
+  rpc SignOut(SignOutRequest) returns (SignOutResponse);
+}
+
+
+// data request/response models
+
+message SignInData {
+  string Login = 1;
+  string Password = 2;
+}
+
+message SignUpData {
+  string Login = 1;
+  string Password = 2;
+  string Name = 3;
+  string Surname = 4;
+}
+
+
+// rpc requests
+
+message SignInRequest {
+  SignInData data = 1;
+}
+
+message SignUpRequest {
+  SignUpData data = 1;
+}
+
+message SignOutRequest {
+
+}
+
+
+// rpc responses
+
+message SignInResponse {
+
+}
+
+message SignUpResponse {
+
+}
+
+message SignOutResponse {
+
+}
+

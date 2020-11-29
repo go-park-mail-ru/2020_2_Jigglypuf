@@ -28,6 +28,7 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session/middleware"
 	ticketConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice"
+	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/swaggo/http-swagger"
 	"github.com/tarantool/go-tarantool"
@@ -104,7 +105,8 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 }
 
 func configureRouter(application *ServerStruct) http.Handler {
-	handler := http.NewServeMux()
+	handler := mux.NewRouter()
+	handler = handler.PathPrefix("/api").Subrouter()
 
 	handler.Handle(movieConfig.URLPattern, application.movieService.MovieRouter)
 	handler.Handle(cinemaConfig.URLPattern, application.cinemaService.CinemaRouter)
@@ -114,12 +116,12 @@ func configureRouter(application *ServerStruct) http.Handler {
 	handler.Handle(hallConfig.URLPattern, application.hallService.Router)
 	handler.Handle(ticketConfig.URLPattern, application.ticketService.Router)
 	handler.Handle(config.URLPattern, application.recommendationService.RecommendationRouter)
-	handler.HandleFunc("/api/csrf/", application.csrfMiddleware.GenerateCSRFToken)
+	handler.HandleFunc("/csrf/", application.csrfMiddleware.GenerateCSRFToken)
 
 	handler.HandleFunc("/media/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, r.RequestURI, http.StatusMovedPermanently)
 	})
-	handler.HandleFunc("/api/docs/", httpSwagger.WrapHandler)
+	handler.HandleFunc("/docs/", httpSwagger.WrapHandler)
 	middlewareHandler := application.csrfMiddleware.CSRFMiddleware(handler)
 	middlewareHandler = middleware.CookieMiddleware(middlewareHandler, application.cookieService.CookieDelivery)
 	middlewareHandler = cors.MiddlewareCORS(middlewareHandler)

@@ -31,6 +31,7 @@ func (t *RecommendationDelivery) GetRecommendedMovieList(w http.ResponseWriter, 
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 
 	isAuth, authErr := r.Context().Value(session.ContextIsAuthName).(bool)
 	userID, userErr := r.Context().Value(session.ContextUserIDName).(uint64)

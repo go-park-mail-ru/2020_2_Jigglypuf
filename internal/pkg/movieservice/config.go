@@ -1,7 +1,7 @@
 package movieservice
 
 const (
-	URLPattern   = "/api/movie/"
+	URLPattern   = "/movie/"
 	GetMovieID   = "id"
 	LimitQuery   = "limit"
 	PageQuery    = "page"

@@ -13,6 +13,7 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/golang/go v0.0.0-20201108121955-7307e86afda3 // indirect
 	github.com/golang/mock v1.4.4
+	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/gonum/blas v0.0.0-20181208220705-f22b278b28ac // indirect
 	github.com/gonum/lapack v0.0.0-20181123203213-e4cdc5a0bff9 // indirect
 	github.com/gonum/matrix v0.0.0-20181209220409-c518dec07be9 // indirect
