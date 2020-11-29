@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
+	ProfileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/proto/codegen"
 	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/julienschmidt/httprouter"
 	"io"
@@ -16,7 +17,7 @@ import (
 )
 
 type ProfileHandler struct {
-	useCase profile.UseCase
+	profile ProfileService.ProfileServiceClient
 }
 
 type SavingError struct{}
@@ -25,9 +26,9 @@ func (t SavingError) Error() string {
 	return "Cannot save the file!"
 }
 
-func NewProfileHandler(useCase profile.UseCase) *ProfileHandler {
+func NewProfileHandler(profile ProfileService.ProfileServiceClient) *ProfileHandler {
 	return &ProfileHandler{
-		useCase: useCase,
+		profile: profile,
 	}
 }
 
@@ -92,7 +93,7 @@ func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, para
 		return
 	}
 
-	requiredProfile, profileError := t.useCase.GetProfileViaID(profileUserID.(uint64))
+	requiredProfile, profileError := t.profile.GetProfileByID(r.Context(),&ProfileService.GetProfileByUserIDRequest{UserID: profileUserID.(uint64),})
 
 	if profileError != nil {
 		models.BadBodyHTTPResponse(&w, profileError)
@@ -142,8 +143,14 @@ func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request, p
 	if savingErr != nil {
 		avatarPath = ""
 	}
-
-	err := t.useCase.UpdateProfile(profileUserID.(uint64), r.FormValue(profile.NameFormName), r.FormValue(profile.SurnameFormName), avatarPath)
+	_, err := t.profile.UpdateProfile(r.Context(), &ProfileService.UpdateProfileRequest{
+		Profile: &ProfileService.Profile{
+			UserID: profileUserID.(uint64),
+			Name: r.FormValue(profile.NameFormName),
+			Surname: r.FormValue(profile.SurnameFormName),
+			AvatarPath: avatarPath,
+		},
+	})
 
 	if err != nil {
 		models.BadBodyHTTPResponse(&w, err)

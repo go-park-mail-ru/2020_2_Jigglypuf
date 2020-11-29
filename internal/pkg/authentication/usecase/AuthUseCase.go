@@ -1,32 +1,32 @@
 package usecase
 
 import (
+	"context"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
+	profileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/utils"
 	"github.com/go-playground/validator/v10"
 	"github.com/microcosm-cc/bluemonday"
 	"golang.org/x/crypto/bcrypt"
-	"net/http"
-	"time"
 )
 
 type UserUseCase struct {
-	sanitizer         *bluemonday.Policy
-	validator         *validator.Validate
-	repository        interfaces.AuthRepository
-	profileRepository profile.Repository
-	salt              string
+	sanitizer      *bluemonday.Policy
+	validator      *validator.Validate
+	repository     interfaces.AuthRepository
+	profileService profileService.ProfileServiceClient
+	salt           string
 }
 
-func NewUserUseCase(repository interfaces.AuthRepository, profileRepository profile.Repository, salt string) *UserUseCase {
+func NewUserUseCase(repository interfaces.AuthRepository, profileService profileService.ProfileServiceClient, salt string) *UserUseCase {
 	return &UserUseCase{
-		sanitizer:         bluemonday.UGCPolicy(),
-		validator:         validator.New(),
-		repository:        repository,
-		profileRepository: profileRepository,
-		salt:              salt,
+		sanitizer:      bluemonday.UGCPolicy(),
+		validator:      validator.New(),
+		repository:     repository,
+		profileService: profileService,
+		salt:           salt,
 	}
 }
 
@@ -67,13 +67,16 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
+
 	// creating profile
-	prof := new(models.Profile)
-	prof.Name = input.Name
-	prof.Surname = input.Surname
-	prof.UserCredentials = &user
-	prof.AvatarPath = profile.NoAvatarImage
-	profileErr := t.profileRepository.CreateProfile(prof)
+	_, profileErr := t.profileService.CreateProfile(context.Background(),&profileService.CreateProfileRequest{
+		Profile: &profileService.Profile{
+			Name: input.Name,
+			Surname: input.Surname,
+			UserID: user.ID,
+			AvatarPath: profile.NoAvatarImage,
+		},
+	})
 	if profileErr != nil {
 		return 0, profileErr
 	}
@@ -101,9 +104,4 @@ func (t *UserUseCase) SignIn(input *models.AuthInput) (uint64, error) {
 		return 0, models.ErrFooIncorrectInputInfo
 	}
 	return user.ID, nil
-}
-
-func (t *UserUseCase) SignOut(cookie *http.Cookie) (*http.Cookie, error) {
-	cookie.Expires = time.Now().Add(-time.Hour)
-	return cookie, nil
 }

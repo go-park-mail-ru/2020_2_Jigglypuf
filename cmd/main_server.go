@@ -5,16 +5,15 @@ import (
 	"errors"
 	"fmt"
 	_ "github.com/go-park-mail-ru/2020_2_Jigglypuf/docs"
-	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/authserver"
 	cinemaService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/cinemaserver"
 	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/cookieserver"
 	hallService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/hallserver"
 	movieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/movieserver"
-	profileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/profileserver"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/recserver"
 	scheduleService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/scheduleserver"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/ticketservice"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/configs"
+	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/proto/codegen"
 	cinemaConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice"
 	hallConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cors"
@@ -23,6 +22,7 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	movieConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
 	profileConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
+	profileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/proto/codegen"
 	config "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/recommendation"
 	scheduleConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
@@ -32,6 +32,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/swaggo/http-swagger"
 	"github.com/tarantool/go-tarantool"
+	"google.golang.org/grpc"
 	"log"
 	"net/http"
 	"sync"
@@ -39,10 +40,8 @@ import (
 )
 
 type ServerStruct struct {
-	authService           *authService.AuthService
 	cinemaService         *cinemaService.CinemaService
 	movieService          *movieService.MovieService
-	profileService        *profileService.ProfileService
 	cookieService         *cookieService.CookieService
 	scheduleService       *scheduleService.ScheduleService
 	ticketService         *ticketservice.TicketService
@@ -59,11 +58,6 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 		log.Println("No Tarantool Cookie DB connection")
 		return nil, cookieErr
 	}
-	newProfileService, profileErr := profileService.Start(mainDBConnection)
-	if profileErr != nil {
-		return nil, profileErr
-	}
-	newAuthService, authErr := authService.Start(newProfileService.ProfileRepository, mainDBConnection)
 	if authErr != nil {
 		log.Println(authErr)
 		return nil, authErr
@@ -94,7 +88,6 @@ func configureAPI(cookieDBConnection *tarantool.Connection, mainDBConnection *sq
 		authService:           newAuthService,
 		cinemaService:         newCinemaService,
 		movieService:          newMovieService,
-		profileService:        newProfileService,
 		cookieService:         NewCookieService,
 		scheduleService:       newScheduleService,
 		ticketService:         newTicketService,
@@ -165,6 +158,20 @@ func startDBWork() (*sql.DB, *tarantool.Connection, error) {
 // @host https://cinemascope.space
 // @BasePath /
 func main() {
+
+	profileServiceConn, profileServiceErr := grpc.Dial("127.0.0.1:8081")
+	if profileServiceErr != nil{
+		log.Fatalln("MAIN SERVICE INIT: no profile service conn")
+	}
+
+	authServiceConn, err := grpc.Dial("127.0.0.1:8082")
+	if err != nil{
+		log.Fatalln("MAIN SERVICE INIT: no authentication service conn")
+	}
+
+	profileServiceClient := profileService.NewProfileServiceClient(profileServiceConn)
+	AuthServiceClient := authService.NewAuthenticationServiceClient(authServiceConn)
+
 	mainDBConnection, cookieDBConnection, DBErr := startDBWork()
 	if DBErr != nil {
 		log.Fatalln(DBErr)

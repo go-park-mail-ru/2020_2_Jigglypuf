@@ -8,14 +8,14 @@ import (
 )
 
 type ProfileUseCase struct {
-	sanitizer *bluemonday.Policy
-	DBConn    profile.Repository
+	sanitizer  *bluemonday.Policy
+	repository profile.Repository
 }
 
-func NewProfileUseCase(dbConn profile.Repository) *ProfileUseCase {
+func NewProfileUseCase(rep profile.Repository) *ProfileUseCase {
 	return &ProfileUseCase{
-		sanitizer: bluemonday.UGCPolicy(),
-		DBConn:    dbConn,
+		sanitizer:  bluemonday.UGCPolicy(),
+		repository: rep,
 	}
 }
 
@@ -27,23 +27,23 @@ func (t *ProfileUseCase) CreateProfile(reqProfile *models.Profile) error {
 		reqProfile.AvatarPath = profile.NoAvatarImage
 	}
 	utils.SanitizeInput(t.sanitizer, &reqProfile.Name, &reqProfile.Surname, &reqProfile.AvatarPath)
-	return t.DBConn.CreateProfile(reqProfile)
+	return t.repository.CreateProfile(reqProfile)
 }
 
 func (t *ProfileUseCase) DeleteProfile(profile *models.Profile) error {
-	return t.DBConn.DeleteProfile(profile)
+	return t.repository.DeleteProfile(profile)
 }
 
 func (t *ProfileUseCase) GetProfile(login *string) (*models.Profile, error) {
-	return t.DBConn.GetProfile(login)
+	return t.repository.GetProfile(login)
 }
 
 func (t *ProfileUseCase) GetProfileViaID(userID uint64) (*models.Profile, error) {
-	return t.DBConn.GetProfileViaID(userID)
+	return t.repository.GetProfileViaID(userID)
 }
 
 func (t *ProfileUseCase) UpdateCredentials(profile *models.Profile) error {
-	return t.DBConn.UpdateCredentials(profile)
+	return t.repository.UpdateCredentials(profile)
 }
 
 func (t *ProfileUseCase) UpdateProfile(profileUserID uint64, name, surname, avatarPath string) error {
@@ -65,5 +65,5 @@ func (t *ProfileUseCase) UpdateProfile(profileUserID uint64, name, surname, avat
 	if avatarPath == "" {
 		avatarPath = profileInput.AvatarPath
 	}
-	return t.DBConn.UpdateProfile(profileInput, name, surname, avatarPath)
+	return t.repository.UpdateProfile(profileInput, name, surname, avatarPath)
 }

@@ -3,7 +3,7 @@ package delivery
 import (
 	"context"
 	"encoding/json"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	session "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/julienschmidt/httprouter"
@@ -13,12 +13,12 @@ import (
 )
 
 type UserHandler struct {
-	useCase interfaces.UserUseCase
+	authService authService.AuthenticationServiceClient
 }
 
-func NewUserHandler(useCase interfaces.UserUseCase) *UserHandler {
+func NewUserHandler(authService authService.AuthenticationServiceClient) *UserHandler {
 	return &UserHandler{
-		useCase: useCase,
+		authService: authService,
 	}
 }
 
@@ -70,12 +70,17 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request, params
 		return
 	}
 
-	userID, err := t.useCase.SignIn(authInput)
+	userID, err := t.authService.SignIn(r.Context(), &authService.SignInRequest{
+		Data: &authService.SignInData{
+			Login: authInput.Login,
+			Password: authInput.Password,
+		},
+	})
 	if err != nil {
 		models.BadBodyHTTPResponse(&w, err)
 		return
 	}
-	*r = *r.WithContext(setContextCookie(r, userID))
+	*r = *r.WithContext(setContextCookie(r, userID.UserID))
 }
 
 // Register godoc
@@ -108,13 +113,20 @@ func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request, pa
 		return
 	}
 
-	userID, err := t.useCase.SignUp(authInput)
+	userID, err := t.authService.SignUp(r.Context(), &authService.SignUpRequest{
+		Data: &authService.SignUpData{
+			Login: authInput.Login,
+			Password: authInput.Password,
+			Name: authInput.Name,
+			Surname: authInput.Surname,
+		},
+	})
 	if err != nil {
 		models.BadBodyHTTPResponse(&w, err)
 		return
 	}
 
-	*r = *r.WithContext(setContextCookie(r, userID))
+	*r = *r.WithContext(setContextCookie(r, userID.UserID))
 }
 
 // SignOut godoc
@@ -136,14 +148,15 @@ func (t *UserHandler) SignOutHandler(w http.ResponseWriter, r *http.Request, par
 		return
 	}
 
-	cookieValue, _ := r.Cookie(session.SessionCookieName)
-	expiredCookie, useCaseError := t.useCase.SignOut(cookieValue)
-	if useCaseError != nil {
+	cookieValue, cookieErr := r.Cookie(session.SessionCookieName)
+	if cookieErr != nil {
 		models.UnauthorizedHTTPResponse(&w)
 		return
 	}
 
+	cookieValue.Expires = time.Now().Add(-time.Hour)
+
 	ctx := r.Context()
-	ctx = context.WithValue(ctx, session.ContextCookieName, *expiredCookie)
+	ctx = context.WithValue(ctx, session.ContextCookieName, *cookieValue)
 	*r = *r.WithContext(ctx)
 }

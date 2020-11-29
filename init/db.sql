@@ -1,6 +1,5 @@
-
 SET timezone ='+3';
-CREATE DATABASE BackendCinemaInterface;
+CREATE DATABASE BackendCinemaInterfaceUser;
 /* users table */
 CREATE TABLE if not exists users
 (
@@ -11,13 +10,16 @@ CREATE TABLE if not exists users
 
 /* profile table */
 
+CREATE DATABASE BackendCinemaInterfaceProfile;
 CREATE TABLE if not exists profile
 (
-    user_id integer NOT NULL PRIMARY KEY REFERENCES users (ID),
+    user_id integer NOT NULL PRIMARY KEY,
     ProfileName VARCHAR(32),
     ProfileSurname VARCHAR(32),
     AvatarPath VARCHAR(64)
 );
+
+CREATE DATABASE BackendCinemaInterface;
 
 /* cinema table */
 
@@ -84,7 +86,7 @@ CREATE TABLE if not exists movie_actors
 CREATE TABLE if not exists rating_history
 (
     ID serial NOT NULL PRIMARY KEY ,
-    user_id integer references users (ID),
+    user_id integer,
     movie_id integer references movie (ID),
     movie_rating integer NOT NULL,
     UNIQUE(user_id, movie_id)

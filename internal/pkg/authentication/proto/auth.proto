@@ -6,9 +6,8 @@ option go_package = ".;codegen";
 // authentication service
 
 service AuthenticationService {
-  rpc SignIn(SignInRequest) returns (SignInResponse);
-  rpc SignUp(SignUpRequest) returns (SignUpResponse);
-  rpc SignOut(SignOutRequest) returns (SignOutResponse);
+  rpc SignIn(SignInRequest) returns (Response);
+  rpc SignUp(SignUpRequest) returns (Response);
 }
 
 
@@ -37,22 +36,10 @@ message SignUpRequest {
   SignUpData data = 1;
 }
 
-message SignOutRequest {
-
-}
-
 
 // rpc responses
 
-message SignInResponse {
-
-}
-
-message SignUpResponse {
-
-}
-
-message SignOutResponse {
-
+message Response {
+  uint64 UserID = 1;
 }
 

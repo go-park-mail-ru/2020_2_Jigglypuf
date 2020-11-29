@@ -2,20 +2,17 @@ package profileserver
 
 import (
 	"database/sql"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"fmt"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/configs"
 	profileConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
 	profileDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/delivery"
-	profileRepository "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/repository"
-	profileUseCase "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/usecase"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/manager"
+	profileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/proto/codegen"
 	"github.com/julienschmidt/httprouter"
+	"google.golang.org/grpc"
+	"log"
+	"net"
 )
-
-type ProfileService struct {
-	ProfileRepository profileConfig.Repository
-	ProfileUseCase    *profileUseCase.ProfileUseCase
-	ProfileDelivery   *profileDelivery.ProfileHandler
-	ProfileRouter     *httprouter.Router
-}
 
 func configureProfileRouter(handler *profileDelivery.ProfileHandler) *httprouter.Router {
 	router := httprouter.New()
@@ -26,20 +23,22 @@ func configureProfileRouter(handler *profileDelivery.ProfileHandler) *httprouter
 	return router
 }
 
-func Start(connection *sql.DB) (*ProfileService, error) {
-	if connection == nil {
-		return nil, models.ErrFooNoDBConnection
+func Start() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		configs.Host, configs.Port, configs.User, configs.Password, configs.DBName)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil{
+		log.Fatalln("PROFILE SERVICE: Cannot create conn to postgresql")
 	}
-	profileRep := profileRepository.NewProfileSQLRepository(connection)
-	profileUC := profileUseCase.NewProfileUseCase(profileRep)
-	profileHandler := profileDelivery.NewProfileHandler(profileUC)
+	serv := grpc.NewServer()
+	profileService.RegisterProfileServiceServer(serv, manager.NewProfileServiceManager(db))
+	lis, err := net.Listen("tcp","127.0.0.1:8081")
+	if err != nil{
+		log.Fatalln("PROFILE SERVICE: Cannot create net params")
+	}
 
-	profileRouter := configureProfileRouter(profileHandler)
-
-	return &ProfileService{
-		profileRep,
-		profileUC,
-		profileHandler,
-		profileRouter,
-	}, nil
+	err = serv.Serve(lis)
+	if err != nil{
+		log.Fatalln("PROFILE SERVICE: server serving troubles")
+	}
 }
