@@ -3,7 +3,7 @@ package ticketservice
 import (
 	"database/sql"
 	"fmt"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
@@ -34,12 +34,12 @@ func configureAPI(handler *delivery.TicketDelivery) *mux.Router {
 	return router
 }
 
-func Start(connection *sql.DB, authRep interfaces.AuthRepository, hallRep hallservice.Repository, scheduleRep schedule.TimeTableRepository) (*TicketService, error) {
-	if connection == nil || authRep == nil || hallRep == nil {
+func Start(connection *sql.DB, auth authService.AuthenticationServiceClient, hallRep hallservice.Repository, scheduleRep schedule.TimeTableRepository) (*TicketService, error) {
+	if connection == nil || auth == nil || hallRep == nil {
 		return nil, models.ErrFooArgsMismatch
 	}
 	rep := repository.NewTicketSQLRepository(connection)
-	uc := usecase.NewTicketUseCase(rep, authRep, hallRep, scheduleRep)
+	uc := usecase.NewTicketUseCase(rep, auth, hallRep, scheduleRep)
 	handler := delivery.NewTicketDelivery(uc)
 	router := configureAPI(handler)
 

@@ -13,7 +13,7 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/golang/go v0.0.0-20201108121955-7307e86afda3 // indirect
 	github.com/golang/mock v1.4.4
-	github.com/golang/protobuf v1.4.3 // indirect
+	github.com/golang/protobuf v1.4.3
 	github.com/gonum/blas v0.0.0-20181208220705-f22b278b28ac // indirect
 	github.com/gonum/lapack v0.0.0-20181123203213-e4cdc5a0bff9 // indirect
 	github.com/gonum/matrix v0.0.0-20181209220409-c518dec07be9 // indirect
@@ -43,8 +43,9 @@ require (
 	golang.org/x/sys v0.0.0-20201109165425-215b40eba54c // indirect
 	golang.org/x/text v0.3.4 // indirect
 	gonum.org/v1/gonum v0.8.1
+	google.golang.org/grpc v1.29.1
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.0.1 // indirect
-	google.golang.org/protobuf v1.25.0 // indirect
+	google.golang.org/protobuf v1.25.0
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0
 	gopkg.in/ini.v1 v1.62.0 // indirect
 )

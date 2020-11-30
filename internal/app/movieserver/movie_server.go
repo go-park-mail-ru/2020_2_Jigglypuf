@@ -3,7 +3,7 @@ package movieserver
 import (
 	"database/sql"
 	"fmt"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	movieConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
 	movieDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice/delivery"
@@ -29,12 +29,12 @@ func configureMovieRouter(handler *movieDelivery.MovieHandler) *mux.Router {
 	return movieRouter
 }
 
-func Start(connection *sql.DB, authRep interfaces.AuthRepository) (*MovieService, error) {
+func Start(connection *sql.DB, auth authService.AuthenticationServiceClient) (*MovieService, error) {
 	if connection == nil {
 		return nil, models.ErrFooNoDBConnection
 	}
 	movieRep := movieRepository.NewMovieSQLRepository(connection)
-	movieUC := movieUseCase.NewMovieUseCase(movieRep, authRep)
+	movieUC := movieUseCase.NewMovieUseCase(movieRep, auth)
 	movieHandler := movieDelivery.NewMovieHandler(movieUC)
 
 	movieRouter := configureMovieRouter(movieHandler)

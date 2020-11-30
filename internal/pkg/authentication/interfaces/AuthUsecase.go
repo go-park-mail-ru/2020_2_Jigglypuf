@@ -8,4 +8,5 @@ import (
 type UserUseCase interface {
 	SignUp(input *models.RegistrationInput) (uint64, error)
 	SignIn(input *models.AuthInput) (uint64, error)
+	GetUserByID(userID uint64) (*models.User, error)
 }

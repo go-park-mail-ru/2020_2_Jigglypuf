@@ -51,3 +51,18 @@ func (t *AuthServiceManager) SignUp(ctx context.Context, in *authService.SignUpR
 		UserID: userID,
 	}, nil
 }
+
+func (t *AuthServiceManager) GetUserByID (ctx context.Context, in *authService.GetUserByIDRequest)(*authService.UserResponse, error){
+	user, err := t.useCase.GetUserByID(in.UserID)
+	if err != nil{
+		return nil, err
+	}
+
+	return &authService.UserResponse{
+		User: &authService.UserData{
+			ID: user.ID,
+			Login: user.Login,
+			Password: user.Password,
+		},
+	}, nil
+}

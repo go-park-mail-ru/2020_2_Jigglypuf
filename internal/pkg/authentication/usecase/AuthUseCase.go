@@ -105,3 +105,9 @@ func (t *UserUseCase) SignIn(input *models.AuthInput) (uint64, error) {
 	}
 	return user.ID, nil
 }
+
+
+func (t *UserUseCase) GetUserByID(userID uint64) (*models.User, error){
+	// TODO tracing
+	return t.repository.GetUserByID(userID)
+}

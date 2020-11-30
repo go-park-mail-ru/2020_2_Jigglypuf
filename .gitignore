@@ -1,5 +1,8 @@
 cmd/server
 cmd/cmd
+cmd/profile_service
+cmd/auth_service
+cmd/main_server
 swagger
 docker-compose-local.yml
 main_server
