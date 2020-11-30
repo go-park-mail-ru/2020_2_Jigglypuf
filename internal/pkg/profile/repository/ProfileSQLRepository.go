@@ -64,7 +64,7 @@ func (t *ProfileSQLRepository) GetProfileViaID(userID uint64) (*models.Profile, 
 		return nil, models.ErrFooNoDBConnection
 	}
 
-	resultSQL := t.DBConnection.QueryRow("SELECT ProfileName, ProfileSurname, AvatarPath, user_id, login FROM profile JOIN users u on profile.user_id = u.id WHERE user_id = $1", userID)
+	resultSQL := t.DBConnection.QueryRow("SELECT ProfileName, ProfileSurname, AvatarPath, user_id, login FROM profile WHERE user_id = $1", userID)
 	rowsErr := resultSQL.Err()
 	if rowsErr != nil {
 		log.Println(rowsErr)
