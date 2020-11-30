@@ -43,6 +43,7 @@ func (t *RecommendationDelivery) GetRecommendedMovieList(w http.ResponseWriter, 
 		}
 		outputBuf, _ := json.Marshal(movieList)
 		_, _ = w.Write(outputBuf)
+		return
 	}
 
 	movieList, movieErr := t.recommendationUseCase.GetRecommendedMovieList(userID)
