@@ -14,7 +14,7 @@ import (
 
 func Start() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		configs.Host, configs.Port, configs.User, configs.Password, configs.DBName)
+		configs.Host, configs.Port, configs.User, configs.Password, "BackendCinemaInterfaceProfile")
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil{
 		log.Fatalln("PROFILE SERVICE: Cannot create conn to postgresql")

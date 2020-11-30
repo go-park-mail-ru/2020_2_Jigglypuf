@@ -1,28 +1,8 @@
 SET timezone ='+3';
-CREATE DATABASE BackendCinemaInterfaceUser;
-/* users table */
-CREATE TABLE if not exists users
-(
-    ID serial NOT NULL PRIMARY KEY,
-    Login VARCHAR(32) NOT NULL UNIQUE ,
-    Password VARCHAR(64) NOT NULL
-);
-
-/* profile table */
-
-CREATE DATABASE BackendCinemaInterfaceProfile;
-CREATE TABLE if not exists profile
-(
-    user_id integer NOT NULL PRIMARY KEY,
-    ProfileName VARCHAR(32),
-    ProfileSurname VARCHAR(32),
-    AvatarPath VARCHAR(64)
-);
-
 CREATE DATABASE BackendCinemaInterface;
 
-/* cinema table */
 
+/* cinema table */
 CREATE TABLE if not exists cinema
 (
     ID serial NOT NULL PRIMARY KEY,

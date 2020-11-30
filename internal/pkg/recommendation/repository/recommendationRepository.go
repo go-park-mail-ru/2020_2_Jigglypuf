@@ -93,7 +93,7 @@ func (t *RecommendationSystemRepository) GetPopularMovies() (*[]models.Movie, er
 		"join genre v3 on (v3.id = v2.genre_id) " +
 		"join movie_actors v4 on (v4.movie_id = v1.id) " +
 		"join actor v5 on (v5.id = v4.actor_id) " +
-		"GROUP BY v1.ID ORDER,v1.Rating_count BY v1.Rating_count DESC"
+		"GROUP BY v1.ID,v1.Rating_count ORDER BY v1.Rating_count DESC"
 
 	rows, err := t.DBConn.Query(SQL)
 	if err != nil || rows == nil || rows.Err() != nil {
@@ -102,8 +102,8 @@ func (t *RecommendationSystemRepository) GetPopularMovies() (*[]models.Movie, er
 		return nil, models.ErrFooInternalDBErr
 	}
 	resultMovieList := make([]models.Movie, 0)
-	movieModel := new(models.Movie)
 	for rows.Next() {
+		movieModel := new(models.Movie)
 		ScanErr := rows.Scan(&movieModel.ID, &movieModel.Name, &movieModel.Description,
 			&movieModel.GenreList, &movieModel.Duration,
 			&movieModel.Producer, &movieModel.Country, &movieModel.ReleaseYear,
