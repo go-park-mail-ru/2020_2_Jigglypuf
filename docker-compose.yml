@@ -16,13 +16,6 @@ services:
    - 3301:3301
   volumes:
    - /home/ubuntu/data/tarantool:/var/lib/tarantool
- app:
-  image: felixgreen/cinema_interfaceservice_image
-  restart: on-failure
-  ports:
-   - 8080:8080
-  volumes:
-   - /home/ubuntu/media:/media
  postgresql:
   image: postgres
   ports:
@@ -36,3 +29,24 @@ services:
    - /home/ubuntu/var/log/postgresql:/var/log/postgresql
    - /home/ubuntu/var/lib/postgresql:/var/lib/postgresql
    - /home/ubuntu/var/lib/postgresql/data:/var/lib/postgresql/data/:rw
+ app:
+  image: felixgreen/cinema_interfaceservice_image
+  restart: on-failure
+  ports:
+   - 8080:8080
+  volumes:
+   - /home/ubuntu/media:/media
+ auth:
+  image: felixgreen/cinema-auth-service
+  restart: on-failure
+  ports:
+   - 8081:8081
+  volumes:
+   - /home/ubuntu/media:/media
+ profile:
+  image: felixgreen/cinema-profile-service
+  restart: on-failure
+  ports:
+   - 8082:8082
+  volumes:
+   - /home/ubuntu/media:/media
