@@ -14,10 +14,10 @@ import (
 
 func Start() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		configs.Host, configs.Port, configs.User, configs.Password, "BackendCinemaInterfaceProfile")
+		configs.Host, configs.Port, "profile", "123", "profiledb")
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil{
-		log.Fatalln("PROFILE SERVICE: Cannot create conn to postgresql")
+		log.Fatalln("PROFILE SERVICE: Cannot create conn to postgresql", psqlInfo)
 	}
 	serv := grpc.NewServer()
 	profileService.RegisterProfileServiceServer(serv, manager.NewProfileServiceManager(db))

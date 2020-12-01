@@ -1,6 +1,4 @@
 SET timezone ='+3';
-CREATE DATABASE BackendCinemaInterface;
-
 
 /* cinema table */
 CREATE TABLE if not exists cinema

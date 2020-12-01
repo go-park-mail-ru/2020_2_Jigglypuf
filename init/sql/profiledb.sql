@@ -1,5 +1,4 @@
 SET timezone ='+3';
-CREATE DATABASE BackendCinemaInterfaceProfile;
 
 /* profile table */
 

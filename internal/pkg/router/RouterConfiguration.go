@@ -2,6 +2,8 @@ package router
 
 import (
 	"database/sql"
+	"fmt"
+	_ "github.com/go-park-mail-ru/2020_2_Jigglypuf/docs"
 	cinemaService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/cinemaserver"
 	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/cookieserver"
 	hallService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/hallserver"
@@ -9,17 +11,16 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/recserver"
 	scheduleService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/scheduleserver"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/ticketservice"
-	authConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/configs"
 	authDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/delivery"
 	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cors"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/csrf"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/logger"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
-	profileConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
 	profileDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/delivery"
 	profileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session/middleware"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/utils"
 	"github.com/gorilla/mux"
 	"github.com/julienschmidt/httprouter"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -31,16 +32,16 @@ import (
 )
 
 type RouterStruct struct {
-	cinemaService         *cinemaService.CinemaService
-	movieService          *movieService.MovieService
-	cookieService         *cookieService.CookieService
-	scheduleService       *scheduleService.ScheduleService
-	ticketService         *ticketservice.TicketService
-	hallService           *hallService.HallService
-	csrfMiddleware        *csrf.HashCSRFToken
-	authServiceClient     *authDelivery.UserHandler
-	profileServiceClient  *profileDelivery.ProfileHandler
-	recommendationService *recserver.RecommendationService
+	CinemaService         *cinemaService.CinemaService
+	MovieService          *movieService.MovieService
+	CookieService         *cookieService.CookieService
+	ScheduleService       *scheduleService.ScheduleService
+	TicketService         *ticketservice.TicketService
+	HallService           *hallService.HallService
+	CsrfMiddleware        *csrf.HashCSRFToken
+	AuthServiceClient     *authDelivery.UserHandler
+	ProfileServiceClient  *profileDelivery.ProfileHandler
+	RecommendationService *recserver.RecommendationService
 }
 
 func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnection *sql.DB, authClient authService.AuthenticationServiceClient, profileClient profileService.ProfileServiceClient) (*RouterStruct, error) {
@@ -75,25 +76,25 @@ func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnectio
 	authHandler := authDelivery.NewUserHandler(authClient)
 	profileHandler := profileDelivery.NewProfileHandler(profileClient)
 	return &RouterStruct{
-		authServiceClient:     authHandler,
-		profileServiceClient:  profileHandler,
-		cinemaService:         newCinemaService,
-		movieService:          newMovieService,
-		cookieService:         NewCookieService,
-		scheduleService:       newScheduleService,
-		ticketService:         newTicketService,
-		hallService:           newHallService,
-		csrfMiddleware:        newHashCSRFMiddleware,
-		recommendationService: recommendationService,
+		AuthServiceClient:     authHandler,
+		ProfileServiceClient:  profileHandler,
+		CinemaService:         newCinemaService,
+		MovieService:          newMovieService,
+		CookieService:         NewCookieService,
+		ScheduleService:       newScheduleService,
+		TicketService:         newTicketService,
+		HallService:           newHallService,
+		CsrfMiddleware:        newHashCSRFMiddleware,
+		RecommendationService: recommendationService,
 	}, nil
 }
 
 func configureAuthRouter(authHandler *authDelivery.UserHandler) *httprouter.Router {
 	authAPIHandler := httprouter.New()
 
-	authAPIHandler.POST(authConfig.URLPattern+"register/", authHandler.RegisterHandler)
-	authAPIHandler.POST(authConfig.URLPattern+"login/", authHandler.AuthHandler)
-	authAPIHandler.POST(authConfig.URLPattern+"logout/", authHandler.SignOutHandler)
+	authAPIHandler.POST(utils.AuthURLPattern+"register/", authHandler.RegisterHandler)
+	authAPIHandler.POST(utils.AuthURLPattern+"login/", authHandler.AuthHandler)
+	authAPIHandler.POST(utils.AuthURLPattern+"logout/", authHandler.SignOutHandler)
 
 	return authAPIHandler
 }
@@ -101,8 +102,8 @@ func configureAuthRouter(authHandler *authDelivery.UserHandler) *httprouter.Rout
 func configureProfileRouter(handler *profileDelivery.ProfileHandler) *httprouter.Router {
 	router := httprouter.New()
 
-	router.GET(profileConfig.URLPattern, handler.GetProfile)
-	router.PUT(profileConfig.URLPattern, handler.UpdateProfile)
+	router.GET(utils.ProfileURLPattern, handler.GetProfile)
+	router.PUT(utils.ProfileURLPattern, handler.UpdateProfile)
 
 	return router
 }
@@ -110,24 +111,23 @@ func configureProfileRouter(handler *profileDelivery.ProfileHandler) *httprouter
 
 func ConfigureRouter(application *RouterStruct) http.Handler {
 	handler := mux.NewRouter()
-	handler = handler.PathPrefix("/api").Subrouter()
+	fmt.Println(application.MovieService.MovieRouter)
+	handler.Handle(utils.MovieURLPattern, application.MovieService.MovieRouter)
+	handler.Handle(utils.CinemaURLPattern, application.CinemaService.CinemaRouter)
+	handler.Handle(utils.AuthURLPattern, configureAuthRouter(application.AuthServiceClient))
+	handler.Handle(utils.ProfileURLPattern, configureProfileRouter(application.ProfileServiceClient))
+	handler.Handle(utils.ScheduleURLPattern, application.ScheduleService.Router)
+	handler.Handle(utils.HallURLPattern, application.HallService.Router)
+	handler.Handle(utils.TicketURLPattern, application.TicketService.Router)
+	handler.Handle(utils.RecommendationsURLPattern, application.RecommendationService.RecommendationRouter)
+	handler.HandleFunc(utils.CSRFURLPattern, application.CsrfMiddleware.GenerateCSRFToken)
 
-	handler.Handle(MovieURLPattern, application.movieService.MovieRouter)
-	handler.Handle(CinemaURLPattern, application.cinemaService.CinemaRouter)
-	handler.Handle(AuthURLPattern, configureAuthRouter(application.authServiceClient))
-	handler.Handle(ProfileURLPattern, configureProfileRouter(application.profileServiceClient))
-	handler.Handle(ScheduleURLPattern, application.scheduleService.Router)
-	handler.Handle(HallURLPattern, application.hallService.Router)
-	handler.Handle(TicketURLPattern, application.ticketService.Router)
-	handler.Handle(RecommendationsURLPattern, application.recommendationService.RecommendationRouter)
-	handler.HandleFunc(CSRFURLPattern, application.csrfMiddleware.GenerateCSRFToken)
-
-	handler.HandleFunc(MediaURLPattern, func(w http.ResponseWriter, r *http.Request) {
+	handler.HandleFunc(utils.MediaURLPattern, func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, r.RequestURI, http.StatusMovedPermanently)
 	})
-	handler.HandleFunc(DocsURLPattern, httpSwagger.WrapHandler)
-	middlewareHandler := application.csrfMiddleware.CSRFMiddleware(handler)
-	middlewareHandler = middleware.CookieMiddleware(middlewareHandler, application.cookieService.CookieDelivery)
+	handler.HandleFunc(utils.DocsURLPattern, httpSwagger.WrapHandler)
+	middlewareHandler := application.CsrfMiddleware.CSRFMiddleware(handler)
+	middlewareHandler = middleware.CookieMiddleware(middlewareHandler, application.CookieService.CookieDelivery)
 	middlewareHandler = cors.MiddlewareCORS(middlewareHandler)
 	middlewareHandler = logger.AccessLogMiddleware(middlewareHandler)
 	return middlewareHandler
