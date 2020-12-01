@@ -40,13 +40,13 @@ services:
   image: felixgreen/cinema-auth-service
   restart: on-failure
   ports:
-   - 8081:8081
+   - 8082:8082
   volumes:
    - /home/ubuntu/media:/media
  profile:
   image: felixgreen/cinema-profile-service
   restart: on-failure
   ports:
-   - 8082:8082
+   - 8081:8081
   volumes:
    - /home/ubuntu/media:/media
