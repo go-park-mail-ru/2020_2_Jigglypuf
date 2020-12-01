@@ -39,7 +39,7 @@ func AccessLogMiddleware(next http.Handler) http.Handler {
 				status = handlerStatus.(string)
 			}
 		}
-
+		log.Println(r.URL.Path,handler, r.Method, status)
 		timer := prometheus.NewTimer(prometheus.ObserverFunc(func(v float64) {
 			URLResponseLatency.WithLabelValues(r.URL.Path,handler, r.Method, status).Observe(v)
 		}))
