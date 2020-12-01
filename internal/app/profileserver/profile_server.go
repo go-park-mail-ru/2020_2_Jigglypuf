@@ -21,7 +21,7 @@ func Start() {
 	}
 	serv := grpc.NewServer()
 	profileService.RegisterProfileServiceServer(serv, manager.NewProfileServiceManager(db))
-	lis, err := net.Listen("tcp","127.0.0.1:8081")
+	lis, err := net.Listen("tcp","profile:8081")
 	if err != nil{
 		log.Fatalln("PROFILE SERVICE: Cannot create net params")
 	}
