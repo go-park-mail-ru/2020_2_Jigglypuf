@@ -57,7 +57,7 @@ services:
   ports:
   - 9090:9090
   volumes:
-  - ./promconfig.yml:/etc/promconfig/promconfig.yml
+   - ./prometheus.yml:/etc/prometheus/prometheus.yml
  grafana:
   image: grafana/grafana
   restart: on-failure
