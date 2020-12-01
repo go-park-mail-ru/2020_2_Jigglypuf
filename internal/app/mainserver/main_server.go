@@ -25,8 +25,8 @@ func configureServer(port string, funcHandler http.Handler) *http.Server {
 }
 
 func startDBWork() (*sql.DB, *tarantool.Connection, error) {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		configs.Host, configs.Port, "main", "123", "interfacedb")
+	psqlInfo := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
+		"main", "123",configs.Host, configs.Port, "interfacedb")
 
 	PostgreSQLConnection, DBErr := sql.Open("postgres", psqlInfo)
 	if DBErr != nil {

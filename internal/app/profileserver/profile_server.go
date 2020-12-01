@@ -13,8 +13,8 @@ import (
 
 
 func Start() {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		configs.Host, configs.Port, "profile", "123", "profiledb")
+	psqlInfo := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
+		"profile", "123",configs.Host, configs.Port, "interfacedb")
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil{
 		log.Fatalln("PROFILE SERVICE: Cannot create conn to postgresql", psqlInfo)
