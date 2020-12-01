@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/configs"
+	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/manager"
 	profileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/proto/codegen"
 	"google.golang.org/grpc"
@@ -12,7 +13,7 @@ import (
 )
 
 
-func Start() {
+func Start(auth authService.AuthenticationServiceClient) {
 	psqlInfo := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
 		"profile", "123",configs.Host, configs.Port, "profiledb")
 	db, err := sql.Open("postgres", psqlInfo)
@@ -20,7 +21,7 @@ func Start() {
 		log.Fatalln("PROFILE SERVICE: Cannot create conn to postgresql", psqlInfo)
 	}
 	serv := grpc.NewServer()
-	profileService.RegisterProfileServiceServer(serv, manager.NewProfileServiceManager(db))
+	profileService.RegisterProfileServiceServer(serv, manager.NewProfileServiceManager(db,auth))
 	lis, err := net.Listen("tcp","profile:8081")
 	if err != nil{
 		log.Fatalln("PROFILE SERVICE: Cannot create net params")

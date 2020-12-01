@@ -4,8 +4,13 @@ option go_package = ".;codegen";
 
 // data models
 
+message UserProfile {
+  uint64 userID = 1;
+  string Login = 2;
+}
+
 message Profile {
-  uint64 UserID = 1;
+  UserProfile UserCredentials = 1;
   string Name = 2;
   string Surname = 3;
   string AvatarPath = 4;

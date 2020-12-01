@@ -145,7 +145,9 @@ func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request, p
 	}
 	_, err := t.profile.UpdateProfile(r.Context(), &ProfileService.UpdateProfileRequest{
 		Profile: &ProfileService.Profile{
-			UserID: profileUserID.(uint64),
+			UserCredentials: &ProfileService.UserProfile{
+				UserID: profileUserID.(uint64),
+			},
 			Name: r.FormValue(profile.NameFormName),
 			Surname: r.FormValue(profile.SurnameFormName),
 			AvatarPath: avatarPath,

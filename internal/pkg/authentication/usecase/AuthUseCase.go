@@ -73,7 +73,9 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (uint64, error) {
 		Profile: &profileService.Profile{
 			Name: input.Name,
 			Surname: input.Surname,
-			UserID: user.ID,
+			UserCredentials: &profileService.UserProfile{
+				UserID: user.ID,
+			},
 			AvatarPath: profile.NoAvatarImage,
 		},
 	})
