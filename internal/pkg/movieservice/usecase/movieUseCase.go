@@ -14,10 +14,10 @@ type MovieUseCase struct {
 	AuthServiceClient authService.AuthenticationServiceClient
 }
 
-func NewMovieUseCase(rep movieservice.MovieRepository, AuthServiceClient authService.AuthenticationServiceClient) *MovieUseCase {
+func NewMovieUseCase(rep movieservice.MovieRepository, authServiceClient authService.AuthenticationServiceClient) *MovieUseCase {
 	return &MovieUseCase{
 		DBConn:            rep,
-		AuthServiceClient: AuthServiceClient,
+		AuthServiceClient: authServiceClient,
 	}
 }
 
@@ -52,13 +52,13 @@ func (t *MovieUseCase) UpdateMovie(movie *models.Movie) error {
 }
 
 func (t *MovieUseCase) RateMovie(userID uint64, id uint64, rating int64) error {
-	reqUser, userErr := t.AuthServiceClient.GetUserByID(context.Background(),&authService.GetUserByIDRequest{UserID: userID})
+	reqUser, userErr := t.AuthServiceClient.GetUserByID(context.Background(), &authService.GetUserByIDRequest{UserID: userID})
 	if userErr != nil {
 		return models.ErrFooNoAuthorization
 	}
 	personalRatingErr := t.DBConn.RateMovie(&models.User{
-		ID: reqUser.User.ID,
-		Login: reqUser.User.Login,
+		ID:       reqUser.User.ID,
+		Login:    reqUser.User.Login,
 		Password: reqUser.User.Password,
 	}, id, rating)
 	if personalRatingErr != nil {

@@ -69,9 +69,9 @@ func (t *UserUseCase) SignUp(input *models.RegistrationInput) (uint64, error) {
 	}
 
 	// creating profile
-	_, profileErr := t.profileService.CreateProfile(context.Background(),&profileService.CreateProfileRequest{
+	_, profileErr := t.profileService.CreateProfile(context.Background(), &profileService.CreateProfileRequest{
 		Profile: &profileService.Profile{
-			Name: input.Name,
+			Name:    input.Name,
 			Surname: input.Surname,
 			UserCredentials: &profileService.UserProfile{
 				UserID: user.ID,
@@ -108,8 +108,7 @@ func (t *UserUseCase) SignIn(input *models.AuthInput) (uint64, error) {
 	return user.ID, nil
 }
 
-
-func (t *UserUseCase) GetUserByID(userID uint64) (*models.User, error){
+func (t *UserUseCase) GetUserByID(userID uint64) (*models.User, error) {
 	// TODO tracing
 	return t.repository.GetUserByID(userID)
 }

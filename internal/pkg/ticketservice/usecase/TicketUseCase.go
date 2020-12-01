@@ -33,7 +33,7 @@ func NewTicketUseCase(repository ticketservice.Repository, authRepository authSe
 }
 
 func (t *TicketUseCase) GetUserTickets(userID uint64) (*[]models.Ticket, error) {
-	user, getUserErr := t.AuthServiceClient.GetUserByID(context.Background(),&authService.GetUserByIDRequest{UserID: userID})
+	user, getUserErr := t.AuthServiceClient.GetUserByID(context.Background(), &authService.GetUserByIDRequest{UserID: userID})
 	if getUserErr != nil {
 		return nil, getUserErr
 	}
@@ -45,7 +45,7 @@ func (t *TicketUseCase) GetSimpleTicket(userID uint64, ticketID string) (*models
 	if castErr != nil {
 		return nil, castErr
 	}
-	user, getUserErr := t.AuthServiceClient.GetUserByID(context.Background(),&authService.GetUserByIDRequest{UserID: userID})
+	user, getUserErr := t.AuthServiceClient.GetUserByID(context.Background(), &authService.GetUserByIDRequest{UserID: userID})
 	if getUserErr != nil {
 		return nil, getUserErr
 	}
@@ -68,7 +68,7 @@ func (t *TicketUseCase) BuyTicket(ticket *models.TicketInput, userID interface{}
 		if _, ok := userID.(uint64); !ok {
 			return models.ErrFooNoAuthorization
 		}
-		user, getUserErr := t.AuthServiceClient.GetUserByID(context.Background(),&authService.GetUserByIDRequest{UserID: userID.(uint64)})
+		user, getUserErr := t.AuthServiceClient.GetUserByID(context.Background(), &authService.GetUserByIDRequest{UserID: userID.(uint64)})
 		if getUserErr != nil {
 			return models.ErrFooNoAuthorization
 		}

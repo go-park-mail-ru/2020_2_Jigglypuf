@@ -44,7 +44,7 @@ func TestGetProfileSuccess(t *testing.T) {
 	ctx := testReq.Context()
 	ctx = context.WithValue(ctx, cookieService.ContextIsAuthName, true)
 	ctx = context.WithValue(ctx, cookieService.ContextUserIDName, uint64(0))
-	testingStruct.useCaseMock.EXPECT().GetProfileByID(gomock.Any(),gomock.Any()).Return(&profileService.Profile{}, nil)
+	testingStruct.useCaseMock.EXPECT().GetProfileByID(gomock.Any(), gomock.Any()).Return(&profileService.Profile{}, nil)
 
 	testRec := httptest.NewRecorder()
 
@@ -59,7 +59,7 @@ func TestGetProfileUCError(t *testing.T) {
 	ctx := testReq.Context()
 	ctx = context.WithValue(ctx, cookieService.ContextIsAuthName, true)
 	ctx = context.WithValue(ctx, cookieService.ContextUserIDName, uint64(0))
-	testingStruct.useCaseMock.EXPECT().GetProfileByID(gomock.Any(),gomock.Any()).Return(nil, errors.New("someerror"))
+	testingStruct.useCaseMock.EXPECT().GetProfileByID(gomock.Any(), gomock.Any()).Return(nil, errors.New("someerror"))
 
 	testRec := httptest.NewRecorder()
 
@@ -133,7 +133,7 @@ func TestUpdateProfileSuccess(t *testing.T) {
 	ctx = context.WithValue(ctx, cookieService.ContextIsAuthName, true)
 	ctx = context.WithValue(ctx, cookieService.ContextUserIDName, uint64(1))
 
-	testingStruct.useCaseMock.EXPECT().UpdateProfile(gomock.Any(), gomock.Any()).Return(nil,nil)
+	testingStruct.useCaseMock.EXPECT().UpdateProfile(gomock.Any(), gomock.Any()).Return(nil, nil)
 	testingStruct.handler.UpdateProfile(testRec, testReq.WithContext(ctx), httprouter.Params{})
 	assert.Equal(t, testRec.Code, http.StatusOK)
 	teardown()
@@ -148,7 +148,7 @@ func TestUpdateProfileUCFail(t *testing.T) {
 	ctx = context.WithValue(ctx, cookieService.ContextIsAuthName, true)
 	ctx = context.WithValue(ctx, cookieService.ContextUserIDName, uint64(1))
 
-	testingStruct.useCaseMock.EXPECT().UpdateProfile(gomock.Any(), gomock.Any()).Return(nil,errors.New("some error"))
+	testingStruct.useCaseMock.EXPECT().UpdateProfile(gomock.Any(), gomock.Any()).Return(nil, errors.New("some error"))
 	testingStruct.handler.UpdateProfile(testRec, testReq.WithContext(ctx), httprouter.Params{})
 	assert.Equal(t, testRec.Code, http.StatusBadRequest)
 	teardown()
@@ -170,7 +170,7 @@ func TestUpdateProfileSaveAvatarError(t *testing.T) {
 	ctx = context.WithValue(ctx, cookieService.ContextIsAuthName, true)
 	ctx = context.WithValue(ctx, cookieService.ContextUserIDName, uint64(1))
 
-	testingStruct.useCaseMock.EXPECT().UpdateProfile(gomock.Any(), gomock.Any()).Return(nil,nil)
+	testingStruct.useCaseMock.EXPECT().UpdateProfile(gomock.Any(), gomock.Any()).Return(nil, nil)
 	testingStruct.handler.UpdateProfile(testRec, testReq.WithContext(ctx), httprouter.Params{})
 	assert.Equal(t, testRec.Code, http.StatusOK)
 	teardown()

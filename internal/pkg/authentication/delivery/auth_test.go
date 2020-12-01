@@ -52,7 +52,7 @@ func TestSignUpSuccessCase(t *testing.T) {
 	testReq := httptest.NewRequest(http.MethodPost, "/auth/", strings.NewReader(string(RegistrationBody)))
 	testRecorder := httptest.NewRecorder()
 
-	testingStruct.UseCaseMock.EXPECT().SignUp(gomock.Any(),gomock.Any()).Return(&authService.Response{UserID: uint64(1)}, nil)
+	testingStruct.UseCaseMock.EXPECT().SignUp(gomock.Any(), gomock.Any()).Return(&authService.Response{UserID: uint64(1)}, nil)
 	testingStruct.Handler.RegisterHandler(testRecorder, testReq, httprouter.Params{})
 	if testRecorder.Code != http.StatusOK {
 		t.Fatalf("TEST: Success sign up "+
@@ -98,7 +98,7 @@ func TestSignUpUseCaseErrorHandling(t *testing.T) {
 
 	TestRequest := httptest.NewRequest(http.MethodPost, "/signup/", strings.NewReader(string(RegistrationBody)))
 	TestResponseWriter := httptest.NewRecorder()
-	testingStruct.UseCaseMock.EXPECT().SignUp(gomock.Any(),gomock.Any()).Return(nil, errors.New("test err"))
+	testingStruct.UseCaseMock.EXPECT().SignUp(gomock.Any(), gomock.Any()).Return(nil, errors.New("test err"))
 	testingStruct.Handler.RegisterHandler(TestResponseWriter, TestRequest, httprouter.Params{})
 	if TestResponseWriter.Code != http.StatusBadRequest {
 		t.Fatalf("TEST: invalid body error handling "+
@@ -121,7 +121,7 @@ func TestSignInSuccessCase(t *testing.T) {
 	testReq := httptest.NewRequest(http.MethodPost, "/login/", strings.NewReader(string(authenticationBody)))
 	testRecorder := httptest.NewRecorder()
 
-	testingStruct.UseCaseMock.EXPECT().SignIn(gomock.Any(),gomock.Any()).Return(&authService.Response{UserID: uint64(1)}, nil)
+	testingStruct.UseCaseMock.EXPECT().SignIn(gomock.Any(), gomock.Any()).Return(&authService.Response{UserID: uint64(1)}, nil)
 	testingStruct.Handler.AuthHandler(testRecorder, testReq, httprouter.Params{})
 	if testRecorder.Code != http.StatusOK {
 		t.Fatalf("TEST: Success log in test case "+
@@ -172,7 +172,7 @@ func TestLogInUCErrorHandling(t *testing.T) {
 	testReq := httptest.NewRequest(http.MethodPost, "/login/", strings.NewReader(string(authenticationBody)))
 	testRecorder := httptest.NewRecorder()
 
-	testingStruct.UseCaseMock.EXPECT().SignIn(gomock.Any(),gomock.Any()).Return(nil, errors.New("test error"))
+	testingStruct.UseCaseMock.EXPECT().SignIn(gomock.Any(), gomock.Any()).Return(nil, errors.New("test error"))
 	testingStruct.Handler.AuthHandler(testRecorder, testReq, httprouter.Params{})
 	if testRecorder.Code != http.StatusBadRequest {
 		t.Fatalf("TEST: Use case error log in test case "+
@@ -189,12 +189,12 @@ func TestLogOutSuccessCase(t *testing.T) {
 	ctx = context.WithValue(ctx, session.ContextIsAuthName, true)
 	testRecorder := httptest.NewRecorder()
 	cookieValue := http.Cookie{
-		Name: "session_id",
+		Name:  "session_id",
 		Value: "New_value",
 	}
 
 	testReq.AddCookie(&cookieValue)
-	//testingStruct.UseCaseMock.EXPECT().S(gomock.Any()).Return(&cookieValue, nil)
+	// testingStruct.UseCaseMock.EXPECT().S(gomock.Any()).Return(&cookieValue, nil)
 	testingStruct.Handler.SignOutHandler(testRecorder, testReq.WithContext(ctx), httprouter.Params{})
 	if testRecorder.Code != http.StatusOK {
 		t.Fatalf("TEST: Success log out test case "+
@@ -249,7 +249,7 @@ func TestLogOutUCErrorHandling(t *testing.T) {
 	ctx := testReq.Context()
 	ctx = context.WithValue(ctx, session.ContextIsAuthName, true)
 
-	//testingStruct.UseCaseMock.EXPECT().SignOut(gomock.Any()).Return(nil, errors.New("some error"))
+	// testingStruct.UseCaseMock.EXPECT().SignOut(gomock.Any()).Return(nil, errors.New("some error"))
 	testingStruct.Handler.SignOutHandler(testRec, testReq.WithContext(ctx), httprouter.Params{})
 
 	if testRec.Code != http.StatusUnauthorized {

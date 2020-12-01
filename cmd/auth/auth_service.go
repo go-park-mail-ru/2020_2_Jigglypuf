@@ -8,10 +8,9 @@ import (
 	"log"
 )
 
-
-func main(){
+func main() {
 	profileService, err := grpc.Dial("profile:8081", grpc.WithInsecure())
-	if err != nil{
+	if err != nil {
 		log.Fatalln("AUTH SERVICE INIT: no connection with profile service")
 	}
 	profileClient := profile.NewProfileServiceClient(profileService)

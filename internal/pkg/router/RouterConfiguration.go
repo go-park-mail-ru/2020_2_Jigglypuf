@@ -2,7 +2,6 @@ package router
 
 import (
 	"database/sql"
-	_ "github.com/go-park-mail-ru/2020_2_Jigglypuf/docs"
 	cinemaService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/cinemaserver"
 	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/cookieserver"
 	hallService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/hallserver"
@@ -29,7 +28,7 @@ import (
 	"time"
 )
 
-type RouterStruct struct {
+type RoutingConfig struct {
 	CinemaService         *cinemaService.CinemaService
 	MovieService          *movieService.MovieService
 	CookieService         *cookieService.CookieService
@@ -42,7 +41,7 @@ type RouterStruct struct {
 	RecommendationService *recserver.RecommendationService
 }
 
-func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnection *sql.DB, authClient authService.AuthenticationServiceClient, profileClient profileService.ProfileServiceClient) (*RouterStruct, error) {
+func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnection *sql.DB, authClient authService.AuthenticationServiceClient, profileClient profileService.ProfileServiceClient) (*RoutingConfig, error) {
 	mutex := sync.RWMutex{}
 	NewCookieService, cookieErr := cookieService.Start(cookieDBConnection)
 	if cookieErr != nil {
@@ -73,7 +72,7 @@ func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnectio
 
 	authHandler := authDelivery.NewUserHandler(authClient)
 	profileHandler := profileDelivery.NewProfileHandler(profileClient)
-	return &RouterStruct{
+	return &RoutingConfig{
 		AuthServiceClient:     authHandler,
 		ProfileServiceClient:  profileHandler,
 		CinemaService:         newCinemaService,
@@ -106,8 +105,7 @@ func configureProfileRouter(handler *profileDelivery.ProfileHandler) *httprouter
 	return router
 }
 
-
-func ConfigureRouter(application *RouterStruct) http.Handler {
+func ConfigureRouter(application *RoutingConfig) http.Handler {
 	handler := http.NewServeMux()
 
 	handler.Handle(utils.MovieURLPattern, application.MovieService.MovieRouter)

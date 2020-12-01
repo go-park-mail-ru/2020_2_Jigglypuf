@@ -12,28 +12,27 @@ import (
 	"net"
 )
 
-
 func Start(profileService profileService.ProfileServiceClient, salt string) {
 	psqlInfo := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
-		 "auth", "123",configs.Host, configs.Port, "authdb")
+		"auth", "123", configs.Host, configs.Port, "authdb")
 	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil{
+	if err != nil {
 		log.Fatalln("AUTH SERVICE: Cannot create conn to postgresql")
 	}
 	serv := grpc.NewServer()
-	authService.RegisterAuthenticationServiceServer(serv,manager.NewAuthServiceManager(db, profileService, salt))
+	authService.RegisterAuthenticationServiceServer(serv, manager.NewAuthServiceManager(db, profileService, salt))
 	lis, err := net.Listen("tcp", "auth:8082")
-	if err != nil{
+	if err != nil {
 		log.Fatalln("AUTH SERVICE: Cannot create net params")
 	}
 
 	err = serv.Serve(lis)
-	if err != nil{
+	if err != nil {
 		log.Fatalln("AUTH SERVICE: server serving troubles")
 	}
 
-	defer func(){
-		if db != nil{
+	defer func() {
+		if db != nil {
 			_ = db.Close()
 		}
 	}()

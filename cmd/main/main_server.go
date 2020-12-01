@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "github.com/go-park-mail-ru/2020_2_Jigglypuf/docs"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/mainserver"
 	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/proto/codegen"
 	profileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/proto/codegen"
@@ -16,7 +17,6 @@ import (
 // @host https://cinemascope.space
 // @BasePath /
 func main() {
-
 	profileServiceConn, profileServiceErr := grpc.Dial("profile:8081", grpc.WithInsecure())
 	if profileServiceErr != nil {
 		log.Fatalln("MAIN SERVICE INIT: no profile service conn")

@@ -72,7 +72,7 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request, params
 
 	userID, err := t.authService.SignIn(r.Context(), &authService.SignInRequest{
 		Data: &authService.SignInData{
-			Login: authInput.Login,
+			Login:    authInput.Login,
 			Password: authInput.Password,
 		},
 	})
@@ -115,10 +115,10 @@ func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request, pa
 
 	userID, err := t.authService.SignUp(r.Context(), &authService.SignUpRequest{
 		Data: &authService.SignUpData{
-			Login: authInput.Login,
+			Login:    authInput.Login,
 			Password: authInput.Password,
-			Name: authInput.Name,
-			Surname: authInput.Surname,
+			Name:     authInput.Name,
+			Surname:  authInput.Surname,
 		},
 	})
 	if err != nil {

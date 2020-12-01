@@ -26,10 +26,9 @@ func configureServer(port string, funcHandler http.Handler) *http.Server {
 
 func startDBWork() (*sql.DB, *tarantool.Connection, error) {
 	psqlInfo := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
-		"main", "123",configs.Host, configs.Port, "interfacedb")
+		"main", "123", configs.Host, configs.Port, "interfacedb")
 
 	fmt.Println(psqlInfo)
-
 
 	PostgreSQLConnection, DBErr := sql.Open("postgres", psqlInfo)
 	if DBErr != nil {
@@ -49,11 +48,11 @@ func startDBWork() (*sql.DB, *tarantool.Connection, error) {
 
 func Start(authenticationServiceClient authService.AuthenticationServiceClient, profileServiceClient profileService.ProfileServiceClient) {
 	postgresConn, tarantoolConn, DBErr := startDBWork()
-	if DBErr != nil{
+	if DBErr != nil {
 		log.Fatalln("MAIN SERVER INIT: NO DB CONN")
 	}
 	application, err := router.ConfigureHandlers(tarantoolConn, postgresConn, authenticationServiceClient, profileServiceClient)
-	if err != nil{
+	if err != nil {
 		log.Fatalln("MAIN SERVER INIT: NO GRPC CONN")
 	}
 

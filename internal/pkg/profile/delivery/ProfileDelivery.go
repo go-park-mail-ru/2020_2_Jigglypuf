@@ -93,7 +93,7 @@ func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, para
 		return
 	}
 
-	requiredProfile, profileError := t.profile.GetProfileByID(r.Context(),&ProfileService.GetProfileByUserIDRequest{UserID: profileUserID.(uint64),})
+	requiredProfile, profileError := t.profile.GetProfileByID(r.Context(), &ProfileService.GetProfileByUserIDRequest{UserID: profileUserID.(uint64)})
 
 	if profileError != nil {
 		models.BadBodyHTTPResponse(&w, profileError)
@@ -148,8 +148,8 @@ func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request, p
 			UserCredentials: &ProfileService.UserProfile{
 				UserID: profileUserID.(uint64),
 			},
-			Name: r.FormValue(profile.NameFormName),
-			Surname: r.FormValue(profile.SurnameFormName),
+			Name:       r.FormValue(profile.NameFormName),
+			Surname:    r.FormValue(profile.SurnameFormName),
 			AvatarPath: avatarPath,
 		},
 	})

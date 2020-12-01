@@ -21,12 +21,12 @@ func NewAuthServiceManager(connection *sql.DB, profileService profileService.Pro
 	}
 }
 
-func (t *AuthServiceManager) SignIn(ctx context.Context, in *authService.SignInRequest) (*authService.Response, error){
+func (t *AuthServiceManager) SignIn(ctx context.Context, in *authService.SignInRequest) (*authService.Response, error) {
 	userID, err := t.useCase.SignIn(&models.AuthInput{
-		Login: in.Data.Login,
+		Login:    in.Data.Login,
 		Password: in.Data.Password,
 	})
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
@@ -35,15 +35,15 @@ func (t *AuthServiceManager) SignIn(ctx context.Context, in *authService.SignInR
 	}, nil
 }
 
-func (t *AuthServiceManager) SignUp(ctx context.Context, in *authService.SignUpRequest) (*authService.Response, error){
+func (t *AuthServiceManager) SignUp(ctx context.Context, in *authService.SignUpRequest) (*authService.Response, error) {
 	userID, err := t.useCase.SignUp(&models.RegistrationInput{
-		Login: in.Data.Login,
+		Login:    in.Data.Login,
 		Password: in.Data.Password,
-		Name: in.Data.Name,
-		Surname: in.Data.Surname,
+		Name:     in.Data.Name,
+		Surname:  in.Data.Surname,
 	})
 
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
@@ -52,16 +52,16 @@ func (t *AuthServiceManager) SignUp(ctx context.Context, in *authService.SignUpR
 	}, nil
 }
 
-func (t *AuthServiceManager) GetUserByID (ctx context.Context, in *authService.GetUserByIDRequest)(*authService.UserResponse, error){
+func (t *AuthServiceManager) GetUserByID(ctx context.Context, in *authService.GetUserByIDRequest) (*authService.UserResponse, error) {
 	user, err := t.useCase.GetUserByID(in.UserID)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
 	return &authService.UserResponse{
 		User: &authService.UserData{
-			ID: user.ID,
-			Login: user.Login,
+			ID:       user.ID,
+			Login:    user.Login,
 			Password: user.Password,
 		},
 	}, nil
