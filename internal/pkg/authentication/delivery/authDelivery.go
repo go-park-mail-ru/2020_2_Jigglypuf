@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/promconfig"
 	session "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/julienschmidt/httprouter"
 	"log"
@@ -54,6 +55,8 @@ func setContextCookie(r *http.Request, userID uint64) context.Context {
 // @Router /api/auth/login/ [post]
 func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(r,promconfig.AuthHandler,status)
 
 	if r.Method != http.MethodPost {
 		models.BadMethodHTTPResponse(&w)
@@ -80,6 +83,8 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request, params
 		models.BadBodyHTTPResponse(&w, err)
 		return
 	}
+
+	status = promconfig.StatusSuccess
 	*r = *r.WithContext(setContextCookie(r, userID.UserID))
 }
 
@@ -95,6 +100,8 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request, params
 // @Router /api/auth/register/ [post]
 func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(r,promconfig.RegisterHandler,status)
 
 	if r.Method != http.MethodPost {
 		log.Println("incorrect method")
@@ -126,6 +133,7 @@ func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request, pa
 		return
 	}
 
+	status = promconfig.StatusSuccess
 	*r = *r.WithContext(setContextCookie(r, userID.UserID))
 }
 
@@ -138,6 +146,9 @@ func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request, pa
 // @Failure 401 {object} models.ServerResponse
 // @Router /api/auth/logout/ [post]
 func (t *UserHandler) SignOutHandler(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(r,promconfig.SignOutHandler,status)
+
 	if r.Method != http.MethodPost {
 		models.BadMethodHTTPResponse(&w)
 		return
@@ -156,6 +167,7 @@ func (t *UserHandler) SignOutHandler(w http.ResponseWriter, r *http.Request, par
 
 	cookieValue.Expires = time.Now().Add(-time.Hour)
 
+	status = promconfig.StatusSuccess
 	ctx := r.Context()
 	ctx = context.WithValue(ctx, session.ContextCookieName, *cookieValue)
 	*r = *r.WithContext(ctx)

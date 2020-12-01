@@ -13,13 +13,14 @@ import (
 	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cors"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/csrf"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/logger"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/monitoring"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	profileDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/delivery"
 	profileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session/middleware"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/utils"
 	"github.com/julienschmidt/httprouter"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/tarantool/go-tarantool"
 	"log"
@@ -121,10 +122,13 @@ func ConfigureRouter(application *RoutingConfig) http.Handler {
 	handler.HandleFunc(utils.MediaURLPattern, func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, r.RequestURI, http.StatusMovedPermanently)
 	})
+
 	handler.HandleFunc(utils.DocsURLPattern, httpSwagger.WrapHandler)
+	handler.Handle("/metrics/", promhttp.Handler())
+
 	middlewareHandler := application.CsrfMiddleware.CSRFMiddleware(handler)
 	middlewareHandler = middleware.CookieMiddleware(middlewareHandler, application.CookieService.CookieDelivery)
 	middlewareHandler = cors.MiddlewareCORS(middlewareHandler)
-	middlewareHandler = logger.AccessLogMiddleware(middlewareHandler)
+	middlewareHandler = monitoring.AccessLogMiddleware(middlewareHandler)
 	return middlewareHandler
 }
