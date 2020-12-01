@@ -27,7 +27,7 @@ func (t *ProfileServiceManager) CreateProfile(ctx context.Context, in *ProfileSe
 		UserCredentials: &models.User{ID: in.Profile.UserID},
 	})
 	// TODO logger
-	return nil,err
+	return &ProfileService.Nil{},err
 }
 
 func (t *ProfileServiceManager) GetProfile (ctx context.Context, in *ProfileService.GetProfileRequest) (*ProfileService.Profile, error){
@@ -61,5 +61,5 @@ func (t *ProfileServiceManager) GetProfileByID(ctx context.Context, in *ProfileS
 func (t *ProfileServiceManager) UpdateProfile(ctx context.Context, in *ProfileService.UpdateProfileRequest) (*ProfileService.Nil, error){
 	err := t.useCase.UpdateProfile(in.Profile.UserID, in.Profile.Name, in.Profile.Surname, in.Profile.AvatarPath)
 	// TODO logger
-	return nil, err
+	return &ProfileService.Nil{}, err
 }
