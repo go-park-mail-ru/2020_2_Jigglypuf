@@ -29,7 +29,7 @@ func configureAPI(handler *delivery.TicketDelivery) *mux.Router {
 	handle.HandleFunc(utils.TicketURLPattern, handler.GetUserTickets).Methods("GET")
 	handle.HandleFunc(utils.TicketURLPattern+fmt.Sprintf("{%s:[0-9]+}/", ticketservice.TicketIDQuery),
 		handler.GetUsersSimpleTicket).Methods("GET")
-	handle.HandleFunc(utils.ScheduleURLPattern+fmt.Sprintf("{%s:[0-9]+}/", ticketservice.ScheduleIDName),
+	handle.HandleFunc(utils.TicketScheduleURLPattern+fmt.Sprintf("{%s:[0-9]+}/", ticketservice.ScheduleIDName),
 		handler.GetHallScheduleTickets).Methods("GET")
 
 	return handle

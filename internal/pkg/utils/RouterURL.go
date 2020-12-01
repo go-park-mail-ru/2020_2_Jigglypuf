@@ -6,6 +6,7 @@ const (
 	AuthURLPattern            = "/api/auth/"
 	ProfileURLPattern         = "/api/profile/"
 	ScheduleURLPattern        = "/api/schedule/"
+	TicketScheduleURLPattern  = "/api/ticket/schedule/"
 	HallURLPattern            = "/api/hall/"
 	TicketURLPattern          = "/api/ticket/"
 	RecommendationsURLPattern = "/api/recommendations/"
