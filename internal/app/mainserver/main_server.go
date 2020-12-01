@@ -28,6 +28,9 @@ func startDBWork() (*sql.DB, *tarantool.Connection, error) {
 	psqlInfo := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
 		"main", "123",configs.Host, configs.Port, "interfacedb")
 
+	fmt.Println(psqlInfo)
+
+
 	PostgreSQLConnection, DBErr := sql.Open("postgres", psqlInfo)
 	if DBErr != nil {
 		return nil, nil, errors.New("no postgresql connection")
