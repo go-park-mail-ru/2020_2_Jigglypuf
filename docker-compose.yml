@@ -31,21 +31,21 @@ services:
    - /home/ubuntu/var/lib/postgresql/data:/var/lib/postgresql/data/:rw
  app:
   image: felixgreen/cinema_interfaceservice_image
-  restart: on-failure
+  restart: always
   ports:
    - 8080:8080
   volumes:
    - /home/ubuntu/media:/media
  auth:
   image: felixgreen/cinema-auth-service
-  restart: on-failure
+  restart: always
   ports:
    - 8082:8082
   volumes:
    - /home/ubuntu/media:/media
  profile:
   image: felixgreen/cinema-profile-service
-  restart: on-failure
+  restart: always
   ports:
    - 8081:8081
   volumes:
