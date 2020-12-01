@@ -2,7 +2,6 @@ package router
 
 import (
 	"database/sql"
-	"fmt"
 	_ "github.com/go-park-mail-ru/2020_2_Jigglypuf/docs"
 	cinemaService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/cinemaserver"
 	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/cookieserver"
@@ -21,7 +20,6 @@ import (
 	profileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session/middleware"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/utils"
-	"github.com/gorilla/mux"
 	"github.com/julienschmidt/httprouter"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/tarantool/go-tarantool"
@@ -110,8 +108,8 @@ func configureProfileRouter(handler *profileDelivery.ProfileHandler) *httprouter
 
 
 func ConfigureRouter(application *RouterStruct) http.Handler {
-	handler := mux.NewRouter()
-	fmt.Println(application.MovieService.MovieRouter)
+	handler := http.NewServeMux()
+
 	handler.Handle(utils.MovieURLPattern, application.MovieService.MovieRouter)
 	handler.Handle(utils.CinemaURLPattern, application.CinemaService.CinemaRouter)
 	handler.Handle(utils.AuthURLPattern, configureAuthRouter(application.AuthServiceClient))
