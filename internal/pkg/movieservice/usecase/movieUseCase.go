@@ -1,7 +1,8 @@
 package usecase
 
 import (
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	"context"
+	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
@@ -9,14 +10,14 @@ import (
 )
 
 type MovieUseCase struct {
-	DBConn         movieservice.MovieRepository
-	UserRepository interfaces.AuthRepository
+	DBConn            movieservice.MovieRepository
+	AuthServiceClient authService.AuthenticationServiceClient
 }
 
-func NewMovieUseCase(rep movieservice.MovieRepository, userRepository interfaces.AuthRepository) *MovieUseCase {
+func NewMovieUseCase(rep movieservice.MovieRepository, authServiceClient authService.AuthenticationServiceClient) *MovieUseCase {
 	return &MovieUseCase{
-		DBConn:         rep,
-		UserRepository: userRepository,
+		DBConn:            rep,
+		AuthServiceClient: authServiceClient,
 	}
 }
 
@@ -51,11 +52,15 @@ func (t *MovieUseCase) UpdateMovie(movie *models.Movie) error {
 }
 
 func (t *MovieUseCase) RateMovie(userID uint64, id uint64, rating int64) error {
-	reqUser, userErr := t.UserRepository.GetUserByID(userID)
+	reqUser, userErr := t.AuthServiceClient.GetUserByID(context.Background(), &authService.GetUserByIDRequest{UserID: userID})
 	if userErr != nil {
 		return models.ErrFooNoAuthorization
 	}
-	personalRatingErr := t.DBConn.RateMovie(reqUser, id, rating)
+	personalRatingErr := t.DBConn.RateMovie(&models.User{
+		ID:       reqUser.User.ID,
+		Login:    reqUser.User.Login,
+		Password: reqUser.User.Password,
+	}, id, rating)
 	if personalRatingErr != nil {
 		return personalRatingErr
 	}

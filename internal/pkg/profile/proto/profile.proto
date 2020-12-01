@@ -1,0 +1,46 @@
+syntax = "proto3";
+package profile;
+option go_package = ".;codegen";
+
+// data models
+
+message UserProfile {
+  uint64 userID = 1;
+  string Login = 2;
+}
+
+message Profile {
+  UserProfile UserCredentials = 1;
+  string Name = 2;
+  string Surname = 3;
+  string AvatarPath = 4;
+}
+
+message Nil {}
+
+// requests
+
+message CreateProfileRequest {
+  Profile profile = 1;
+}
+
+message GetProfileRequest {
+  string login = 1;
+}
+
+message GetProfileByUserIDRequest {
+  uint64 UserID = 1;
+}
+
+message UpdateProfileRequest {
+  Profile profile = 1;
+}
+
+// profile service
+service profileService {
+  rpc CreateProfile (CreateProfileRequest) returns (Nil);
+  rpc GetProfile (GetProfileRequest) returns (Profile);
+  rpc GetProfileByID(GetProfileByUserIDRequest) returns (Profile);
+  rpc UpdateProfile(UpdateProfileRequest) returns (Nil);
+}
+

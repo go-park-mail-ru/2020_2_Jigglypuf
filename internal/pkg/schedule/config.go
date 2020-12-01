@@ -5,6 +5,6 @@ const (
 	ScheduleID             = "id"
 	DateQueryParamName     = "date"
 	CinemaIDQueryParamName = "cinema_id"
-	URLPattern             = "/api/schedule/"
+	URLPattern             = "/schedule/"
 	TimeStandard           = "2006-01-02"
 )

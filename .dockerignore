@@ -1,0 +1,4 @@
+.git
+.gitignore
+.travis.yml
+.golangci-lint.yml

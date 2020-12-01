@@ -1,26 +1,6 @@
-
 SET timezone ='+3';
-CREATE DATABASE BackendCinemaInterface;
-/* users table */
-CREATE TABLE if not exists users
-(
-    ID serial NOT NULL PRIMARY KEY,
-    Login VARCHAR(32) NOT NULL UNIQUE ,
-    Password VARCHAR(64) NOT NULL
-);
-
-/* profile table */
-
-CREATE TABLE if not exists profile
-(
-    user_id integer NOT NULL PRIMARY KEY REFERENCES users (ID),
-    ProfileName VARCHAR(32),
-    ProfileSurname VARCHAR(32),
-    AvatarPath VARCHAR(64)
-);
 
 /* cinema table */
-
 CREATE TABLE if not exists cinema
 (
     ID serial NOT NULL PRIMARY KEY,
@@ -84,7 +64,7 @@ CREATE TABLE if not exists movie_actors
 CREATE TABLE if not exists rating_history
 (
     ID serial NOT NULL PRIMARY KEY ,
-    user_id integer references users (ID),
+    user_id integer,
     movie_id integer references movie (ID),
     movie_rating integer NOT NULL,
     UNIQUE(user_id, movie_id)
@@ -240,4 +220,29 @@ VALUES (1,2,2,now() + interval '1 hour', 400),
        (11,1,2,now() + interval '6 hours',228),
        (11,2,2,now() + interval '5 hours',228),
        (11,3,2,now() + interval '5 hours',228);
+
+
+
+
+-- INSERT INTO schedule(Movie_ID, Cinema_ID, Hall_ID, Premiere_time, Cost)
+-- VALUES (1,1,1, now() + interval '7 hour', 322),
+--        (8,1,2, now() + interval '8 hour', 599),
+--        (9,1,1, now() + interval '10 hours 30 minutes', 299),
+--        (8,2,1, now() + interval '9 hour', 400),
+--        (9,2,1, now() + interval '7 hour 30 minutes', 399),
+--        (9,2,2, now() + interval '1 day 4 hours', 599),
+--        (1,2,2, now() + interval '8 hour', 228),
+--        (2,2,1, now() + interval '11 hours', 500),
+--        (4,2,2, now() + interval '2 days', 300),
+--        (4,3,2, now() + interval '10 hour', 399),
+--        (2,3,2, now() + interval '3 days', 500),
+--        (1,3,1, now() + interval '1 day 10 hour', 300),
+--        (2,3,1, now() + interval '10 hour', 399),
+--        (3,3,2, now() + interval '1 day', 599),
+--        (6,4,1, now() + interval '8 hour 30 minutes',500),
+--        (2,4,2, now() + interval '8 hours', 699),
+--        (1,4,1, now() + interval '18 hour 30 minutes',500),
+--        (2,4,2, now() + interval '35 hours', 699),
+--        (8,4,1, now() + interval '24 hour 30 minutes',500),
+--        (6,4,2, now() + interval '19 hours', 699);
 

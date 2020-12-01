@@ -7,5 +7,5 @@ var (
 	NameFormName    = "name"
 	SurnameFormName = "surname"
 	NoAvatarImage   = MediaPath + "NoAvatar.jpg"
-	URLPattern      = "/api/profile/"
+	URLPattern      = "/profile/"
 )

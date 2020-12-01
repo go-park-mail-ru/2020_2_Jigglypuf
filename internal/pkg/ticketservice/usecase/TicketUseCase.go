@@ -1,7 +1,8 @@
 package usecase
 
 import (
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	"context"
+	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
@@ -15,28 +16,28 @@ type TicketUseCase struct {
 	validator          *validator.Validate
 	sanitizer          bluemonday.Policy
 	repository         ticketservice.Repository
-	userRepository     interfaces.AuthRepository
+	AuthServiceClient  authService.AuthenticationServiceClient
 	hallRepository     hallservice.Repository
 	scheduleRepository schedule.TimeTableRepository
 }
 
-func NewTicketUseCase(repository ticketservice.Repository, authRepository interfaces.AuthRepository, hallRepository hallservice.Repository, scheduleRepository schedule.TimeTableRepository) *TicketUseCase {
+func NewTicketUseCase(repository ticketservice.Repository, authRepository authService.AuthenticationServiceClient, hallRepository hallservice.Repository, scheduleRepository schedule.TimeTableRepository) *TicketUseCase {
 	return &TicketUseCase{
 		validator:          validator.New(),
 		repository:         repository,
 		sanitizer:          *bluemonday.UGCPolicy(),
-		userRepository:     authRepository,
+		AuthServiceClient:  authRepository,
 		hallRepository:     hallRepository,
 		scheduleRepository: scheduleRepository,
 	}
 }
 
 func (t *TicketUseCase) GetUserTickets(userID uint64) (*[]models.Ticket, error) {
-	user, getUserErr := t.userRepository.GetUserByID(userID)
+	user, getUserErr := t.AuthServiceClient.GetUserByID(context.Background(), &authService.GetUserByIDRequest{UserID: userID})
 	if getUserErr != nil {
 		return nil, getUserErr
 	}
-	return t.repository.GetUserTickets(user.Login)
+	return t.repository.GetUserTickets(user.User.Login)
 }
 
 func (t *TicketUseCase) GetSimpleTicket(userID uint64, ticketID string) (*models.Ticket, error) {
@@ -44,11 +45,11 @@ func (t *TicketUseCase) GetSimpleTicket(userID uint64, ticketID string) (*models
 	if castErr != nil {
 		return nil, castErr
 	}
-	user, getUserErr := t.userRepository.GetUserByID(userID)
+	user, getUserErr := t.AuthServiceClient.GetUserByID(context.Background(), &authService.GetUserByIDRequest{UserID: userID})
 	if getUserErr != nil {
 		return nil, getUserErr
 	}
-	return t.repository.GetSimpleTicket(uint64(castedTicketID), user.Login)
+	return t.repository.GetSimpleTicket(uint64(castedTicketID), user.User.Login)
 }
 
 func (t *TicketUseCase) GetHallScheduleTickets(scheduleID string) (*[]models.TicketPlace, error) {
@@ -67,11 +68,11 @@ func (t *TicketUseCase) BuyTicket(ticket *models.TicketInput, userID interface{}
 		if _, ok := userID.(uint64); !ok {
 			return models.ErrFooNoAuthorization
 		}
-		user, getUserErr := t.userRepository.GetUserByID(userID.(uint64))
+		user, getUserErr := t.AuthServiceClient.GetUserByID(context.Background(), &authService.GetUserByIDRequest{UserID: userID.(uint64)})
 		if getUserErr != nil {
 			return models.ErrFooNoAuthorization
 		}
-		ticket.Login = user.Login
+		ticket.Login = user.User.Login
 	}
 
 	HallID, HallErr := t.scheduleRepository.GetScheduleHallID(ticket.ScheduleID)
