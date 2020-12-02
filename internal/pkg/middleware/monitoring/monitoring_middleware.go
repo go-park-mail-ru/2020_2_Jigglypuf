@@ -26,6 +26,9 @@ func AccessLogMiddleware(next http.Handler) http.Handler {
 		status := promconfig.StatusErr
 		handler := "no_handler"
 		start := time.Now()
+		timer := prometheus.NewTimer(prometheus.ObserverFunc(func(v float64) {
+			URLResponseLatency.WithLabelValues(r.URL.Path, handler, r.Method, status).Observe(v)
+		}))
 		next.ServeHTTP(w, r)
 		handlerName := w.Header().Get(promconfig.HandlerNameID)
 		if handlerName != "" {
@@ -40,9 +43,6 @@ func AccessLogMiddleware(next http.Handler) http.Handler {
 			w.Header().Del(promconfig.HandlerNameID)
 		}
 		log.Println(r.URL.Path, handler, r.Method, status)
-		timer := prometheus.NewTimer(prometheus.ObserverFunc(func(v float64) {
-			URLResponseLatency.WithLabelValues(r.URL.Path, handler, r.Method, status).Observe(v)
-		}))
 		defer func() {
 			timer.ObserveDuration()
 		}()
