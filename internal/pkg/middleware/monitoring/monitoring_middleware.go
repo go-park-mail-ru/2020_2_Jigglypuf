@@ -33,8 +33,9 @@ func AccessLogMiddleware(next http.Handler) http.Handler {
 		handlerName := w.Header().Get(promconfig.HandlerNameID)
 		if handlerName != "" {
 			log.Println("Handler name was found")
+			handler = handlerName
 			handlerStatus := w.Header().Get(promconfig.StatusNameID)
-			if handlerStatus != ""{
+			if handlerStatus != "" {
 				status = handlerStatus
 				w.Header().Del(promconfig.StatusNameID)
 			}
