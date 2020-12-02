@@ -1,7 +1,6 @@
 package delivery
 
 import (
-	"encoding/json"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/promconfig"
@@ -53,7 +52,7 @@ func (t *HallDelivery) GetHallStructure(w http.ResponseWriter, r *http.Request) 
 	}
 	log.Println("hall:", hallItem.PlaceConfig)
 	status = promconfig.StatusSuccess
-	outputBuf, _ := json.Marshal(hallItem)
+	outputBuf, _ := hallItem.MarshalJSON()
 
 	_, _ = w.Write(outputBuf)
 }
