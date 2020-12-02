@@ -12,27 +12,12 @@ type Cinema struct {
 }
 
 type SearchCinema struct {
-	Name string
+	Name string `json:"name"`
 }
 
 type GetCinemaList struct {
 	Limit int
 	Page  int
-}
-
-type HallConfig struct {
-	Levels []HallPlace
-}
-
-type HallPlace struct {
-	Place int
-	Row   int
-}
-
-type CinemaHall struct {
-	ID          uint64
-	PlaceAmount int
-	PlaceConfig HallConfig
 }
 
 type Ticket struct {
@@ -44,12 +29,12 @@ type Ticket struct {
 }
 
 type TicketInput struct {
-	Login      string `validate:"required,email"`
-	ScheduleID uint64
-	PlaceField TicketPlace
+	Login      string      `validate:"required,email" json:"login"`
+	ScheduleID uint64      `json:"scheduleID"`
+	PlaceField TicketPlace `json:"placeField"`
 }
 
 type TicketPlace struct {
-	Row   int
-	Place int
+	Row   int `json:"row"`
+	Place int `json:"place"`
 }

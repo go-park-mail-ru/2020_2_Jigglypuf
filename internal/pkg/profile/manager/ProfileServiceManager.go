@@ -29,14 +29,14 @@ func (t *ProfileServiceManager) CreateProfile(ctx context.Context, in *ProfileSe
 		AvatarPath:      in.Profile.AvatarPath,
 		UserCredentials: &models.User{ID: in.Profile.UserCredentials.UserID},
 	})
-	// TODO logger
+	// TODO monitoring
 	return &ProfileService.Nil{}, err
 }
 
 func (t *ProfileServiceManager) GetProfile(ctx context.Context, in *ProfileService.GetProfileRequest) (*ProfileService.Profile, error) {
 	profile, err := t.useCase.GetProfile(&in.Login)
 	if err != nil {
-		// TODO logger
+		// TODO monitoring
 		return nil, err
 	}
 	return &ProfileService.Profile{
@@ -52,7 +52,7 @@ func (t *ProfileServiceManager) GetProfile(ctx context.Context, in *ProfileServi
 func (t *ProfileServiceManager) GetProfileByID(ctx context.Context, in *ProfileService.GetProfileByUserIDRequest) (*ProfileService.Profile, error) {
 	profile, err := t.useCase.GetProfileViaID(in.UserID)
 	if err != nil {
-		// TODO logger
+		// TODO monitoring
 		return nil, err
 	}
 	user, userErr := t.authClient.GetUserByID(ctx, &authService.GetUserByIDRequest{UserID: profile.UserCredentials.ID})
@@ -71,6 +71,6 @@ func (t *ProfileServiceManager) GetProfileByID(ctx context.Context, in *ProfileS
 
 func (t *ProfileServiceManager) UpdateProfile(ctx context.Context, in *ProfileService.UpdateProfileRequest) (*ProfileService.Nil, error) {
 	err := t.useCase.UpdateProfile(in.Profile.UserCredentials.UserID, in.Profile.Name, in.Profile.Surname, in.Profile.AvatarPath)
-	// TODO logger
+	// TODO monitoring
 	return &ProfileService.Nil{}, err
 }

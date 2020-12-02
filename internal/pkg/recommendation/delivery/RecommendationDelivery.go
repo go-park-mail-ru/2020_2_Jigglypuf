@@ -3,6 +3,7 @@ package delivery
 import (
 	"encoding/json"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/promconfig"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/recommendation"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"net/http"
@@ -27,6 +28,9 @@ func NewRecommendationDelivery(useCase recommendation.UseCase) *RecommendationDe
 // @Failure 500 {object} models.ServerResponse
 // @Router /api/recommendations/ [get]
 func (t *RecommendationDelivery) GetRecommendedMovieList(w http.ResponseWriter, r *http.Request) {
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetRecommendedMovieList, &status)
+
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
@@ -52,6 +56,7 @@ func (t *RecommendationDelivery) GetRecommendedMovieList(w http.ResponseWriter, 
 		return
 	}
 
+	status = promconfig.StatusSuccess
 	outputBuf, _ := json.Marshal(movieList)
 
 	_, _ = w.Write(outputBuf)

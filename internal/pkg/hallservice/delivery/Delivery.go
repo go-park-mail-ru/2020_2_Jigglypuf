@@ -1,10 +1,11 @@
 package delivery
 
 import (
-	"encoding/json"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/promconfig"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 )
 
@@ -29,6 +30,8 @@ func NewHallDelivery(useCase hallservice.UseCase) *HallDelivery {
 // @Failure 500 {object} models.ServerResponse
 // @Router /api/hall/{id}/ [get]
 func (t *HallDelivery) GetHallStructure(w http.ResponseWriter, r *http.Request) {
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetHallStructure, &status)
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
@@ -47,8 +50,9 @@ func (t *HallDelivery) GetHallStructure(w http.ResponseWriter, r *http.Request) 
 		models.BadBodyHTTPResponse(&w, models.ErrFooIncorrectInputInfo)
 		return
 	}
-
-	outputBuf, _ := json.Marshal(hallItem)
+	log.Println("hall:", hallItem.PlaceConfig)
+	status = promconfig.StatusSuccess
+	outputBuf, _ := hallItem.MarshalJSON()
 
 	_, _ = w.Write(outputBuf)
 }

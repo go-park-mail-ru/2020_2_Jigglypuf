@@ -8,7 +8,7 @@ type Profile struct {
 }
 
 type ProfileFormData struct {
-	Name    string
-	Surname string
-	Avatar  string
+	Name    string `json:"name"`
+	Surname string `json:"surname"`
+	Avatar  string `json:"avatar"`
 }

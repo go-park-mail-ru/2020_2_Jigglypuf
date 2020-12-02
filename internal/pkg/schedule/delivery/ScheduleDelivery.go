@@ -3,6 +3,7 @@ package delivery
 import (
 	"encoding/json"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/promconfig"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -31,6 +32,9 @@ func NewScheduleDelivery(useCase schedule.TimeTableUseCase) *ScheduleDelivery {
 // @Failure 500 {object} models.ServerResponse "internal error"
 // @Router /api/schedule/ [get]
 func (t *ScheduleDelivery) GetMovieSchedule(w http.ResponseWriter, r *http.Request) {
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetMovieSchedule, &status)
+
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
@@ -46,6 +50,7 @@ func (t *ScheduleDelivery) GetMovieSchedule(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	status = promconfig.StatusSuccess
 	outputBuf, _ := json.Marshal(resultList)
 	_, _ = w.Write(outputBuf)
 }
@@ -61,6 +66,9 @@ func (t *ScheduleDelivery) GetMovieSchedule(w http.ResponseWriter, r *http.Reque
 // @Failure 500 {object} models.ServerResponse "internal error"
 // @Router /api/schedule/{id} [get]
 func (t *ScheduleDelivery) GetSchedule(w http.ResponseWriter, r *http.Request) {
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetSchedule, &status)
+
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
@@ -76,7 +84,8 @@ func (t *ScheduleDelivery) GetSchedule(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	outputBuf, _ := json.Marshal(resultList)
+	status = promconfig.StatusSuccess
+	outputBuf, _ := resultList.MarshalJSON()
 
 	_, _ = w.Write(outputBuf)
 }

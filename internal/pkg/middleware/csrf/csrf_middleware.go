@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/promconfig"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"log"
 	"net/http"
@@ -41,6 +42,9 @@ func NewHashCSRFToken(secret string, duration time.Duration) (*HashCSRFToken, er
 // @Failure 500 {object} models.ServerResponse "internal error"
 // @Router /api/csrf/ [get]
 func (t *HashCSRFToken) GenerateCSRFToken(w http.ResponseWriter, r *http.Request) {
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GenerateCSRFToken, &status)
+
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
@@ -62,6 +66,7 @@ func (t *HashCSRFToken) GenerateCSRFToken(w http.ResponseWriter, r *http.Request
 		token,
 	}
 
+	status = promconfig.StatusSuccess
 	outputBuf, _ := json.Marshal(csrfResponse)
 	_, _ = w.Write(outputBuf)
 }
