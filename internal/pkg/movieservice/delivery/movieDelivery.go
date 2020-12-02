@@ -1,6 +1,7 @@
 package delivery
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
@@ -188,7 +189,6 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 // @Router /api/movie/actual/ [get]
 func (t *MovieHandler) GetActualMovies(w http.ResponseWriter, r *http.Request) {
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(r,promconfig.GetActualMovies,status)
 
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -212,6 +212,11 @@ func (t *MovieHandler) GetActualMovies(w http.ResponseWriter, r *http.Request) {
 	status = promconfig.StatusSuccess
 	w.WriteHeader(http.StatusOK)
 	response, _ := json.Marshal(movieList)
+
+	ctx := r.Context()
+	ctx = context.WithValue(ctx,promconfig.HandlerNameID, "GetActualMovies")
+	ctx = context.WithValue(ctx,promconfig.StatusNameID, status)
+	*r = *r.WithContext(ctx)
 
 	_, _ = w.Write(response)
 }
