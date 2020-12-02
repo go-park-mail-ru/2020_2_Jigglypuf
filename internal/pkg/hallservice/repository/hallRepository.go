@@ -53,6 +53,6 @@ func (t *SQLRepository) GetHallStructure(hallID uint64) (*models.CinemaHall, err
 		return nil, models.ErrFooCastErr
 	}
 
-	log.Println("rep:", hallItem.PlaceConfig)
+	log.Println("rep:", hallItem.PlaceConfig,placeConfig)
 	return hallItem, nil
 }
