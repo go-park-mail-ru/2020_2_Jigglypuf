@@ -31,7 +31,7 @@ func NewHallDelivery(useCase hallservice.UseCase) *HallDelivery {
 // @Router /api/hall/{id}/ [get]
 func (t *HallDelivery) GetHallStructure(w http.ResponseWriter, r *http.Request) {
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(r,promconfig.GetHallStructure,status)
+	defer promconfig.SetRequestMonitoringContext(w,promconfig.GetHallStructure,status)
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
