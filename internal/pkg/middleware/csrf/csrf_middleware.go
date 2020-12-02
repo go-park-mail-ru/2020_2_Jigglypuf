@@ -43,7 +43,7 @@ func NewHashCSRFToken(secret string, duration time.Duration) (*HashCSRFToken, er
 // @Router /api/csrf/ [get]
 func (t *HashCSRFToken) GenerateCSRFToken(w http.ResponseWriter, r *http.Request) {
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(w,promconfig.GenerateCSRFToken,status)
+	defer promconfig.SetRequestMonitoringContext(w,promconfig.GenerateCSRFToken,&status)
 
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)

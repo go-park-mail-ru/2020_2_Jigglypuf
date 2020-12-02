@@ -33,7 +33,7 @@ var (
 )
 
 
-func SetRequestMonitoringContext(r http.ResponseWriter, handlerName, status string){
+func SetRequestMonitoringContext(r http.ResponseWriter, handlerName string, status *string){
 	r.Header().Set(HandlerNameID, handlerName)
-	r.Header().Set(StatusNameID, status)
+	r.Header().Set(StatusNameID, *status)
 }
