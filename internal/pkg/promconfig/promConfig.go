@@ -38,5 +38,5 @@ func SetRequestMonitoringContext(r *http.Request, handlerName, status string){
 	ctx := r.Context()
 	ctx = context.WithValue(ctx,HandlerNameID, handlerName)
 	ctx = context.WithValue(ctx,StatusNameID, status)
-	*r = *r.WithContext(ctx)
+	*r = *r.Clone(ctx)
 }
