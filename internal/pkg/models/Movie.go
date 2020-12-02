@@ -73,8 +73,8 @@ type RatingSet struct {
 }
 
 type RatingInput struct {
-	Rating    int64
-	MovieName string
+	Rating    int64 `json:"rating"`
+	MovieName string `json:"moviename"`
 }
 
 type GetMovieList struct {
@@ -83,10 +83,10 @@ type GetMovieList struct {
 }
 
 type SearchMovie struct {
-	Name string
+	Name string `json:"name"`
 }
 
 type RateMovie struct {
-	ID     uint64
-	Rating int64
+	ID     uint64 `json:"id"`
+	Rating int64 `json:"rating"`
 }

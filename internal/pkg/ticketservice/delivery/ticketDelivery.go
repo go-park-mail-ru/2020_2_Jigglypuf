@@ -7,6 +7,7 @@ import (
 	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -38,10 +39,13 @@ func (t *TicketDelivery) BuyTicket(w http.ResponseWriter, r *http.Request) {
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
-	decoder := json.NewDecoder(r.Body)
-	defer r.Body.Close()
+
+	inputBuf, inputErr := ioutil.ReadAll(r.Body)
+	if inputErr != nil{
+		models.BadBodyHTTPResponse(&w,models.ErrFooIncorrectInputInfo)
+	}
 	ticketItem := new(models.TicketInput)
-	decodeErr := decoder.Decode(ticketItem)
+	decodeErr := ticketItem.UnmarshalJSON(inputBuf)
 	if decodeErr != nil {
 		models.BadBodyHTTPResponse(&w, decodeErr)
 		return
@@ -139,7 +143,7 @@ func (t *TicketDelivery) GetUsersSimpleTicket(w http.ResponseWriter, r *http.Req
 	}
 
 	status = promconfig.StatusSuccess
-	outputBuf, _ := json.Marshal(ticketItem)
+	outputBuf, _ := ticketItem.MarshalJSON()
 
 	_, _ = w.Write(outputBuf)
 }

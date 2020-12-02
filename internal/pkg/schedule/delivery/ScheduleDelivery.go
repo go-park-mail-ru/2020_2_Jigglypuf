@@ -85,7 +85,7 @@ func (t *ScheduleDelivery) GetSchedule(w http.ResponseWriter, r *http.Request) {
 	}
 
 	status = promconfig.StatusSuccess
-	outputBuf, _ := json.Marshal(resultList)
+	outputBuf, _ := resultList.MarshalJSON()
 
 	_, _ = w.Write(outputBuf)
 }

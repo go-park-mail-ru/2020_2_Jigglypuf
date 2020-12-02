@@ -12,7 +12,7 @@ type Cinema struct {
 }
 
 type SearchCinema struct {
-	Name string
+	Name string `json:"name"`
 }
 
 type GetCinemaList struct {
@@ -44,12 +44,12 @@ type Ticket struct {
 }
 
 type TicketInput struct {
-	Login      string `validate:"required,email"`
-	ScheduleID uint64
-	PlaceField TicketPlace
+	Login      string `validate:"required,email" json:"login"`
+	ScheduleID uint64 `json:"scheduleID"`
+	PlaceField TicketPlace `json:"placeField"`
 }
 
 type TicketPlace struct {
-	Row   int
-	Place int
+	Row   int `json:"row"`
+	Place int `json:"place"`
 }

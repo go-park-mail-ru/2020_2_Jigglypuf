@@ -8,6 +8,7 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
 	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 )
@@ -121,7 +122,7 @@ func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	response, _ := json.Marshal(result)
+	response, _ := result.MarshalJSON()
 
 	status = promconfig.StatusSuccess
 	_, _ = w.Write(response)
@@ -157,9 +158,12 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	decoder := json.NewDecoder(r.Body)
+	inputBuf, inputErr := ioutil.ReadAll(r.Body)
+	if inputErr != nil{
+		models.BadBodyHTTPResponse(&w,models.ErrFooIncorrectInputInfo)
+	}
 	movie := new(models.RateMovie)
-	translationError := decoder.Decode(movie)
+	translationError := movie.UnmarshalJSON(inputBuf)
 	if translationError != nil {
 		models.BadBodyHTTPResponse(&w, translationError)
 		return

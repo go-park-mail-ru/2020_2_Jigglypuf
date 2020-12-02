@@ -107,13 +107,13 @@ func easyjson750e3c9dDecodeGithubComGoParkMailRu20202JigglypufInternalPkgModels1
 			continue
 		}
 		switch key {
-		case "Login":
+		case "login":
 			out.Login = string(in.String())
-		case "Password":
+		case "password":
 			out.Password = string(in.String())
-		case "Name":
+		case "name":
 			out.Name = string(in.String())
-		case "Surname":
+		case "surname":
 			out.Surname = string(in.String())
 		default:
 			in.SkipRecursive()
@@ -130,22 +130,22 @@ func easyjson750e3c9dEncodeGithubComGoParkMailRu20202JigglypufInternalPkgModels1
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"Login\":"
+		const prefix string = ",\"login\":"
 		out.RawString(prefix[1:])
 		out.String(string(in.Login))
 	}
 	{
-		const prefix string = ",\"Password\":"
+		const prefix string = ",\"password\":"
 		out.RawString(prefix)
 		out.String(string(in.Password))
 	}
 	{
-		const prefix string = ",\"Name\":"
+		const prefix string = ",\"name\":"
 		out.RawString(prefix)
 		out.String(string(in.Name))
 	}
 	{
-		const prefix string = ",\"Surname\":"
+		const prefix string = ",\"surname\":"
 		out.RawString(prefix)
 		out.String(string(in.Surname))
 	}
@@ -194,9 +194,9 @@ func easyjson750e3c9dDecodeGithubComGoParkMailRu20202JigglypufInternalPkgModels2
 			continue
 		}
 		switch key {
-		case "Login":
+		case "login":
 			out.Login = string(in.String())
-		case "Password":
+		case "password":
 			out.Password = string(in.String())
 		default:
 			in.SkipRecursive()
@@ -213,12 +213,12 @@ func easyjson750e3c9dEncodeGithubComGoParkMailRu20202JigglypufInternalPkgModels2
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"Login\":"
+		const prefix string = ",\"login\":"
 		out.RawString(prefix[1:])
 		out.String(string(in.Login))
 	}
 	{
-		const prefix string = ",\"Password\":"
+		const prefix string = ",\"password\":"
 		out.RawString(prefix)
 		out.String(string(in.Password))
 	}

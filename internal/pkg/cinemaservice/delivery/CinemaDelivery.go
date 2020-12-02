@@ -57,7 +57,7 @@ func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r *http.Request, params
 
 	status = promconfig.StatusSuccess
 	w.WriteHeader(http.StatusOK)
-	response, _ := json.Marshal(result)
+	response, _ := result.MarshalJSON()
 	_, _ = w.Write(response)
 }
 

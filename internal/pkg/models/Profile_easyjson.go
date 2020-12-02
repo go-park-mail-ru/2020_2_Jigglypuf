@@ -36,11 +36,11 @@ func easyjson16e76531DecodeGithubComGoParkMailRu20202JigglypufInternalPkgModels(
 			continue
 		}
 		switch key {
-		case "Name":
+		case "name":
 			out.Name = string(in.String())
-		case "Surname":
+		case "surname":
 			out.Surname = string(in.String())
-		case "Avatar":
+		case "avatar":
 			out.Avatar = string(in.String())
 		default:
 			in.SkipRecursive()
@@ -57,17 +57,17 @@ func easyjson16e76531EncodeGithubComGoParkMailRu20202JigglypufInternalPkgModels(
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"Name\":"
+		const prefix string = ",\"name\":"
 		out.RawString(prefix[1:])
 		out.String(string(in.Name))
 	}
 	{
-		const prefix string = ",\"Surname\":"
+		const prefix string = ",\"surname\":"
 		out.RawString(prefix)
 		out.String(string(in.Surname))
 	}
 	{
-		const prefix string = ",\"Avatar\":"
+		const prefix string = ",\"avatar\":"
 		out.RawString(prefix)
 		out.String(string(in.Avatar))
 	}
@@ -124,7 +124,7 @@ func easyjson16e76531DecodeGithubComGoParkMailRu20202JigglypufInternalPkgModels1
 				if out.UserCredentials == nil {
 					out.UserCredentials = new(User)
 				}
-				easyjson16e76531DecodeGithubComGoParkMailRu20202JigglypufInternalPkgModels2(in, out.UserCredentials)
+				(*out.UserCredentials).UnmarshalEasyJSON(in)
 			}
 		case "Name":
 			out.Name = string(in.String())
@@ -152,7 +152,7 @@ func easyjson16e76531EncodeGithubComGoParkMailRu20202JigglypufInternalPkgModels1
 		if in.UserCredentials == nil {
 			out.RawString("null")
 		} else {
-			easyjson16e76531EncodeGithubComGoParkMailRu20202JigglypufInternalPkgModels2(out, *in.UserCredentials)
+			(*in.UserCredentials).MarshalEasyJSON(out)
 		}
 	}
 	{
@@ -195,51 +195,4 @@ func (v *Profile) UnmarshalJSON(data []byte) error {
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *Profile) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjson16e76531DecodeGithubComGoParkMailRu20202JigglypufInternalPkgModels1(l, v)
-}
-func easyjson16e76531DecodeGithubComGoParkMailRu20202JigglypufInternalPkgModels2(in *jlexer.Lexer, out *User) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "Login":
-			out.Login = string(in.String())
-		default:
-			in.SkipRecursive()
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjson16e76531EncodeGithubComGoParkMailRu20202JigglypufInternalPkgModels2(out *jwriter.Writer, in User) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	{
-		const prefix string = ",\"Login\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Login))
-	}
-	out.RawByte('}')
 }

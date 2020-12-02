@@ -36,7 +36,7 @@ func easyjsonA97f39aeDecodeGithubComGoParkMailRu20202JigglypufInternalPkgModels(
 			continue
 		}
 		switch key {
-		case "Name":
+		case "name":
 			out.Name = string(in.String())
 		default:
 			in.SkipRecursive()
@@ -53,7 +53,7 @@ func easyjsonA97f39aeEncodeGithubComGoParkMailRu20202JigglypufInternalPkgModels(
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"Name\":"
+		const prefix string = ",\"name\":"
 		out.RawString(prefix[1:])
 		out.String(string(in.Name))
 	}
@@ -187,9 +187,9 @@ func easyjsonA97f39aeDecodeGithubComGoParkMailRu20202JigglypufInternalPkgModels2
 			continue
 		}
 		switch key {
-		case "Rating":
+		case "rating":
 			out.Rating = int64(in.Int64())
-		case "MovieName":
+		case "moviename":
 			out.MovieName = string(in.String())
 		default:
 			in.SkipRecursive()
@@ -206,12 +206,12 @@ func easyjsonA97f39aeEncodeGithubComGoParkMailRu20202JigglypufInternalPkgModels2
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"Rating\":"
+		const prefix string = ",\"rating\":"
 		out.RawString(prefix[1:])
 		out.Int64(int64(in.Rating))
 	}
 	{
-		const prefix string = ",\"MovieName\":"
+		const prefix string = ",\"moviename\":"
 		out.RawString(prefix)
 		out.String(string(in.MovieName))
 	}
@@ -260,9 +260,9 @@ func easyjsonA97f39aeDecodeGithubComGoParkMailRu20202JigglypufInternalPkgModels3
 			continue
 		}
 		switch key {
-		case "ID":
+		case "id":
 			out.ID = uint64(in.Uint64())
-		case "Rating":
+		case "rating":
 			out.Rating = int64(in.Int64())
 		default:
 			in.SkipRecursive()
@@ -279,12 +279,12 @@ func easyjsonA97f39aeEncodeGithubComGoParkMailRu20202JigglypufInternalPkgModels3
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"ID\":"
+		const prefix string = ",\"id\":"
 		out.RawString(prefix[1:])
 		out.Uint64(uint64(in.ID))
 	}
 	{
-		const prefix string = ",\"Rating\":"
+		const prefix string = ",\"rating\":"
 		out.RawString(prefix)
 		out.Int64(int64(in.Rating))
 	}
