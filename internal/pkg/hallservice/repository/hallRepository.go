@@ -41,7 +41,7 @@ func (t *SQLRepository) GetHallStructure(hallID uint64) (*models.CinemaHall, err
 		return nil, models.ErrFooIncorrectSQLQuery
 	}
 
-	hallItem := new(models.CinemaHall)
+	hallItem := models.CinemaHall{}
 	placeConfig := ""
 	hallItem.ID = hallID
 	ScanErr := SQLResult.Scan(&hallItem.PlaceAmount, &placeConfig)
@@ -54,5 +54,5 @@ func (t *SQLRepository) GetHallStructure(hallID uint64) (*models.CinemaHall, err
 	}
 
 	log.Println("rep:", hallItem.PlaceConfig,placeConfig)
-	return hallItem, nil
+	return &hallItem, nil
 }
