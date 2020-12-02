@@ -31,9 +31,9 @@ func NewCinemaHandler(useCase cinemaservice.UseCase) *CinemaHandler {
 // @Router /api/cinema/{id}/ [get]
 func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
-	status := promconfig.StatusErr
+	var status string
 	defer promconfig.SetRequestMonitoringContext(w,promconfig.GetCinema,status)
-
+	status = promconfig.StatusErr
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method != http.MethodGet {
@@ -73,8 +73,9 @@ func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r *http.Request, params
 // @Router /api/cinema/ [get]
 func (t *CinemaHandler) GetCinemaList(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
-	status := promconfig.StatusErr
+	var status string
 	defer promconfig.SetRequestMonitoringContext(w,promconfig.GetCinemaList,status)
+	status = promconfig.StatusErr
 
 	w.Header().Set("Content-Type", "application/json")
 
