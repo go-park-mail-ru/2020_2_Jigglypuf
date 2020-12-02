@@ -115,9 +115,9 @@ func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request, pa
 	inputBuf, err := ioutil.ReadAll(r.Body)
 	authInput := models.RegistrationInput{}
 	translationErr := authInput.UnmarshalJSON(inputBuf)
-	log.Println("kek",authInput.Name, authInput.Login, authInput.Password, authInput.Surname)
 
 	if err != nil || translationErr != nil {
+		log.Println(translationErr)
 		models.BadBodyHTTPResponse(&w, models.ErrFooIncorrectInputInfo)
 		return
 	}
