@@ -48,7 +48,7 @@ func NewMovieHandler(useCase movieservice.MovieUseCase) *MovieHandler {
 // @Router /api/movie/ [get]
 func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request) {
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(r,promconfig.GetMovieList,status)
+	defer promconfig.SetRequestMonitoringContext(w,promconfig.GetMovieList,status)
 
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -91,7 +91,7 @@ func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request) {
 // @Router /api/movie/{id}/ [get]
 func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(r,promconfig.GetMovie,status)
+	defer promconfig.SetRequestMonitoringContext(w,promconfig.GetMovie,status)
 
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -141,7 +141,7 @@ func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(r,promconfig.RateMovie,status)
+	defer promconfig.SetRequestMonitoringContext(w,promconfig.RateMovie,status)
 
 	if r.Method != http.MethodPost {
 		models.BadMethodHTTPResponse(&w)
@@ -188,7 +188,7 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 // @Router /api/movie/actual/ [get]
 func (t *MovieHandler) GetActualMovies(w http.ResponseWriter, r *http.Request) {
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(r,promconfig.GetActualMovies,status)
+	defer promconfig.SetRequestMonitoringContext(w,promconfig.GetActualMovies,status)
 
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)

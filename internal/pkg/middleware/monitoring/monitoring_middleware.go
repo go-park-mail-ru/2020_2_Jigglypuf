@@ -30,14 +30,15 @@ func AccessLogMiddleware(next http.Handler) http.Handler {
 		handler := "no_handler"
 		start := time.Now()
 		next.ServeHTTP(w, r)
-		handlerName := r.Context().Value(promconfig.HandlerNameID)
-		if handlerName != nil {
+		handlerName := w.Header().Get(promconfig.HandlerNameID)
+		if handlerName != "" {
 			log.Println("Handler name was found")
-			handler = handlerName.(string)
-			handlerStatus := r.Context().Value(promconfig.StatusNameID)
-			if handlerStatus != nil{
-				status = handlerStatus.(string)
+			handlerStatus := w.Header().Get(promconfig.StatusNameID)
+			if handlerStatus != ""{
+				status = handlerStatus
+				w.Header().Del(promconfig.StatusNameID)
 			}
+			w.Header().Del(promconfig.HandlerNameID)
 		}
 		log.Println(r.URL.Path,handler, r.Method, status)
 		timer := prometheus.NewTimer(prometheus.ObserverFunc(func(v float64) {

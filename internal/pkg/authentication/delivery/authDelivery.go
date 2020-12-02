@@ -56,7 +56,7 @@ func setContextCookie(r *http.Request, userID uint64) context.Context {
 func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(r,promconfig.AuthHandler,status)
+	defer promconfig.SetRequestMonitoringContext(w,promconfig.AuthHandler,status)
 
 	if r.Method != http.MethodPost {
 		models.BadMethodHTTPResponse(&w)
@@ -101,7 +101,7 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request, params
 func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(r,promconfig.RegisterHandler,status)
+	defer promconfig.SetRequestMonitoringContext(w,promconfig.RegisterHandler,status)
 
 	if r.Method != http.MethodPost {
 		log.Println("incorrect method")
@@ -147,7 +147,7 @@ func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request, pa
 // @Router /api/auth/logout/ [post]
 func (t *UserHandler) SignOutHandler(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(r,promconfig.SignOutHandler,status)
+	defer promconfig.SetRequestMonitoringContext(w,promconfig.SignOutHandler,status)
 
 	if r.Method != http.MethodPost {
 		models.BadMethodHTTPResponse(&w)

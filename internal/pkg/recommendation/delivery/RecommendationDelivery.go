@@ -29,7 +29,7 @@ func NewRecommendationDelivery(useCase recommendation.UseCase) *RecommendationDe
 // @Router /api/recommendations/ [get]
 func (t *RecommendationDelivery) GetRecommendedMovieList(w http.ResponseWriter, r *http.Request) {
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(r,promconfig.GetRecommendedMovieList,status)
+	defer promconfig.SetRequestMonitoringContext(w,promconfig.GetRecommendedMovieList,status)
 
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)

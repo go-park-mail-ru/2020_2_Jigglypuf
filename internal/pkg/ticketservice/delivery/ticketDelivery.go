@@ -32,7 +32,7 @@ func NewTicketDelivery(useCase ticketservice.UseCase) *TicketDelivery {
 // @Router /api/ticket/buy/ [post]
 func (t *TicketDelivery) BuyTicket(w http.ResponseWriter, r *http.Request) {
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(r,promconfig.BuyTicket,status)
+	defer promconfig.SetRequestMonitoringContext(w,promconfig.BuyTicket,status)
 
 	if r.Method != http.MethodPost {
 		models.BadMethodHTTPResponse(&w)
@@ -77,7 +77,7 @@ func (t *TicketDelivery) BuyTicket(w http.ResponseWriter, r *http.Request) {
 // @Router /api/ticket/ [get]
 func (t *TicketDelivery) GetUserTickets(w http.ResponseWriter, r *http.Request) {
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(r,promconfig.GetUserTickets,status)
+	defer promconfig.SetRequestMonitoringContext(w,promconfig.GetUserTickets,status)
 
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -115,7 +115,7 @@ func (t *TicketDelivery) GetUserTickets(w http.ResponseWriter, r *http.Request) 
 // @Router /api/ticket/{id}/ [get]
 func (t *TicketDelivery) GetUsersSimpleTicket(w http.ResponseWriter, r *http.Request) {
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(r,promconfig.GetUsersSimpleTicket,status)
+	defer promconfig.SetRequestMonitoringContext(w,promconfig.GetUsersSimpleTicket,status)
 
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -156,7 +156,7 @@ func (t *TicketDelivery) GetUsersSimpleTicket(w http.ResponseWriter, r *http.Req
 // @Router /api/ticket/schedule/{id}/ [get]
 func (t *TicketDelivery) GetHallScheduleTickets(w http.ResponseWriter, r *http.Request) {
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(r,promconfig.GetHallScheduleTickets,status)
+	defer promconfig.SetRequestMonitoringContext(w,promconfig.GetHallScheduleTickets,status)
 
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)

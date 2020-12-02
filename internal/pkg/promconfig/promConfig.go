@@ -1,7 +1,6 @@
 package promconfig
 
 import (
-	"context"
 	"net/http"
 )
 
@@ -34,9 +33,7 @@ var (
 )
 
 
-func SetRequestMonitoringContext(r *http.Request, handlerName, status string){
-	ctx := r.Context()
-	ctx = context.WithValue(ctx,HandlerNameID, handlerName)
-	ctx = context.WithValue(ctx,StatusNameID, status)
-	r = r.Clone(ctx)
+func SetRequestMonitoringContext(r http.ResponseWriter, handlerName, status string){
+	r.Header().Set(HandlerNameID, handlerName)
+	r.Header().Set(StatusNameID, status)
 }
