@@ -3,11 +3,10 @@ package interfaces
 
 import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
-	"net/http"
 )
 
 type UserUseCase interface {
-	SignUp(input *models.RegistrationInput) (*http.Cookie, error)
-	SignIn(input *models.AuthInput) (*http.Cookie, error)
-	SignOut(cookie *http.Cookie) (*http.Cookie, error)
+	SignUp(input *models.RegistrationInput) (uint64, error)
+	SignIn(input *models.AuthInput) (uint64, error)
+	GetUserByID(userID uint64) (*models.User, error)
 }

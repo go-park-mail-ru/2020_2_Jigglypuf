@@ -1,10 +1,10 @@
 package delivery
 
 import (
+	"errors"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice/mock"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
-	"errors"
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -12,17 +12,17 @@ import (
 	"testing"
 )
 
-type TestingHallStruct struct{
-	handler *HallDelivery
-	useCaseMock *mock.MockUseCase
+type TestingHallStruct struct {
+	handler          *HallDelivery
+	useCaseMock      *mock.MockUseCase
 	GoMockController *gomock.Controller
 }
 
-var(
+var (
 	testingStruct *TestingHallStruct = nil
 )
 
-func setUp(t *testing.T){
+func setUp(t *testing.T) {
 	testingStruct = new(TestingHallStruct)
 	testingStruct.GoMockController = gomock.NewController(t)
 
@@ -30,11 +30,11 @@ func setUp(t *testing.T){
 	testingStruct.handler = NewHallDelivery(testingStruct.useCaseMock)
 }
 
-func tearDown(){
+func tearDown() {
 	testingStruct.GoMockController.Finish()
 }
 
-func TestGetHallStructureSuccessCase(t *testing.T){
+func TestGetHallStructureSuccessCase(t *testing.T) {
 	setUp(t)
 	testReq := httptest.NewRequest(http.MethodGet, "/hall/1/", nil)
 	testRecorder := httptest.NewRecorder()
@@ -48,7 +48,7 @@ func TestGetHallStructureSuccessCase(t *testing.T){
 
 	testingStruct.handler.GetHallStructure(testRecorder, testReq)
 
-	if testRecorder.Code != http.StatusOK{
+	if testRecorder.Code != http.StatusOK {
 		t.Fatalf("TEST: Success get hall "+
 			"handler returned wrong status code: got %v want %v", testRecorder.Code, http.StatusOK)
 	}
@@ -56,12 +56,12 @@ func TestGetHallStructureSuccessCase(t *testing.T){
 	tearDown()
 }
 
-func TestGetHallStructureFailureCases(t *testing.T){
+func TestGetHallStructureFailureCases(t *testing.T) {
 	setUp(t)
 
-	testCases := []struct{
-		Request *http.Request
-		Recorder *httptest.ResponseRecorder
+	testCases := []struct {
+		Request    *http.Request
+		Recorder   *httptest.ResponseRecorder
 		StatusCode int
 	}{
 		{
@@ -76,9 +76,9 @@ func TestGetHallStructureFailureCases(t *testing.T){
 		},
 	}
 
-	for _, val := range testCases{
+	for _, val := range testCases {
 		testingStruct.handler.GetHallStructure(val.Recorder, val.Request)
-		if val.Recorder.Code != val.StatusCode{
+		if val.Recorder.Code != val.StatusCode {
 			t.Fatalf("TEST: Failure get hall "+
 				"handler returned wrong status code: got %v want %v", val.Recorder.Code, val.StatusCode)
 		}
@@ -87,7 +87,7 @@ func TestGetHallStructureFailureCases(t *testing.T){
 	tearDown()
 }
 
-func TestGetHallUCErrorHandling(t *testing.T){
+func TestGetHallUCErrorHandling(t *testing.T) {
 	setUp(t)
 	testReq := httptest.NewRequest(http.MethodGet, "/hall/", nil)
 	testRecorder := httptest.NewRecorder()
@@ -99,7 +99,7 @@ func TestGetHallUCErrorHandling(t *testing.T){
 	testReq = mux.SetURLVars(testReq, varsMap)
 
 	testingStruct.handler.GetHallStructure(testRecorder, testReq)
-	if testRecorder.Code != http.StatusBadRequest{
+	if testRecorder.Code != http.StatusBadRequest {
 		t.Fatalf("TEST: Failure UC get hall "+
 			"handler returned wrong status code: got %v want %v", testRecorder.Code, http.StatusBadRequest)
 	}

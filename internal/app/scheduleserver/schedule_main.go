@@ -8,6 +8,7 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule/delivery"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule/repository"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule/usecase"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/utils"
 	"github.com/gorilla/mux"
 )
 
@@ -19,11 +20,11 @@ type ScheduleService struct {
 }
 
 func configureRouter(handler *delivery.ScheduleDelivery) *mux.Router {
-	router := mux.NewRouter()
+	handle := mux.NewRouter()
 
-	router.HandleFunc(schedule.URLPattern, handler.GetMovieSchedule)
-	router.HandleFunc(schedule.URLPattern + fmt.Sprintf("{%s:[0-9]+}/", schedule.ScheduleID),handler.GetSchedule)
-	return router
+	handle.HandleFunc(utils.ScheduleURLPattern, handler.GetMovieSchedule)
+	handle.HandleFunc(utils.ScheduleURLPattern+fmt.Sprintf("{%s:[0-9]+}/", schedule.ScheduleID), handler.GetSchedule)
+	return handle
 }
 
 func Start(connection *sql.DB) (*ScheduleService, error) {
@@ -33,12 +34,12 @@ func Start(connection *sql.DB) (*ScheduleService, error) {
 	rep := repository.NewScheduleSQLRepository(connection)
 	useCase := usecase.NewTimeTableUseCase(rep)
 	handler := delivery.NewScheduleDelivery(useCase)
-	router := configureRouter(handler)
+	handle := configureRouter(handler)
 
 	return &ScheduleService{
 		handler,
 		useCase,
 		rep,
-		router,
+		handle,
 	}, nil
 }

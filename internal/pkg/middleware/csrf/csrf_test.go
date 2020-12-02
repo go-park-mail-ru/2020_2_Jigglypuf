@@ -1,37 +1,37 @@
 package csrf
 
-import(
+import (
 	"context"
 	"encoding/json"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"testing"
-	"github.com/stretchr/testify/assert"
 	"time"
 )
 
-type MiddlewareCSRFTesting struct{
+type MiddlewareCSRFTesting struct {
 	mainStruct *HashCSRFToken
 }
 
-var(
+var (
 	middlewareTesting *MiddlewareCSRFTesting = nil
 )
 
-func setUp(t *testing.T){
+func setUp() {
 	middlewareTesting = new(MiddlewareCSRFTesting)
 	middlewareTesting.mainStruct, _ = NewHashCSRFToken("some secret", time.Hour)
 }
 
-func TestGenerateCSRFHandler(t *testing.T){
-	setUp(t)
+func TestGenerateCSRFHandler(t *testing.T) {
+	setUp()
 
 	testReq := httptest.NewRequest(http.MethodGet, "/csrf/generate", nil)
 	ctx := testReq.Context()
-	ctx = context.WithValue(ctx, cookie.ContextIsAuthName, true)
-	ctx = context.WithValue(ctx , cookie.ContextUserIDName, uint64(1))
+	ctx = context.WithValue(ctx, session.ContextIsAuthName, true)
+	ctx = context.WithValue(ctx, session.ContextUserIDName, uint64(1))
 	testRecorder := httptest.NewRecorder()
 
 	middlewareTesting.mainStruct.GenerateCSRFToken(testRecorder, testReq.WithContext(ctx))
@@ -39,16 +39,16 @@ func TestGenerateCSRFHandler(t *testing.T){
 
 	resp := new(Response)
 	castErr := json.Unmarshal(testRecorder.Body.Bytes(), &resp)
-	if castErr != nil{
+	if castErr != nil {
 		t.Fatalf("TEST: Success csrf generate: incorrect response body format")
 	}
-	if resp.Token == ""{
+	if resp.Token == "" {
 		t.Fatalf("TEST: Success csrf generate: incorrect response body")
 	}
 }
 
-func TestFailGenerateCSRF(t *testing.T){
-	setUp(t)
+func TestFailGenerateCSRF(t *testing.T) {
+	setUp()
 	testReq := httptest.NewRequest(http.MethodGet, "/csrf/generate", nil)
 	testRecorder := httptest.NewRecorder()
 
@@ -56,7 +56,7 @@ func TestFailGenerateCSRF(t *testing.T){
 	assert.Equal(t, http.StatusUnauthorized, testRecorder.Code)
 }
 
-func TestIncorrectMethodGenerateCSRF(t *testing.T){
+func TestIncorrectMethodGenerateCSRF(t *testing.T) {
 	testReq := httptest.NewRequest(http.MethodPost, "/csrf/generate", nil)
 	testRecorder := httptest.NewRecorder()
 
@@ -64,46 +64,42 @@ func TestIncorrectMethodGenerateCSRF(t *testing.T){
 	assert.Equal(t, http.StatusMethodNotAllowed, testRecorder.Code)
 }
 
-func TestCheckCSRFSuccess(t *testing.T){
-	setUp(t)
+func TestCheckCSRFSuccess(t *testing.T) {
+	setUp()
 
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-		return
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	})
 	csrfReq := httptest.NewRequest(http.MethodGet, "/somepath/", nil)
 	ctx := csrfReq.Context()
-	ctx = context.WithValue(ctx, cookie.ContextIsAuthName ,true)
-	ctx = context.WithValue(ctx, cookie.ContextUserIDName, uint64(1))
+	ctx = context.WithValue(ctx, session.ContextIsAuthName, true)
+	ctx = context.WithValue(ctx, session.ContextUserIDName, uint64(1))
 	csrfRec := httptest.NewRecorder()
 	middlewareTesting.mainStruct.GenerateCSRFToken(csrfRec, csrfReq.WithContext(ctx))
 	assert.Equal(t, csrfRec.Code, http.StatusOK)
 	csrfToken := new(Response)
 	castErr := json.Unmarshal(csrfRec.Body.Bytes(), csrfToken)
-	if castErr != nil{
+	if castErr != nil {
 		t.Fatalf("Incorrect generate token body")
 	}
-
 
 	testFunc := middlewareTesting.mainStruct.CSRFMiddleware(handler)
 	testReq := httptest.NewRequest(http.MethodPost, "/somepath/", nil)
 	ctxHandler := testReq.Context()
-	ctxHandler = context.WithValue(ctxHandler, cookie.ContextIsAuthName ,true)
-	ctxHandler = context.WithValue(ctxHandler, cookie.ContextUserIDName, uint64(1))
+	ctxHandler = context.WithValue(ctxHandler, session.ContextIsAuthName, true)
+	ctxHandler = context.WithValue(ctxHandler, session.ContextUserIDName, uint64(1))
 	testReq.Header.Set("X-CSRF-Token", csrfToken.Token)
 	newRec := httptest.NewRecorder()
 	testFunc.ServeHTTP(newRec, testReq.WithContext(ctxHandler))
 	assert.Equal(t, http.StatusOK, newRec.Code)
-
 }
 
-func TestCheckCSRFTokenError(t *testing.T){
-	setUp(t)
-	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-		return
+func TestCheckCSRFTokenError(t *testing.T) {
+	setUp()
+	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	})
 	testFunc := middlewareTesting.mainStruct.CSRFMiddleware(testHandler)
-	var testCases = []struct{
-		request *http.Request
+	var testCases = []struct {
+		request    *http.Request
 		statusCode int
 	}{
 		{
@@ -116,22 +112,21 @@ func TestCheckCSRFTokenError(t *testing.T){
 		},
 	}
 
-	for _, val := range testCases{
+	for _, val := range testCases {
 		recorder := httptest.NewRecorder()
 		testFunc.ServeHTTP(recorder, val.request)
 		assert.Equal(t, val.statusCode, recorder.Code)
 	}
 }
 
-func TestIncorrectToken(t *testing.T){
-	setUp(t)
+func TestIncorrectToken(t *testing.T) {
+	setUp()
 	pastTime := time.Now().Add(-time.Hour).Unix()
-	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-		return
+	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	})
 	testFunc := middlewareTesting.mainStruct.CSRFMiddleware(testHandler)
-	var testCases = []struct{
-		token string
+	var testCases = []struct {
+		token   string
 		request *http.Request
 	}{
 		{
@@ -152,13 +147,13 @@ func TestIncorrectToken(t *testing.T){
 		},
 	}
 
-	for _,val := range testCases{
+	for _, val := range testCases {
 		ctx := val.request.Context()
-		ctx = context.WithValue(ctx, cookie.ContextIsAuthName ,true)
-		ctx = context.WithValue(ctx, cookie.ContextUserIDName, uint64(1))
+		ctx = context.WithValue(ctx, session.ContextIsAuthName, true)
+		ctx = context.WithValue(ctx, session.ContextUserIDName, uint64(1))
 		val.request.Header.Set("X-CSRF-Token", val.token)
 		Rec := httptest.NewRecorder()
-		testFunc.ServeHTTP(Rec,val.request.WithContext(ctx))
+		testFunc.ServeHTTP(Rec, val.request.WithContext(ctx))
 		assert.Equal(t, http.StatusForbidden, Rec.Code)
 	}
 }

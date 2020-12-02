@@ -26,7 +26,7 @@ var doc = `{
     "paths": {
         "/api/auth/login/": {
             "post": {
-                "description": "login user and get cookie",
+                "description": "login user and get session",
                 "consumes": [
                     "application/json"
                 ],
@@ -84,7 +84,7 @@ var doc = `{
         },
         "/api/auth/register/": {
             "post": {
-                "description": "register user and get cookie",
+                "description": "register user and get session",
                 "consumes": [
                     "application/json"
                 ],
@@ -203,7 +203,7 @@ var doc = `{
         "/api/csrf/": {
             "get": {
                 "description": "Returns movie schedule by ID",
-                "summary": "Get CSRF by cookie",
+                "summary": "Get CSRF by session",
                 "operationId": "csrf-id",
                 "responses": {
                     "200": {
@@ -340,6 +340,12 @@ var doc = `{
                         "name": "page",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "date in format 2006-01-02",
+                        "name": "date",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -529,6 +535,36 @@ var doc = `{
                     },
                     "405": {
                         "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/recommendations/": {
+            "get": {
+                "description": "get user recommendations",
+                "summary": "recommendations",
+                "operationId": "get-user-recommendations",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Movie"
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Method Not Allowed",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/models.ServerResponse"
                         }
@@ -818,6 +854,26 @@ var doc = `{
                 }
             }
         },
+        "models.Actor": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "patronymic": {
+                    "type": "string"
+                },
+                "surname": {
+                    "type": "string"
+                }
+            }
+        },
         "models.AuthInput": {
             "type": "object",
             "required": [
@@ -869,6 +925,17 @@ var doc = `{
                 }
             }
         },
+        "models.Genre": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.HallConfig": {
             "type": "object",
             "properties": {
@@ -894,8 +961,11 @@ var doc = `{
         "models.Movie": {
             "type": "object",
             "properties": {
-                "actors": {
-                    "type": "string"
+                "actorList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Actor"
+                    }
                 },
                 "ageGroup": {
                     "type": "integer"
@@ -909,8 +979,11 @@ var doc = `{
                 "duration": {
                     "type": "integer"
                 },
-                "genre": {
-                    "type": "string"
+                "genreList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Genre"
+                    }
                 },
                 "id": {
                     "type": "integer"
@@ -944,8 +1017,11 @@ var doc = `{
         "models.MovieList": {
             "type": "object",
             "properties": {
-                "actors": {
-                    "type": "string"
+                "actorList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Actor"
+                    }
                 },
                 "ageGroup": {
                     "type": "integer"
@@ -959,8 +1035,11 @@ var doc = `{
                 "duration": {
                     "type": "integer"
                 },
-                "genre": {
-                    "type": "string"
+                "genreList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Genre"
+                    }
                 },
                 "id": {
                     "type": "integer"

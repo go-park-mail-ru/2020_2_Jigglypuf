@@ -1,11 +1,14 @@
 package delivery
 
 import (
-	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"encoding/json"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
-	"encoding/json"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/promconfig"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
+	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 )
@@ -28,9 +31,9 @@ func getQueryLimitPageArgs(r *http.Request) (int, int, error) {
 	return limit, page, nil
 }
 
-func NewMovieHandler(usecase movieservice.MovieUseCase) *MovieHandler {
+func NewMovieHandler(useCase movieservice.MovieUseCase) *MovieHandler {
 	return &MovieHandler{
-		movieUseCase: usecase,
+		movieUseCase: useCase,
 	}
 }
 
@@ -45,6 +48,9 @@ func NewMovieHandler(usecase movieservice.MovieUseCase) *MovieHandler {
 // @Failure 405 {object} models.ServerResponse
 // @Router /api/movie/ [get]
 func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request) {
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetMovieList, &status)
+
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
@@ -71,6 +77,7 @@ func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	status = promconfig.StatusSuccess
 	_, _ = w.Write(response)
 }
 
@@ -84,6 +91,9 @@ func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request) {
 // @Failure 405 {object} models.ServerResponse
 // @Router /api/movie/{id}/ [get]
 func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetMovie, &status)
+
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
@@ -112,8 +122,9 @@ func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	response, _ := json.Marshal(result)
+	response, _ := result.MarshalJSON()
 
+	status = promconfig.StatusSuccess
 	_, _ = w.Write(response)
 }
 
@@ -130,6 +141,8 @@ func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 // @Router /api/movie/rate/ [post]
 func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.RateMovie, &status)
 
 	if r.Method != http.MethodPost {
 		models.BadMethodHTTPResponse(&w)
@@ -145,9 +158,12 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	decoder := json.NewDecoder(r.Body)
+	inputBuf, inputErr := ioutil.ReadAll(r.Body)
+	if inputErr != nil {
+		models.BadBodyHTTPResponse(&w, models.ErrFooIncorrectInputInfo)
+	}
 	movie := new(models.RateMovie)
-	translationError := decoder.Decode(movie)
+	translationError := movie.UnmarshalJSON(inputBuf)
 	if translationError != nil {
 		models.BadBodyHTTPResponse(&w, translationError)
 		return
@@ -158,6 +174,8 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 		models.BadBodyHTTPResponse(&w, RateErr)
 		return
 	}
+
+	status = promconfig.StatusSuccess
 }
 
 // Movie godoc
@@ -166,12 +184,16 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 // @ID movie-in-cinema-id
 // @Param limit query int true "limit"
 // @Param page query int true "page"
+// @Param date query int false "date in format 2006-01-02"
 // @Success 200 {array} models.MovieList
 // @Failure 400 {object} models.ServerResponse "Bad body"
 // @Failure 401 {object} models.ServerResponse "No authorization"
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
 // @Router /api/movie/actual/ [get]
-func (t *MovieHandler) GetMoviesInCinema(w http.ResponseWriter, r *http.Request) {
+func (t *MovieHandler) GetActualMovies(w http.ResponseWriter, r *http.Request) {
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetActualMovies, &status)
+
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
@@ -183,13 +205,15 @@ func (t *MovieHandler) GetMoviesInCinema(w http.ResponseWriter, r *http.Request)
 		models.BadBodyHTTPResponse(&w, models.IncorrectGetParameters{})
 		return
 	}
+	date := r.URL.Query()[schedule.DateQueryParamName]
 
-	movieList, movieErr := t.movieUseCase.GetMoviesInCinema(limit, page)
+	movieList, movieErr := t.movieUseCase.GetActualMovies(limit, page, date)
 	if movieErr != nil {
 		models.BadBodyHTTPResponse(&w, movieErr)
 		return
 	}
 
+	status = promconfig.StatusSuccess
 	w.WriteHeader(http.StatusOK)
 	response, _ := json.Marshal(movieList)
 

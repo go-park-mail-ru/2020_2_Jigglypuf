@@ -1,11 +1,13 @@
 package delivery
 
 import (
-	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice"
 	"encoding/json"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/promconfig"
+	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -30,14 +32,20 @@ func NewTicketDelivery(useCase ticketservice.UseCase) *TicketDelivery {
 // @Failure 405 {object} models.ServerResponse "Method not allowed"
 // @Router /api/ticket/buy/ [post]
 func (t *TicketDelivery) BuyTicket(w http.ResponseWriter, r *http.Request) {
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.BuyTicket, &status)
+
 	if r.Method != http.MethodPost {
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
-	decoder := json.NewDecoder(r.Body)
-	defer r.Body.Close()
+
+	inputBuf, inputErr := ioutil.ReadAll(r.Body)
+	if inputErr != nil {
+		models.BadBodyHTTPResponse(&w, models.ErrFooIncorrectInputInfo)
+	}
 	ticketItem := new(models.TicketInput)
-	decodeErr := decoder.Decode(ticketItem)
+	decodeErr := ticketItem.UnmarshalJSON(inputBuf)
 	if decodeErr != nil {
 		models.BadBodyHTTPResponse(&w, decodeErr)
 		return
@@ -57,6 +65,8 @@ func (t *TicketDelivery) BuyTicket(w http.ResponseWriter, r *http.Request) {
 		models.BadBodyHTTPResponse(&w, buyErr)
 		return
 	}
+
+	status = promconfig.StatusSuccess
 }
 
 // Ticket godoc
@@ -70,6 +80,9 @@ func (t *TicketDelivery) BuyTicket(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} models.ServerResponse "Internal err"
 // @Router /api/ticket/ [get]
 func (t *TicketDelivery) GetUserTickets(w http.ResponseWriter, r *http.Request) {
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetUserTickets, &status)
+
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
@@ -87,6 +100,8 @@ func (t *TicketDelivery) GetUserTickets(w http.ResponseWriter, r *http.Request) 
 		models.BadBodyHTTPResponse(&w, getTicketErr)
 		return
 	}
+
+	status = promconfig.StatusSuccess
 	outputBuf, _ := json.Marshal(ticketList)
 	_, _ = w.Write(outputBuf)
 }
@@ -103,6 +118,9 @@ func (t *TicketDelivery) GetUserTickets(w http.ResponseWriter, r *http.Request) 
 // @Failure 500 {object} models.ServerResponse "Internal err"
 // @Router /api/ticket/{id}/ [get]
 func (t *TicketDelivery) GetUsersSimpleTicket(w http.ResponseWriter, r *http.Request) {
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetUsersSimpleTicket, &status)
+
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
@@ -124,7 +142,8 @@ func (t *TicketDelivery) GetUsersSimpleTicket(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	outputBuf, _ := json.Marshal(ticketItem)
+	status = promconfig.StatusSuccess
+	outputBuf, _ := ticketItem.MarshalJSON()
 
 	_, _ = w.Write(outputBuf)
 }
@@ -140,6 +159,9 @@ func (t *TicketDelivery) GetUsersSimpleTicket(w http.ResponseWriter, r *http.Req
 // @Failure 500 {object} models.ServerResponse "Internal err"
 // @Router /api/ticket/schedule/{id}/ [get]
 func (t *TicketDelivery) GetHallScheduleTickets(w http.ResponseWriter, r *http.Request) {
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetHallScheduleTickets, &status)
+
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
 		return
@@ -153,6 +175,7 @@ func (t *TicketDelivery) GetHallScheduleTickets(w http.ResponseWriter, r *http.R
 		return
 	}
 
+	status = promconfig.StatusSuccess
 	outputBuf, _ := json.Marshal(ticketList)
 
 	_, _ = w.Write(outputBuf)

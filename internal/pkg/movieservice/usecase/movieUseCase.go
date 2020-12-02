@@ -1,20 +1,23 @@
 package usecase
 
 import (
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	"context"
+	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/schedule"
+	"time"
 )
 
 type MovieUseCase struct {
-	DBConn         movieservice.MovieRepository
-	UserRepository interfaces.AuthRepository
+	DBConn            movieservice.MovieRepository
+	AuthServiceClient authService.AuthenticationServiceClient
 }
 
-func NewMovieUseCase(rep movieservice.MovieRepository, userRepository interfaces.AuthRepository) *MovieUseCase {
+func NewMovieUseCase(rep movieservice.MovieRepository, authServiceClient authService.AuthenticationServiceClient) *MovieUseCase {
 	return &MovieUseCase{
-		DBConn:         rep,
-		UserRepository: userRepository,
+		DBConn:            rep,
+		AuthServiceClient: authServiceClient,
 	}
 }
 
@@ -33,9 +36,9 @@ func (t *MovieUseCase) GetMovie(id uint64, isAuth bool, userID uint64) (*models.
 }
 
 func (t *MovieUseCase) GetMovieList(limit, page int) (*[]models.MovieList, error) {
-	page -= 1
-	if page < 0 || limit < 0{
-		return nil,models.ErrFooIncorrectInputInfo
+	page--
+	if page < 0 || limit < 0 {
+		return nil, models.ErrFooIncorrectInputInfo
 	}
 	return t.DBConn.GetMovieList(limit, page)
 }
@@ -49,11 +52,15 @@ func (t *MovieUseCase) UpdateMovie(movie *models.Movie) error {
 }
 
 func (t *MovieUseCase) RateMovie(userID uint64, id uint64, rating int64) error {
-	reqUser, userErr := t.UserRepository.GetUserByID(userID)
+	reqUser, userErr := t.AuthServiceClient.GetUserByID(context.Background(), &authService.GetUserByIDRequest{UserID: userID})
 	if userErr != nil {
 		return models.ErrFooNoAuthorization
 	}
-	personalRatingErr := t.DBConn.RateMovie(reqUser, id, rating)
+	personalRatingErr := t.DBConn.RateMovie(&models.User{
+		ID:       reqUser.User.ID,
+		Login:    reqUser.User.Login,
+		Password: reqUser.User.Password,
+	}, id, rating)
 	if personalRatingErr != nil {
 		return personalRatingErr
 	}
@@ -66,10 +73,19 @@ func (t *MovieUseCase) GetRating(user *models.User, id uint64) (int64, error) {
 	return t.DBConn.GetRating(user.ID, id)
 }
 
-func (t *MovieUseCase) GetMoviesInCinema(limit, page int) (*[]models.MovieList, error) {
-	page -= 1
-	if page < 0 || limit < 0{
-		return nil,models.ErrFooIncorrectInputInfo
+func (t *MovieUseCase) GetActualMovies(limit, page int, date []string) (*[]models.MovieList, error) {
+	page--
+	if page < 0 || limit < 0 {
+		return nil, models.ErrFooIncorrectInputInfo
 	}
-	return t.DBConn.GetMoviesInCinema(limit, page)
+	castedDate := time.Now().Format(schedule.TimeStandard)
+	allTime := true
+	if len(date) != 0 {
+		_, castErr := time.Parse(schedule.TimeStandard, date[0])
+		if castErr == nil {
+			castedDate = date[0]
+			allTime = false
+		}
+	}
+	return t.DBConn.GetMoviesInCinema(limit, page, castedDate, allTime)
 }

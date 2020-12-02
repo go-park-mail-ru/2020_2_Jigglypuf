@@ -1,9 +1,10 @@
 package delivery
 
 import (
+	"encoding/json"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
-	"encoding/json"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/promconfig"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strconv"
@@ -30,6 +31,8 @@ func NewCinemaHandler(useCase cinemaservice.UseCase) *CinemaHandler {
 // @Router /api/cinema/{id}/ [get]
 func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetCinema, &status)
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -52,8 +55,9 @@ func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r *http.Request, params
 		return
 	}
 
+	status = promconfig.StatusSuccess
 	w.WriteHeader(http.StatusOK)
-	response, _ := json.Marshal(result)
+	response, _ := result.MarshalJSON()
 	_, _ = w.Write(response)
 }
 
@@ -69,6 +73,8 @@ func (t *CinemaHandler) GetCinema(w http.ResponseWriter, r *http.Request, params
 // @Router /api/cinema/ [get]
 func (t *CinemaHandler) GetCinemaList(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetCinemaList, &status)
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -96,6 +102,8 @@ func (t *CinemaHandler) GetCinemaList(w http.ResponseWriter, r *http.Request, pa
 		models.BadBodyHTTPResponse(&w, GetCinemaError)
 		return
 	}
+
+	status = promconfig.StatusSuccess
 
 	w.WriteHeader(http.StatusOK)
 	response, _ := json.Marshal(result)

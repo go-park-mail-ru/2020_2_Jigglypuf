@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"database/sql"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"log"
 )
 
@@ -64,7 +64,7 @@ func (t *ProfileSQLRepository) GetProfileViaID(userID uint64) (*models.Profile, 
 		return nil, models.ErrFooNoDBConnection
 	}
 
-	resultSQL := t.DBConnection.QueryRow("SELECT ProfileName, ProfileSurname, AvatarPath, user_id, login FROM profile JOIN users u on profile.user_id = u.id WHERE user_id = $1", userID)
+	resultSQL := t.DBConnection.QueryRow("SELECT ProfileName, ProfileSurname, AvatarPath, user_id FROM profile WHERE user_id = $1", userID)
 	rowsErr := resultSQL.Err()
 	if rowsErr != nil {
 		log.Println(rowsErr)
@@ -73,7 +73,7 @@ func (t *ProfileSQLRepository) GetProfileViaID(userID uint64) (*models.Profile, 
 
 	reqProfile := new(models.Profile)
 	reqProfile.UserCredentials = new(models.User)
-	ScanErr := resultSQL.Scan(&reqProfile.Name, &reqProfile.Surname, &reqProfile.AvatarPath, &reqProfile.UserCredentials.ID, &reqProfile.UserCredentials.Login)
+	ScanErr := resultSQL.Scan(&reqProfile.Name, &reqProfile.Surname, &reqProfile.AvatarPath, &reqProfile.UserCredentials.ID)
 	if ScanErr != nil {
 		log.Println(ScanErr)
 		return nil, ScanErr

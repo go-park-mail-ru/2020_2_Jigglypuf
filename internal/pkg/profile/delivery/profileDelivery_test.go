@@ -1,12 +1,12 @@
 package delivery
 
-import(
+import (
 	"context"
 	"errors"
-	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/mock"
+	profileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/proto/codegen"
+	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/golang/mock/gomock"
 	"github.com/julienschmidt/httprouter"
 	"github.com/magiconair/properties/assert"
@@ -16,37 +16,35 @@ import(
 	"testing"
 )
 
-
-type ProfileTesting struct{
-	handler *ProfileHandler
-	useCaseMock *mock.MockUseCase
+type ProfileTesting struct {
+	handler          *ProfileHandler
+	useCaseMock      *mock.MockManagerInterface
 	goMockController *gomock.Controller
 }
 
-var(
+var (
 	testingStruct *ProfileTesting = nil
 )
 
-func setup(t *testing.T){
+func setup(t *testing.T) {
 	testingStruct = new(ProfileTesting)
 	testingStruct.goMockController = gomock.NewController(t)
 
-	testingStruct.useCaseMock = mock.NewMockUseCase(testingStruct.goMockController)
+	testingStruct.useCaseMock = mock.NewMockManagerInterface(testingStruct.goMockController)
 	testingStruct.handler = NewProfileHandler(testingStruct.useCaseMock)
 }
 
-func teardown(){
+func teardown() {
 	testingStruct.goMockController.Finish()
 }
 
-func TestGetProfileSuccess(t *testing.T){
+func TestGetProfileSuccess(t *testing.T) {
 	setup(t)
 	testReq := httptest.NewRequest(http.MethodGet, "/somepath/", nil)
 	ctx := testReq.Context()
-	ctx = context.WithValue(ctx,cookieService.ContextIsAuthName, true)
+	ctx = context.WithValue(ctx, cookieService.ContextIsAuthName, true)
 	ctx = context.WithValue(ctx, cookieService.ContextUserIDName, uint64(0))
-	returnItem := new(models.Profile)
-	testingStruct.useCaseMock.EXPECT().GetProfileViaID(gomock.Any()).Return(returnItem, nil)
+	testingStruct.useCaseMock.EXPECT().GetProfileByID(gomock.Any(), gomock.Any()).Return(&profileService.Profile{}, nil)
 
 	testRec := httptest.NewRecorder()
 
@@ -55,13 +53,13 @@ func TestGetProfileSuccess(t *testing.T){
 
 	teardown()
 }
-func TestGetProfileUCError(t *testing.T){
+func TestGetProfileUCError(t *testing.T) {
 	setup(t)
 	testReq := httptest.NewRequest(http.MethodGet, "/somepath/", nil)
 	ctx := testReq.Context()
-	ctx = context.WithValue(ctx,cookieService.ContextIsAuthName, true)
+	ctx = context.WithValue(ctx, cookieService.ContextIsAuthName, true)
 	ctx = context.WithValue(ctx, cookieService.ContextUserIDName, uint64(0))
-	testingStruct.useCaseMock.EXPECT().GetProfileViaID(gomock.Any()).Return(nil, errors.New("someerror"))
+	testingStruct.useCaseMock.EXPECT().GetProfileByID(gomock.Any(), gomock.Any()).Return(nil, errors.New("someerror"))
 
 	testRec := httptest.NewRecorder()
 
@@ -71,7 +69,7 @@ func TestGetProfileUCError(t *testing.T){
 	teardown()
 }
 
-func TestGetProfileInvalidMethod(t *testing.T){
+func TestGetProfileInvalidMethod(t *testing.T) {
 	setup(t)
 
 	testReq := httptest.NewRequest(http.MethodPost, "/somepath", nil)
@@ -83,7 +81,7 @@ func TestGetProfileInvalidMethod(t *testing.T){
 	teardown()
 }
 
-func TestGetProfileNoAuth(t *testing.T){
+func TestGetProfileNoAuth(t *testing.T) {
 	setup(t)
 	testReq := httptest.NewRequest(http.MethodGet, "/somepath/", nil)
 
@@ -95,7 +93,7 @@ func TestGetProfileNoAuth(t *testing.T){
 	teardown()
 }
 
-func TestUpdateProfileFail(t *testing.T){
+func TestUpdateProfileFail(t *testing.T) {
 	setup(t)
 	testReq := httptest.NewRequest(http.MethodPost, "/somepath/", nil)
 	testRec := httptest.NewRecorder()
@@ -105,7 +103,7 @@ func TestUpdateProfileFail(t *testing.T){
 	teardown()
 }
 
-func TestUpdateProfileFailNoForm(t *testing.T){
+func TestUpdateProfileFailNoForm(t *testing.T) {
 	setup(t)
 	testReq := httptest.NewRequest(http.MethodPut, "/somepath/", nil)
 	testRec := httptest.NewRecorder()
@@ -115,7 +113,7 @@ func TestUpdateProfileFailNoForm(t *testing.T){
 	teardown()
 }
 
-func TestUpdateProfileFailBody(t *testing.T){
+func TestUpdateProfileFailBody(t *testing.T) {
 	setup(t)
 	testReq := httptest.NewRequest(http.MethodPut, "/somepath/", nil)
 	testRec := httptest.NewRecorder()
@@ -126,8 +124,7 @@ func TestUpdateProfileFailBody(t *testing.T){
 	teardown()
 }
 
-
-func TestUpdateProfileSuccess(t *testing.T){
+func TestUpdateProfileSuccess(t *testing.T) {
 	setup(t)
 	testReq := httptest.NewRequest(http.MethodPut, "/somepath/", nil)
 	testRec := httptest.NewRecorder()
@@ -136,13 +133,13 @@ func TestUpdateProfileSuccess(t *testing.T){
 	ctx = context.WithValue(ctx, cookieService.ContextIsAuthName, true)
 	ctx = context.WithValue(ctx, cookieService.ContextUserIDName, uint64(1))
 
-	testingStruct.useCaseMock.EXPECT().UpdateProfile(gomock.Any(),gomock.Any(),gomock.Any(),gomock.Any()).Return(nil)
+	testingStruct.useCaseMock.EXPECT().UpdateProfile(gomock.Any(), gomock.Any()).Return(nil, nil)
 	testingStruct.handler.UpdateProfile(testRec, testReq.WithContext(ctx), httprouter.Params{})
 	assert.Equal(t, testRec.Code, http.StatusOK)
 	teardown()
 }
 
-func TestUpdateProfileUCFail(t *testing.T){
+func TestUpdateProfileUCFail(t *testing.T) {
 	setup(t)
 	testReq := httptest.NewRequest(http.MethodPut, "/somepath/", nil)
 	testRec := httptest.NewRecorder()
@@ -151,30 +148,29 @@ func TestUpdateProfileUCFail(t *testing.T){
 	ctx = context.WithValue(ctx, cookieService.ContextIsAuthName, true)
 	ctx = context.WithValue(ctx, cookieService.ContextUserIDName, uint64(1))
 
-	testingStruct.useCaseMock.EXPECT().UpdateProfile(gomock.Any(),gomock.Any(),gomock.Any(),gomock.Any()).Return(errors.New("some error"))
+	testingStruct.useCaseMock.EXPECT().UpdateProfile(gomock.Any(), gomock.Any()).Return(nil, errors.New("some error"))
 	testingStruct.handler.UpdateProfile(testRec, testReq.WithContext(ctx), httprouter.Params{})
 	assert.Equal(t, testRec.Code, http.StatusBadRequest)
 	teardown()
 }
 
-func TestUpdateProfileSaveAvatarError(t *testing.T){
+func TestUpdateProfileSaveAvatarError(t *testing.T) {
 	setup(t)
 	testReq := httptest.NewRequest(http.MethodPut, "/somepath/", nil)
 	testRec := httptest.NewRecorder()
 	testReq.MultipartForm = new(multipart.Form)
 	testReq.MultipartForm.File = map[string][]*multipart.FileHeader{
-		profile.AvatarFormName:
-			{
-				&multipart.FileHeader{
-					Filename: "some file",
-				},
+		profile.AvatarFormName: {
+			&multipart.FileHeader{
+				Filename: "some file",
 			},
+		},
 	}
 	ctx := testReq.Context()
 	ctx = context.WithValue(ctx, cookieService.ContextIsAuthName, true)
 	ctx = context.WithValue(ctx, cookieService.ContextUserIDName, uint64(1))
 
-	testingStruct.useCaseMock.EXPECT().UpdateProfile(gomock.Any(),gomock.Any(),gomock.Any(),gomock.Any()).Return(nil)
+	testingStruct.useCaseMock.EXPECT().UpdateProfile(gomock.Any(), gomock.Any()).Return(nil, nil)
 	testingStruct.handler.UpdateProfile(testRec, testReq.WithContext(ctx), httprouter.Params{})
 	assert.Equal(t, testRec.Code, http.StatusOK)
 	teardown()

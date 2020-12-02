@@ -5,6 +5,19 @@ definitions:
       token:
         type: string
     type: object
+  models.Actor:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      patronymic:
+        type: string
+      surname:
+        type: string
+    type: object
   models.AuthInput:
     properties:
       login:
@@ -38,6 +51,13 @@ definitions:
       placeConfig:
         $ref: '#/definitions/models.HallConfig'
     type: object
+  models.Genre:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   models.HallConfig:
     properties:
       levels:
@@ -54,8 +74,10 @@ definitions:
     type: object
   models.Movie:
     properties:
-      actors:
-        type: string
+      actorList:
+        items:
+          $ref: '#/definitions/models.Actor'
+        type: array
       ageGroup:
         type: integer
       country:
@@ -64,8 +86,10 @@ definitions:
         type: string
       duration:
         type: integer
-      genre:
-        type: string
+      genreList:
+        items:
+          $ref: '#/definitions/models.Genre'
+        type: array
       id:
         type: integer
       name:
@@ -87,8 +111,10 @@ definitions:
     type: object
   models.MovieList:
     properties:
-      actors:
-        type: string
+      actorList:
+        items:
+          $ref: '#/definitions/models.Actor'
+        type: array
       ageGroup:
         type: integer
       country:
@@ -97,8 +123,10 @@ definitions:
         type: string
       duration:
         type: integer
-      genre:
-        type: string
+      genreList:
+        items:
+          $ref: '#/definitions/models.Genre'
+        type: array
       id:
         type: integer
       name:
@@ -220,7 +248,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: login user and get cookie
+      description: login user and get session
       operationId: login-user-by-login-data
       parameters:
       - description: Login information
@@ -259,7 +287,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: register user and get cookie
+      description: register user and get session
       operationId: register-user-by-register-data
       parameters:
       - description: Register information
@@ -355,7 +383,7 @@ paths:
           description: internal error
           schema:
             $ref: '#/definitions/models.ServerResponse'
-      summary: Get CSRF by cookie
+      summary: Get CSRF by session
   /api/hall/{id}/:
     get:
       description: Get cinema hall placement structure
@@ -453,6 +481,10 @@ paths:
         in: query
         name: page
         required: true
+        type: integer
+      - description: date in format 2006-01-02
+        in: query
+        name: date
         type: integer
       responses:
         "200":
@@ -558,6 +590,26 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: GetProfile
+  /api/recommendations/:
+    get:
+      description: get user recommendations
+      operationId: get-user-recommendations
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Movie'
+            type: array
+        "405":
+          description: Method Not Allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: recommendations
   /api/schedule/:
     get:
       description: Returns movie schedule by getting movie id, cinema id and day(date) in format schedule.TimeStandard

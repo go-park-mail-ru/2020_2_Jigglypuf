@@ -1,10 +1,12 @@
 package delivery
 
 import (
-	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cookie"
+	"encoding/json"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile"
-	"encoding/json"
+	ProfileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/proto/codegen"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/promconfig"
+	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/julienschmidt/httprouter"
 	"io"
 	"log"
@@ -16,7 +18,7 @@ import (
 )
 
 type ProfileHandler struct {
-	useCase profile.UseCase
+	profile ProfileService.ProfileServiceClient
 }
 
 type SavingError struct{}
@@ -25,9 +27,9 @@ func (t SavingError) Error() string {
 	return "Cannot save the file!"
 }
 
-func NewProfileHandler(useCase profile.UseCase) *ProfileHandler {
+func NewProfileHandler(profile ProfileService.ProfileServiceClient) *ProfileHandler {
 	return &ProfileHandler{
-		useCase: useCase,
+		profile: profile,
 	}
 }
 
@@ -39,17 +41,17 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 
 	buff := make([]byte, 512)
 	_, err := image.Read(buff)
-	_, _ = image.Seek(int64(0),0)
-	if err != nil{
-		return "",SavingError{}
+	_, _ = image.Seek(int64(0), 0)
+	if err != nil {
+		return "", SavingError{}
 	}
 	filetype := http.DetectContentType(buff)
-	if matched, regexErr := regexp.Match("image/.*", []byte(filetype)); !matched || regexErr != nil{
-		return "",SavingError{}
+	if matched, regexErr := regexp.Match("image/.*", []byte(filetype)); !matched || regexErr != nil {
+		return "", SavingError{}
 	}
 	defer image.Close()
 	uniqueName := models.RandStringRunes(25)
-	fileName := uniqueName + "." + strings.Split(filetype,"/")[1]
+	fileName := uniqueName + "." + strings.Split(filetype, "/")[1]
 	f, saveErr := os.OpenFile(profile.SavingPath+fileName, os.O_WRONLY|os.O_CREATE, 0666)
 	if saveErr != nil {
 		return "", SavingError{}
@@ -76,6 +78,8 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 // @Router /api/profile/ [get]
 func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetProfile, &status)
 
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -92,13 +96,14 @@ func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, para
 		return
 	}
 
-	requiredProfile, profileError := t.useCase.GetProfileViaID(profileUserID.(uint64))
+	requiredProfile, profileError := t.profile.GetProfileByID(r.Context(), &ProfileService.GetProfileByUserIDRequest{UserID: profileUserID.(uint64)})
 
 	if profileError != nil {
 		models.BadBodyHTTPResponse(&w, profileError)
 		return
 	}
 
+	status = promconfig.StatusSuccess
 	w.WriteHeader(http.StatusOK)
 	responseProfile, _ := json.Marshal(requiredProfile)
 
@@ -117,6 +122,9 @@ func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, para
 // @Router /api/profile/ [put]
 func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
+	status := promconfig.StatusErr
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.UpdateProfile, &status)
+
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method != http.MethodPut {
@@ -142,14 +150,23 @@ func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request, p
 	if savingErr != nil {
 		avatarPath = ""
 	}
-
-	err := t.useCase.UpdateProfile(profileUserID.(uint64), r.FormValue(profile.NameFormName), r.FormValue(profile.SurnameFormName), avatarPath)
+	_, err := t.profile.UpdateProfile(r.Context(), &ProfileService.UpdateProfileRequest{
+		Profile: &ProfileService.Profile{
+			UserCredentials: &ProfileService.UserProfile{
+				UserID: profileUserID.(uint64),
+			},
+			Name:       r.FormValue(profile.NameFormName),
+			Surname:    r.FormValue(profile.SurnameFormName),
+			AvatarPath: avatarPath,
+		},
+	})
 
 	if err != nil {
 		models.BadBodyHTTPResponse(&w, err)
 		return
 	}
 
-	// http.SetCookie(w, cookie)
+	status = promconfig.StatusSuccess
+	// http.SetCookie(w, session)
 	w.WriteHeader(http.StatusOK)
 }

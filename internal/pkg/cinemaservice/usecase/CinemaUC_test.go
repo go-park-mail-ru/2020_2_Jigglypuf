@@ -7,17 +7,17 @@ import (
 	"testing"
 )
 
-type TestingCinemaUseCase struct{
-	useCase *CinemaUseCase
-	DBMock *mock.MockRepository
+type TestingCinemaUseCase struct {
+	useCase          *CinemaUseCase
+	DBMock           *mock.MockRepository
 	goMockController *gomock.Controller
 }
 
-var(
+var (
 	testingStruct *TestingCinemaUseCase = nil
 )
 
-func setup(t *testing.T){
+func setup(t *testing.T) {
 	testingStruct = new(TestingCinemaUseCase)
 
 	testingStruct.goMockController = gomock.NewController(t)
@@ -25,18 +25,18 @@ func setup(t *testing.T){
 	testingStruct.useCase = NewCinemaUseCase(testingStruct.DBMock)
 }
 
-func tearDown(){
+func tearDown() {
 	testingStruct.goMockController.Finish()
 }
 
-func TestGetCinema(t *testing.T){
+func TestGetCinema(t *testing.T) {
 	setup(t)
-	testingStruct.DBMock.EXPECT().GetCinema(gomock.Any()).Return(nil,nil)
+	testingStruct.DBMock.EXPECT().GetCinema(gomock.Any()).Return(nil, nil)
 	_, _ = testingStruct.useCase.GetCinema(uint64(1))
 	tearDown()
 }
 
-func TestCreateCinema(t *testing.T){
+func TestCreateCinema(t *testing.T) {
 	setup(t)
 
 	testingStruct.DBMock.EXPECT().CreateCinema(gomock.Any()).Return(nil)
@@ -45,22 +45,22 @@ func TestCreateCinema(t *testing.T){
 	tearDown()
 }
 
-func TestGetCinemaList(t *testing.T){
+func TestGetCinemaList(t *testing.T) {
 	setup(t)
 
 	testingStruct.DBMock.EXPECT().GetCinemaList(gomock.Any(), gomock.Any()).Return(nil, nil)
-	_, err := testingStruct.useCase.GetCinemaList(1,1)
-	if err != nil{
+	_, err := testingStruct.useCase.GetCinemaList(1, 1)
+	if err != nil {
 		t.Fatalf("INCORRECT TEST GetCinemaList")
 	}
 	tearDown()
 }
 
-func TestGetCinemaListErr(t *testing.T){
+func TestGetCinemaListErr(t *testing.T) {
 	setup(t)
 
-	_, err := testingStruct.useCase.GetCinemaList(0,0)
-	if err == nil{
+	_, err := testingStruct.useCase.GetCinemaList(0, 0)
+	if err == nil {
 		t.Fatalf("INCORRECT TEST GetCinemaListErr")
 	}
 	tearDown()

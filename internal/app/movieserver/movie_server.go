@@ -1,14 +1,15 @@
 package movieserver
 
 import (
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/interfaces"
+	"database/sql"
+	"fmt"
+	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	movieConfig "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
 	movieDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice/delivery"
 	movieRepository "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice/repository"
 	movieUseCase "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice/usecase"
-	"database/sql"
-	"fmt"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/utils"
 	"github.com/gorilla/mux"
 )
 
@@ -21,20 +22,20 @@ type MovieService struct {
 
 func configureMovieRouter(handler *movieDelivery.MovieHandler) *mux.Router {
 	movieRouter := mux.NewRouter()
-	movieRouter.HandleFunc(movieConfig.URLPattern, handler.GetMovieList)
-	movieRouter.HandleFunc(movieConfig.URLPattern+"rate/", handler.RateMovie)
-	movieRouter.HandleFunc(movieConfig.URLPattern+"actual/", handler.GetMoviesInCinema)
-	movieRouter.HandleFunc(movieConfig.URLPattern+fmt.Sprintf("{%s:[0-9]+}/", movieConfig.MovieIDQuery), handler.GetMovie)
+	movieRouter.HandleFunc(utils.MovieURLPattern, handler.GetMovieList)
+	movieRouter.HandleFunc(utils.MovieURLPattern+"rate/", handler.RateMovie)
+	movieRouter.HandleFunc(utils.MovieURLPattern+"actual/", handler.GetActualMovies)
+	movieRouter.HandleFunc(utils.MovieURLPattern+fmt.Sprintf("{%s:[0-9]+}/", movieConfig.MovieIDQuery), handler.GetMovie)
 
 	return movieRouter
 }
 
-func Start(connection *sql.DB, authRep interfaces.AuthRepository) (*MovieService, error) {
+func Start(connection *sql.DB, auth authService.AuthenticationServiceClient) (*MovieService, error) {
 	if connection == nil {
 		return nil, models.ErrFooNoDBConnection
 	}
 	movieRep := movieRepository.NewMovieSQLRepository(connection)
-	movieUC := movieUseCase.NewMovieUseCase(movieRep, authRep)
+	movieUC := movieUseCase.NewMovieUseCase(movieRep, auth)
 	movieHandler := movieDelivery.NewMovieHandler(movieUC)
 
 	movieRouter := configureMovieRouter(movieHandler)

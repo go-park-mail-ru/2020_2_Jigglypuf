@@ -24,9 +24,9 @@ func (t *CinemaUseCase) GetCinema(name uint64) (*models.Cinema, error) {
 }
 
 func (t *CinemaUseCase) GetCinemaList(limit, page int) (*[]models.Cinema, error) {
-	page -= 1
-	if page < 0 || limit < 0{
-		return nil,models.ErrFooIncorrectInputInfo
+	page--
+	if page < 0 || limit < 0 {
+		return nil, models.ErrFooIncorrectInputInfo
 	}
 	return t.DBConn.GetCinemaList(limit, page)
 }

@@ -7,13 +7,13 @@ type User struct {
 }
 
 type AuthInput struct {
-	Login    string `validate:"required,email"`
-	Password string
+	Login    string `validate:"required,email" json:"login"`
+	Password string `json:"password"`
 }
 
 type RegistrationInput struct {
-	Login    string `validate:"required,email"`
-	Password string
-	Name     string
-	Surname  string
+	Login    string `validate:"required,email" json:"login"`
+	Password string `json:"password"`
+	Name     string `json:"name"`
+	Surname  string `json:"surname"`
 }

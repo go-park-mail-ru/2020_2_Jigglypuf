@@ -58,8 +58,8 @@ package tests
 //				writerAuth := httptest.NewRecorder()
 //				requestAuth := httptest.NewRequest("POST", signUpURL, signUpInfo)
 //				AuthService.AuthenticationDelivery.RegisterHandler(writerAuth, requestAuth, nil)
-//				if cookie := writerAuth.Header()["Set-Cookie"]; cookie != nil {
-//					requestProfile.Header.Set("Cookie", cookie[0])
+//				if session := writerAuth.Header()["Set-Cookie"]; session != nil {
+//					requestProfile.Header.Set("Cookie", session[0])
 //				}
 //
 //				profileHandler := profileDelivery.NewProfileHandler(profileUC)

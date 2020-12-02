@@ -11,7 +11,7 @@ import (
 	reflect "reflect"
 )
 
-// MockUserUseCase is a mock of UserUseCase interfaces
+// MockUserUseCase is a mock of UserUseCase interface
 type MockUserUseCase struct {
 	ctrl     *gomock.Controller
 	recorder *MockUserUseCaseMockRecorder
@@ -35,10 +35,10 @@ func (m *MockUserUseCase) EXPECT() *MockUserUseCaseMockRecorder {
 }
 
 // SignUp mocks base method
-func (m *MockUserUseCase) SignUp(input *models.RegistrationInput) (*http.Cookie, error) {
+func (m *MockUserUseCase) SignUp(input *models.RegistrationInput) (uint64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SignUp", input)
-	ret0, _ := ret[0].(*http.Cookie)
+	ret0, _ := ret[0].(uint64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -50,10 +50,10 @@ func (mr *MockUserUseCaseMockRecorder) SignUp(input interface{}) *gomock.Call {
 }
 
 // SignIn mocks base method
-func (m *MockUserUseCase) SignIn(input *models.AuthInput) (*http.Cookie, error) {
+func (m *MockUserUseCase) SignIn(input *models.AuthInput) (uint64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SignIn", input)
-	ret0, _ := ret[0].(*http.Cookie)
+	ret0, _ := ret[0].(uint64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
