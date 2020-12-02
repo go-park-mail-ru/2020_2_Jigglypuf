@@ -2,12 +2,12 @@ package delivery
 
 import (
 	"context"
-	"encoding/json"
 	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/promconfig"
 	session "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/julienschmidt/httprouter"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -65,11 +65,11 @@ func (t *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request, params
 
 	w.Header().Set("Content-Type", "application/json")
 
-	decoder := json.NewDecoder(r.Body)
+	inputBuf, err := ioutil.ReadAll(r.Body)
 	authInput := new(models.AuthInput)
-	translationError := decoder.Decode(authInput)
-	if translationError != nil {
-		models.BadBodyHTTPResponse(&w, translationError)
+	translationErr := authInput.UnmarshalJSON(inputBuf)
+	if err != nil || translationErr != nil {
+		models.BadBodyHTTPResponse(&w, models.ErrFooIncorrectInputInfo)
 		return
 	}
 
@@ -111,12 +111,12 @@ func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request, pa
 
 	w.Header().Set("Content-Type", "application/json")
 
-	decoder := json.NewDecoder(r.Body)
-	authInput := new(models.RegistrationInput)
 
-	translationError := decoder.Decode(authInput)
-	if translationError != nil {
-		models.BadBodyHTTPResponse(&w, translationError)
+	inputBuf, err := ioutil.ReadAll(r.Body)
+	authInput := new(models.RegistrationInput)
+	translationErr := authInput.UnmarshalJSON(inputBuf)
+	if err != nil || translationErr != nil {
+		models.BadBodyHTTPResponse(&w, models.ErrFooIncorrectInputInfo)
 		return
 	}
 

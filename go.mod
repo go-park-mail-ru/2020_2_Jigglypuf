@@ -22,7 +22,7 @@ require (
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/lib/pq v1.8.0
 	github.com/magiconair/properties v1.8.4
-	github.com/mailru/easyjson v0.7.6 // indirect
+	github.com/mailru/easyjson v0.7.6
 	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
 	github.com/ory/go-acc v0.2.6 // indirect
