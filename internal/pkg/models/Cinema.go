@@ -21,7 +21,7 @@ type GetCinemaList struct {
 }
 
 type HallConfig struct {
-	Levels []HallPlace
+	Levels []HallPlace `json:"levels"`
 }
 
 type HallPlace struct {
