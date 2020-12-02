@@ -115,6 +115,7 @@ func (t *UserHandler) RegisterHandler(w http.ResponseWriter, r *http.Request, pa
 	inputBuf, err := ioutil.ReadAll(r.Body)
 	authInput := models.RegistrationInput{}
 	translationErr := authInput.UnmarshalJSON(inputBuf)
+	log.Println(string(inputBuf))
 
 	if err != nil || translationErr != nil {
 		log.Println(translationErr)
