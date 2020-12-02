@@ -36,9 +36,9 @@ func easyjson9b68e925DecodeGithubComGoParkMailRu20202JigglypufInternalPkgModels(
 			continue
 		}
 		switch key {
-		case "Place":
+		case "place":
 			out.Place = int(in.Int())
-		case "Row":
+		case "row":
 			out.Row = int(in.Int())
 		default:
 			in.SkipRecursive()
@@ -55,12 +55,12 @@ func easyjson9b68e925EncodeGithubComGoParkMailRu20202JigglypufInternalPkgModels(
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"Place\":"
+		const prefix string = ",\"place\":"
 		out.RawString(prefix[1:])
 		out.Int(int(in.Place))
 	}
 	{
-		const prefix string = ",\"Row\":"
+		const prefix string = ",\"row\":"
 		out.RawString(prefix)
 		out.Int(int(in.Row))
 	}
@@ -109,7 +109,7 @@ func easyjson9b68e925DecodeGithubComGoParkMailRu20202JigglypufInternalPkgModels1
 			continue
 		}
 		switch key {
-		case "Levels":
+		case "levels":
 			if in.IsNull() {
 				in.Skip()
 				out.Levels = nil
@@ -147,7 +147,7 @@ func easyjson9b68e925EncodeGithubComGoParkMailRu20202JigglypufInternalPkgModels1
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"Levels\":"
+		const prefix string = ",\"levels\":"
 		out.RawString(prefix[1:])
 		if in.Levels == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")

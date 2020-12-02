@@ -1,12 +1,12 @@
 package models
 
 type HallConfig struct {
-	Levels []HallPlace
+	Levels []HallPlace `json:"levels"`
 }
 
 type HallPlace struct {
-	Place int
-	Row   int
+	Place int `json:"place"`
+	Row   int `json:"row"`
 }
 
 type CinemaHall struct {
