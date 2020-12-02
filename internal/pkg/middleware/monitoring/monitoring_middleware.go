@@ -8,21 +8,18 @@ import (
 	"time"
 )
 
-
 var URLResponseLatency = prometheus.NewHistogramVec(
 	prometheus.HistogramOpts{
 		Name:    "http_request_url_duration",
 		Help:    "Latency of response duration",
 		Buckets: prometheus.LinearBuckets(0.01, 0.05, 10),
 	},
-	[]string{"url","handler","method","status"},
+	[]string{"url", "handler", "method", "status"},
 )
 
-
-func init(){
+func init() {
 	prometheus.MustRegister(URLResponseLatency)
 }
-
 
 func AccessLogMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -42,11 +39,11 @@ func AccessLogMiddleware(next http.Handler) http.Handler {
 			}
 			w.Header().Del(promconfig.HandlerNameID)
 		}
-		log.Println(r.URL.Path,handler, r.Method, status)
+		log.Println(r.URL.Path, handler, r.Method, status)
 		timer := prometheus.NewTimer(prometheus.ObserverFunc(func(v float64) {
-			URLResponseLatency.WithLabelValues(r.URL.Path,handler, r.Method, status).Observe(v)
+			URLResponseLatency.WithLabelValues(r.URL.Path, handler, r.Method, status).Observe(v)
 		}))
-		defer func(){
+		defer func() {
 			timer.ObserveDuration()
 		}()
 

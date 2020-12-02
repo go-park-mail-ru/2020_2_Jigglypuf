@@ -49,7 +49,7 @@ func NewMovieHandler(useCase movieservice.MovieUseCase) *MovieHandler {
 // @Router /api/movie/ [get]
 func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request) {
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(w,promconfig.GetMovieList,&status)
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetMovieList, &status)
 
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -92,7 +92,7 @@ func (t *MovieHandler) GetMovieList(w http.ResponseWriter, r *http.Request) {
 // @Router /api/movie/{id}/ [get]
 func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(w,promconfig.GetMovie,&status)
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetMovie, &status)
 
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -142,7 +142,7 @@ func (t *MovieHandler) GetMovie(w http.ResponseWriter, r *http.Request) {
 func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(w,promconfig.RateMovie,&status)
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.RateMovie, &status)
 
 	if r.Method != http.MethodPost {
 		models.BadMethodHTTPResponse(&w)
@@ -159,8 +159,8 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 	}
 
 	inputBuf, inputErr := ioutil.ReadAll(r.Body)
-	if inputErr != nil{
-		models.BadBodyHTTPResponse(&w,models.ErrFooIncorrectInputInfo)
+	if inputErr != nil {
+		models.BadBodyHTTPResponse(&w, models.ErrFooIncorrectInputInfo)
 	}
 	movie := new(models.RateMovie)
 	translationError := movie.UnmarshalJSON(inputBuf)
@@ -192,7 +192,7 @@ func (t *MovieHandler) RateMovie(w http.ResponseWriter, r *http.Request) {
 // @Router /api/movie/actual/ [get]
 func (t *MovieHandler) GetActualMovies(w http.ResponseWriter, r *http.Request) {
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(w,promconfig.GetActualMovies,&status)
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetActualMovies, &status)
 
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -216,7 +216,6 @@ func (t *MovieHandler) GetActualMovies(w http.ResponseWriter, r *http.Request) {
 	status = promconfig.StatusSuccess
 	w.WriteHeader(http.StatusOK)
 	response, _ := json.Marshal(movieList)
-
 
 	_, _ = w.Write(response)
 }

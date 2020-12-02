@@ -79,7 +79,7 @@ func SaveAvatarImage(image multipart.File, handler *multipart.FileHeader, fileEr
 func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(w,promconfig.GetProfile,&status)
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetProfile, &status)
 
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -123,8 +123,7 @@ func (t *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request, para
 func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	defer r.Body.Close()
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(w,promconfig.UpdateProfile,&status)
-
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.UpdateProfile, &status)
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -166,7 +165,6 @@ func (t *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request, p
 		models.BadBodyHTTPResponse(&w, err)
 		return
 	}
-
 
 	status = promconfig.StatusSuccess
 	// http.SetCookie(w, session)

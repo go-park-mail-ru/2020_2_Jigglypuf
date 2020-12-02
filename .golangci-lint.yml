@@ -42,7 +42,7 @@ linters:
     - dupl
     - errcheck
     - exhaustive
-    - gochecknoinits
+    #- gochecknoinits
     - goconst
     - gocritic
     - gocyclo
@@ -50,7 +50,7 @@ linters:
     - golint
     # - gomnd
     - goprintffuncname
-    - gosec
+    #- gosec
     - gosimple
     - govet
     - misspell

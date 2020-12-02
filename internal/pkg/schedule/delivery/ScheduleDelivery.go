@@ -33,7 +33,7 @@ func NewScheduleDelivery(useCase schedule.TimeTableUseCase) *ScheduleDelivery {
 // @Router /api/schedule/ [get]
 func (t *ScheduleDelivery) GetMovieSchedule(w http.ResponseWriter, r *http.Request) {
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(w,promconfig.GetMovieSchedule,&status)
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetMovieSchedule, &status)
 
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)
@@ -67,7 +67,7 @@ func (t *ScheduleDelivery) GetMovieSchedule(w http.ResponseWriter, r *http.Reque
 // @Router /api/schedule/{id} [get]
 func (t *ScheduleDelivery) GetSchedule(w http.ResponseWriter, r *http.Request) {
 	status := promconfig.StatusErr
-	defer promconfig.SetRequestMonitoringContext(w,promconfig.GetSchedule,&status)
+	defer promconfig.SetRequestMonitoringContext(w, promconfig.GetSchedule, &status)
 
 	if r.Method != http.MethodGet {
 		models.BadMethodHTTPResponse(&w)

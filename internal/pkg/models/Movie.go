@@ -73,7 +73,7 @@ type RatingSet struct {
 }
 
 type RatingInput struct {
-	Rating    int64 `json:"rating"`
+	Rating    int64  `json:"rating"`
 	MovieName string `json:"moviename"`
 }
 
@@ -88,5 +88,5 @@ type SearchMovie struct {
 
 type RateMovie struct {
 	ID     uint64 `json:"id"`
-	Rating int64 `json:"rating"`
+	Rating int64  `json:"rating"`
 }

@@ -20,7 +20,6 @@ type GetCinemaList struct {
 	Page  int
 }
 
-
 type Ticket struct {
 	ID              uint64
 	Login           string `validate:"required,email"`
@@ -30,8 +29,8 @@ type Ticket struct {
 }
 
 type TicketInput struct {
-	Login      string `validate:"required,email" json:"login"`
-	ScheduleID uint64 `json:"scheduleID"`
+	Login      string      `validate:"required,email" json:"login"`
+	ScheduleID uint64      `json:"scheduleID"`
 	PlaceField TicketPlace `json:"placeField"`
 }
 
