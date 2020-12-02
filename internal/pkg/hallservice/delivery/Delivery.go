@@ -5,6 +5,7 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/promconfig"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 )
 
@@ -51,6 +52,11 @@ func (t *HallDelivery) GetHallStructure(w http.ResponseWriter, r *http.Request) 
 	}
 
 	status = promconfig.StatusSuccess
-	outputBuf, _ := hallItem.MarshalJSON()
+	outputBuf, MarshalErr := hallItem.MarshalJSON()
+	if MarshalErr != nil{
+		log.Println(MarshalErr)
+		models.InternalErrorHTTPResponse(&w)
+		return
+	}
 	_, _ = w.Write(outputBuf)
 }
