@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"log"
 )
 
 type SQLRepository struct {
@@ -52,5 +53,6 @@ func (t *SQLRepository) GetHallStructure(hallID uint64) (*models.CinemaHall, err
 		return nil, models.ErrFooCastErr
 	}
 
+	log.Println("rep:", hallItem.PlaceConfig)
 	return hallItem, nil
 }

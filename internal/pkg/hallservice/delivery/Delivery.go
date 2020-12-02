@@ -6,6 +6,7 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/promconfig"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 )
 
@@ -50,7 +51,7 @@ func (t *HallDelivery) GetHallStructure(w http.ResponseWriter, r *http.Request) 
 		models.BadBodyHTTPResponse(&w, models.ErrFooIncorrectInputInfo)
 		return
 	}
-
+	log.Println("hall:", hallItem.PlaceConfig)
 	status = promconfig.StatusSuccess
 	outputBuf, _ := json.Marshal(hallItem)
 
