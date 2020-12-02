@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"encoding/json"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 )
 
@@ -46,7 +47,7 @@ func (t *SQLRepository) GetHallStructure(hallID uint64) (*models.CinemaHall, err
 	if ScanErr != nil {
 		return nil, models.ErrFooIncorrectSQLQuery
 	}
-	decodeErr := hallItem.PlaceConfig.UnmarshalJSON([]byte(placeConfig))
+	decodeErr := json.Unmarshal([]byte(placeConfig), &hallItem.PlaceConfig)
 	if decodeErr != nil {
 		return nil, models.ErrFooCastErr
 	}
