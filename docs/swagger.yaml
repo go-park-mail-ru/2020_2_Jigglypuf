@@ -217,7 +217,9 @@ definitions:
       login:
         type: string
       placeField:
-        $ref: '#/definitions/models.TicketPlace'
+        items:
+          $ref: '#/definitions/models.TicketPlace'
+        type: array
       scheduleID:
         type: integer
     required:

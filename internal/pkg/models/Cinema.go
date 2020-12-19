@@ -31,7 +31,7 @@ type Ticket struct {
 type TicketInput struct {
 	Login      string      `validate:"required,email" json:"login"`
 	ScheduleID uint64      `json:"scheduleID"`
-	PlaceField TicketPlace `json:"placeField"`
+	PlaceField []TicketPlace `json:"placeField"`
 }
 
 type TicketPlace struct {

@@ -1182,7 +1182,10 @@ var doc = `{
                     "type": "string"
                 },
                 "placeField": {
-                    "$ref": "#/definitions/models.TicketPlace"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.TicketPlace"
+                    }
                 },
                 "scheduleID": {
                     "type": "integer"

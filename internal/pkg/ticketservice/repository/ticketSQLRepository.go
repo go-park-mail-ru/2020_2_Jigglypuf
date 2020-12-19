@@ -2,8 +2,10 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"log"
+	"strings"
 )
 
 type SQLRepository struct {
@@ -26,7 +28,9 @@ func (t *SQLRepository) GetUserTickets(login string) (*[]models.Ticket, error) {
 		log.Println(SQLErr)
 		return nil, models.ErrFooInternalDBErr
 	}
-	defer SQLResult.Close()
+	defer func(){
+		_ = SQLResult.Close()
+	}()
 
 	ticketList := make([]models.Ticket, 0)
 	ticketItem := new(models.Ticket)
@@ -88,11 +92,27 @@ func (t *SQLRepository) CreateTicket(ticket *models.TicketInput) error {
 		return models.ErrFooNoDBConnection
 	}
 	var ID uint64 = 0
-	ScanErr := t.DBConnection.QueryRow("INSERT INTO ticket (User_login,schedule_id,row,place) VALUES($1,$2,$3,$4) RETURNING ID",
-		ticket.Login, ticket.ScheduleID, ticket.PlaceField.Row, ticket.PlaceField.Place).Scan(&ID)
+	insertQuery := "INSERT INTO ticket (User_login,schedule_id,row,place) VALUES %s"
+	query, args := bulkInsert(ticket, insertQuery)
+	query += " RETURNING ID"
+	ScanErr := t.DBConnection.QueryRow(query,
+		*args...).Scan(&ID)
 	if ScanErr != nil {
 		return models.ErrFooIncorrectSQLQuery
 	}
 
 	return nil
+}
+
+func bulkInsert(rows *models.TicketInput, query string) (string, *[]interface{}) {
+	ValueStrings := make([]interface{}, 0)
+	QueryStrings := make([]string, 0)
+	i := 0
+	for _, val := range rows.PlaceField {
+		QueryStrings = append(QueryStrings, fmt.Sprintf("($%d, $%d, $%d,$%d)", i*4+1, i*4+2, i*4+3, i*4+4))
+		ValueStrings = append(ValueStrings, rows.Login, rows.ScheduleID, val.Row, val.Place)
+		i++
+	}
+	smtp := fmt.Sprintf(query, strings.Join(QueryStrings, ","))
+	return smtp, &ValueStrings
 }

@@ -80,9 +80,11 @@ func (t *TicketUseCase) BuyTicket(ticket *models.TicketInput, userID interface{}
 		return models.ErrFooIncorrectInputInfo
 	}
 
-	availability, avErr := t.hallRepository.CheckAvailability(HallID, &ticket.PlaceField)
-	if avErr != nil || !availability {
-		return models.ErrFooPlaceAlreadyBusy
+	for _,val := range ticket.PlaceField{
+		availability, avErr := t.hallRepository.CheckAvailability(HallID, &val)
+		if avErr != nil || !availability {
+			return models.ErrFooPlaceAlreadyBusy
+		}
 	}
 
 	validationError := t.validator.Struct(ticket)

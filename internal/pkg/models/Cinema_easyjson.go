@@ -114,7 +114,28 @@ func easyjson316958ddDecodeGithubComGoParkMailRu20202JigglypufInternalPkgModels1
 		case "scheduleID":
 			out.ScheduleID = uint64(in.Uint64())
 		case "placeField":
-			(out.PlaceField).UnmarshalEasyJSON(in)
+			if in.IsNull() {
+				in.Skip()
+				out.PlaceField = nil
+			} else {
+				in.Delim('[')
+				if out.PlaceField == nil {
+					if !in.IsDelim(']') {
+						out.PlaceField = make([]TicketPlace, 0, 4)
+					} else {
+						out.PlaceField = []TicketPlace{}
+					}
+				} else {
+					out.PlaceField = (out.PlaceField)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v1 TicketPlace
+					(v1).UnmarshalEasyJSON(in)
+					out.PlaceField = append(out.PlaceField, v1)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
 		default:
 			in.SkipRecursive()
 		}
@@ -142,7 +163,18 @@ func easyjson316958ddEncodeGithubComGoParkMailRu20202JigglypufInternalPkgModels1
 	{
 		const prefix string = ",\"placeField\":"
 		out.RawString(prefix)
-		(in.PlaceField).MarshalEasyJSON(out)
+		if in.PlaceField == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+			out.RawString("null")
+		} else {
+			out.RawByte('[')
+			for v2, v3 := range in.PlaceField {
+				if v2 > 0 {
+					out.RawByte(',')
+				}
+				(v3).MarshalEasyJSON(out)
+			}
+			out.RawByte(']')
+		}
 	}
 	out.RawByte('}')
 }
