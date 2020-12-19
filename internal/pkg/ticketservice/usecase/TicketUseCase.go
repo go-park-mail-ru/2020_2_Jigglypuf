@@ -80,7 +80,7 @@ func (t *TicketUseCase) BuyTicket(ticket *models.TicketInput, userID interface{}
 		return models.ErrFooIncorrectInputInfo
 	}
 
-	for _,val := range ticket.PlaceField{
+	for _, val := range ticket.PlaceField {
 		availability, avErr := t.hallRepository.CheckAvailability(HallID, &val)
 		if avErr != nil || !availability {
 			return models.ErrFooPlaceAlreadyBusy

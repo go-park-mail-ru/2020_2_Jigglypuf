@@ -28,7 +28,7 @@ func (t *SQLRepository) GetUserTickets(login string) (*[]models.Ticket, error) {
 		log.Println(SQLErr)
 		return nil, models.ErrFooInternalDBErr
 	}
-	defer func(){
+	defer func() {
 		_ = SQLResult.Close()
 	}()
 
