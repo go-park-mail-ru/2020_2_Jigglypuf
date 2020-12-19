@@ -30,7 +30,7 @@ services:
    - /home/ubuntu/var/lib/postgresql:/var/lib/postgresql
    - /home/ubuntu/var/lib/postgresql/data:/var/lib/postgresql/data/:rw
  app:
-  image: felixgreen/dev_service_image
+  image: felixgreen/cinema_interfaceservice_image
   restart: always
   ports:
    - 8080:8080
