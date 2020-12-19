@@ -11,6 +11,6 @@ RUN CGO_ENABLED=0 go build -o profile_service cmd/profile/profile_service.go
 
 FROM alpine
 WORKDIR /app
-COPY --from=builder /app/profile/profile_service /app/
+COPY --from=builder /app/cmd/profile/profile_service /app/
 RUN chmod +x /app/profile_service
 ENTRYPOINT /app/profile_service
