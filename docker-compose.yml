@@ -36,7 +36,6 @@ services:
    - 8080:8080
   volumes:
    - /home/ubuntu/media:/media
-   - ./:/app
  auth:
   image: felixgreen/cinema-auth-service
   restart: always
