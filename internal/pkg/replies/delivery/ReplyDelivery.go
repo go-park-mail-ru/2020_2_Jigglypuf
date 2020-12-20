@@ -21,6 +21,17 @@ func NewReplyDelivery(useCase replies.UseCase) *ReplyDelivery{
 	}
 }
 
+
+// Reply godoc
+// @Summary CreateReply
+// @Description Create reply to movie
+// @ID create-reply-id
+// @Param Reply_info body models.ReplyInput true "Login information"
+// @Success 200
+// @Failure 400 {object} models.ServerResponse
+// @Failure 401 {object} models.ServerResponse
+// @Failure 405 {object} models.ServerResponse
+// @Router /api/reply/ [post]
 func (t *ReplyDelivery) CreateReply(w http.ResponseWriter, r *http.Request){
 	if r.Method != http.MethodPost{
 		models.BadMethodHTTPResponse(&w)
@@ -49,6 +60,17 @@ func (t *ReplyDelivery) CreateReply(w http.ResponseWriter, r *http.Request){
 	}
 }
 
+// Reply godoc
+// @Summary GetMovieReplies
+// @Description Get movie reply list
+// @ID movie-reply-list-id
+// @Param limit query int true "movie_id"
+// @Param limit query int true "limit"
+// @Param page query int true "page"
+// @Success 200 {array} models.ReplyModel
+// @Failure 400 {object} models.ServerResponse
+// @Failure 405 {object} models.ServerResponse
+// @Router /api/reply/ [get]
 func (t *ReplyDelivery) GetMovieReplies(w http.ResponseWriter, r *http.Request){
 	if r.Method != http.MethodGet{
 		models.BadMethodHTTPResponse(&w)
