@@ -10,6 +10,8 @@ services:
   - /home/ubuntu/media:/media
   - /home/ubuntu/static:/static
   - /home/ubuntu/etc/letsencrypt:/etc/letsencrypt
+  depends_on:
+   - app
  tarantool:
   image: felixgreen/teamproject_tarantool_image
   ports:
@@ -36,6 +38,8 @@ services:
    - 8080:8080
   volumes:
    - /home/ubuntu/media:/media
+  depends_on:
+   - auth
  auth:
   image: felixgreen/cinema-auth-service
   restart: always
@@ -43,6 +47,8 @@ services:
    - 8082:8082
   volumes:
    - /home/ubuntu/media:/media
+  depends_on:
+   - profile
  profile:
   image: felixgreen/cinema-profile-service
   restart: always
@@ -50,6 +56,9 @@ services:
    - 8081:8081
   volumes:
    - /home/ubuntu/media:/media
+  depends_on:
+   - postgresql
+   - tarantool
 # prometheus:
 #  image: prom/prometheus
 #  restart: on-failure

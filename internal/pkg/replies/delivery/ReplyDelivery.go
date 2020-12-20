@@ -62,7 +62,7 @@ func (t *ReplyDelivery) CreateReply(w http.ResponseWriter, r *http.Request) {
 // @Summary GetMovieReplies
 // @Description Get movie reply list
 // @ID movie-reply-list-id
-// @Param limit query int true "movie_id"
+// @Param movie_id query int true "movie_id"
 // @Param limit query int true "limit"
 // @Param page query int true "page"
 // @Success 200 {array} models.ReplyModel
@@ -74,6 +74,7 @@ func (t *ReplyDelivery) GetMovieReplies(w http.ResponseWriter, r *http.Request) 
 		models.BadMethodHTTPResponse(&w)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 
 	movie := r.URL.Query()[replies.MovieIDQuery]
 	Limit := r.URL.Query()[movieservice.LimitQuery]

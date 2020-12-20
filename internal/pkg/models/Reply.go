@@ -9,6 +9,6 @@ type ReplyModel struct {
 	MovieID     uint64
 	UserName    string
 	UserSurname string
-	UserRating  int64
+	UserRating  interface{}
 	Text        string
 }
