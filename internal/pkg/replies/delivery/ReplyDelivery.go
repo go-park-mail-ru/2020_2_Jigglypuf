@@ -6,7 +6,6 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/movieservice"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/replies"
 	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
-	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
 )
@@ -76,29 +75,22 @@ func (t *ReplyDelivery) GetMovieReplies(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	movieID, movieOk := mux.Vars(r)[replies.MovieIDQuery]
-	limit, limitOk := mux.Vars(r)[movieservice.LimitQuery]
-	page, pageOk := mux.Vars(r)[movieservice.PageQuery]
-	if !movieOk || !limitOk || !pageOk {
+	movie := r.URL.Query()[replies.MovieIDQuery]
+	Limit := r.URL.Query()[movieservice.LimitQuery]
+	Page := r.URL.Query()[movieservice.PageQuery]
+	if len(Limit) == 0 || len(Page) == 0 || len(movie) == 0 {
 		models.IncorrectGetParamsHTTPResponse(&w)
 		return
 	}
-	castedMovieID, err := strconv.Atoi(movieID)
-	if err != nil {
+	movieID, movieErr := strconv.Atoi(movie[0])
+	limit, limitErr := strconv.Atoi(Limit[0])
+	page, pageErr := strconv.Atoi(Page[0])
+	if limitErr != nil || pageErr != nil || movieErr != nil {
 		models.IncorrectGetParamsHTTPResponse(&w)
 		return
 	}
-	castedLimit, err := strconv.Atoi(limit)
-	if err != nil {
-		models.IncorrectGetParamsHTTPResponse(&w)
-		return
-	}
-	castedPage, err := strconv.Atoi(page)
-	if err != nil {
-		models.IncorrectGetParamsHTTPResponse(&w)
-		return
-	}
-	resp, err := t.useCase.GetMovieReplies(castedMovieID, castedLimit, castedPage)
+
+	resp, err := t.useCase.GetMovieReplies(movieID, limit, page)
 	if err != nil {
 		models.BadBodyHTTPResponse(&w, err)
 		return
