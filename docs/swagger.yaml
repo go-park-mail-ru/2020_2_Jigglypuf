@@ -191,7 +191,7 @@ definitions:
       userName:
         type: string
       userRating:
-        type: integer
+        type: object
       userSurname:
         type: string
     type: object
@@ -639,7 +639,7 @@ paths:
       parameters:
       - description: movie_id
         in: query
-        name: limit
+        name: movie_id
         required: true
         type: integer
       - description: limit

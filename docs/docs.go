@@ -581,7 +581,7 @@ var doc = `{
                     {
                         "type": "integer",
                         "description": "movie_id",
-                        "name": "limit",
+                        "name": "movie_id",
                         "in": "query",
                         "required": true
                     },
@@ -1229,7 +1229,7 @@ var doc = `{
                     "type": "string"
                 },
                 "userRating": {
-                    "type": "integer"
+                    "type": "object"
                 },
                 "userSurname": {
                     "type": "string"
