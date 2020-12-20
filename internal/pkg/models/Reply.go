@@ -1,16 +1,14 @@
 package models
 
-
-
 type ReplyInput struct {
 	MovieID uint64
-	Text string
+	Text    string
 }
 
 type ReplyModel struct {
-	MovieID uint64
-	UserName string
+	MovieID     uint64
+	UserName    string
 	UserSurname string
-	UserRating int64
-	Text string
+	UserRating  int64
+	Text        string
 }

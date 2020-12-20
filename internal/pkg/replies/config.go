@@ -1,7 +1,5 @@
 package replies
 
-
-const(
-	MovieIdQuery = "movie_id"
-
+const (
+	MovieIDQuery = "movie_id"
 )

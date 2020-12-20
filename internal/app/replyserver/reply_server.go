@@ -15,9 +15,9 @@ import (
 
 type ReplyService struct {
 	ReplyRepository replies.Repository
-	ReplyUseCase replies.UseCase
-	ReplyDelivery *delivery.ReplyDelivery
-	ReplyRouter *mux.Router
+	ReplyUseCase    replies.UseCase
+	ReplyDelivery   *delivery.ReplyDelivery
+	ReplyRouter     *mux.Router
 }
 
 func configureReplyRouter(handler *delivery.ReplyDelivery) *mux.Router {
@@ -28,8 +28,8 @@ func configureReplyRouter(handler *delivery.ReplyDelivery) *mux.Router {
 	return replyRouter
 }
 
-func Start(profileConn profileService.ProfileServiceClient, connection *sql.DB) (*ReplyService, error){
-	if connection == nil{
+func Start(profileConn profileService.ProfileServiceClient, connection *sql.DB) (*ReplyService, error) {
+	if connection == nil {
 		return nil, models.ErrFooNoDBConnection
 	}
 	replyRep := repository.NewReplyRepository(connection)
@@ -37,9 +37,9 @@ func Start(profileConn profileService.ProfileServiceClient, connection *sql.DB) 
 	replyDelivery := delivery.NewReplyDelivery(replyUC)
 	router := configureReplyRouter(replyDelivery)
 	return &ReplyService{
-		ReplyDelivery: replyDelivery,
-		ReplyUseCase: replyUC,
+		ReplyDelivery:   replyDelivery,
+		ReplyUseCase:    replyUC,
 		ReplyRepository: replyRep,
-		ReplyRouter: router,
+		ReplyRouter:     router,
 	}, nil
 }

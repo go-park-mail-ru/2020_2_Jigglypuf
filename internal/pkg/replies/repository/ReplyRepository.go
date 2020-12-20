@@ -9,7 +9,7 @@ type ReplyRepository struct {
 	dbConnection *sql.DB
 }
 
-func NewReplyRepository(dbConnection *sql.DB) *ReplyRepository{
+func NewReplyRepository(dbConnection *sql.DB) *ReplyRepository {
 	return &ReplyRepository{
 		dbConnection: dbConnection,
 	}

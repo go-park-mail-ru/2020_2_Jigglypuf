@@ -41,7 +41,7 @@ type RoutingConfig struct {
 	AuthServiceClient     *authDelivery.UserHandler
 	ProfileServiceClient  *profileDelivery.ProfileHandler
 	RecommendationService *recserver.RecommendationService
-	ReplyService		  *replyserver.ReplyService
+	ReplyService          *replyserver.ReplyService
 }
 
 func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnection *sql.DB, authClient authService.AuthenticationServiceClient, profileClient profileService.ProfileServiceClient) (*RoutingConfig, error) {
@@ -74,7 +74,7 @@ func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnectio
 	}
 
 	replyService, replyErr := replyserver.Start(profileClient, mainDBConnection)
-	if replyErr != nil{
+	if replyErr != nil {
 		return nil, models.ErrFooInitFail
 	}
 
@@ -91,7 +91,7 @@ func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnectio
 		HallService:           newHallService,
 		CsrfMiddleware:        newHashCSRFMiddleware,
 		RecommendationService: recommendationService,
-		ReplyService: 		   replyService,
+		ReplyService:          replyService,
 	}, nil
 }
 

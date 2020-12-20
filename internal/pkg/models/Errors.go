@@ -15,5 +15,5 @@ var (
 	ErrFooInitFail            = errors.New("init fail")
 	ErrFooInternalServerError = errors.New("internal server error")
 	ErrFooNoRatingInfo        = errors.New("nothing to show")
-	ErrFooUniqueFail		  = errors.New("already exists")
+	ErrFooUniqueFail          = errors.New("already exists")
 )

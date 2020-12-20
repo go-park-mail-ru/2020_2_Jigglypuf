@@ -61,7 +61,7 @@ func (t *TicketUseCase) GetHallScheduleTickets(scheduleID string) (*[]models.Tic
 }
 
 func (t *TicketUseCase) BuyTicket(ticket *models.TicketInput, userID interface{}) error {
-	if len(ticket.PlaceField) > ticketservice.MaxPlaceCollection{
+	if len(ticket.PlaceField) > ticketservice.MaxPlaceCollection {
 		return models.ErrFooIncorrectInputInfo
 	}
 	if ticket.Login == "" {
