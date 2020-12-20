@@ -34,6 +34,17 @@ CREATE TABLE if not exists movie
     pathToSliderAvatar VARCHAR(64) default ''
 );
 
+CREATE TABLE if not exists movie_reply
+(
+    ID serial not null primary key,
+    MovieID integer not null references movie(ID),
+    UserID integer not null,
+    UserName varchar(64) not null,
+    UserSurname varchar(64) not null,
+    replyText text not null,
+    UNIQUE(UserID, MovieID)
+);
+
 CREATE TABLE if not exists movie_genre
 (
     ID serial not null primary key,

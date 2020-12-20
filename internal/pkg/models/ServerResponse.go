@@ -44,6 +44,16 @@ func UnauthorizedHTTPResponse(w *http.ResponseWriter) {
 	(*w).WriteHeader(http.StatusUnauthorized)
 	_, _ = (*w).Write(response)
 }
+
+func IncorrectGetParamsHTTPResponse(w *http.ResponseWriter) {
+	response, _ := json.Marshal(ServerResponse{
+		StatusCode: http.StatusBadRequest,
+		Response:   "Incorrect get params!",
+	})
+	(*w).WriteHeader(http.StatusBadRequest)
+	_, _ = (*w).Write(response)
+}
+
 func InternalErrorHTTPResponse(w *http.ResponseWriter) {
 	response, _ := json.Marshal(ServerResponse{
 		StatusCode: http.StatusInternalServerError,
