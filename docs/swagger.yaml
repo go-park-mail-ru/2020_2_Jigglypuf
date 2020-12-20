@@ -175,6 +175,26 @@ definitions:
     required:
     - login
     type: object
+  models.ReplyInput:
+    properties:
+      movieID:
+        type: integer
+      text:
+        type: string
+    type: object
+  models.ReplyModel:
+    properties:
+      movieID:
+        type: integer
+      text:
+        type: string
+      userName:
+        type: string
+      userRating:
+        type: object
+      userSurname:
+        type: string
+    type: object
   models.Schedule:
     properties:
       cinemaID:
@@ -612,6 +632,67 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: recommendations
+  /api/reply/:
+    get:
+      description: Get movie reply list
+      operationId: movie-reply-list-id
+      parameters:
+      - description: movie_id
+        in: query
+        name: movie_id
+        required: true
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: page
+        in: query
+        name: page
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.ReplyModel'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method Not Allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: GetMovieReplies
+    post:
+      description: Create reply to movie
+      operationId: create-reply-id
+      parameters:
+      - description: Login information
+        in: body
+        name: Reply_info
+        required: true
+        schema:
+          $ref: '#/definitions/models.ReplyInput'
+      responses:
+        "200": {}
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method Not Allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: CreateReply
   /api/schedule/:
     get:
       description: Returns movie schedule by getting movie id, cinema id and day(date) in format schedule.TimeStandard

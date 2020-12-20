@@ -7,6 +7,7 @@ import (
 	hallService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/hallserver"
 	movieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/movieserver"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/recserver"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/replyserver"
 	scheduleService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/scheduleserver"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/ticketservice"
 	authDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/delivery"
@@ -40,6 +41,7 @@ type RoutingConfig struct {
 	AuthServiceClient     *authDelivery.UserHandler
 	ProfileServiceClient  *profileDelivery.ProfileHandler
 	RecommendationService *recserver.RecommendationService
+	ReplyService          *replyserver.ReplyService
 }
 
 func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnection *sql.DB, authClient authService.AuthenticationServiceClient, profileClient profileService.ProfileServiceClient) (*RoutingConfig, error) {
@@ -71,6 +73,11 @@ func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnectio
 		return nil, models.ErrFooInitFail
 	}
 
+	replyService, replyErr := replyserver.Start(profileClient, mainDBConnection)
+	if replyErr != nil {
+		return nil, models.ErrFooInitFail
+	}
+
 	authHandler := authDelivery.NewUserHandler(authClient)
 	profileHandler := profileDelivery.NewProfileHandler(profileClient)
 	return &RoutingConfig{
@@ -84,6 +91,7 @@ func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnectio
 		HallService:           newHallService,
 		CsrfMiddleware:        newHashCSRFMiddleware,
 		RecommendationService: recommendationService,
+		ReplyService:          replyService,
 	}, nil
 }
 
@@ -117,6 +125,7 @@ func ConfigureRouter(application *RoutingConfig) http.Handler {
 	handler.Handle(utils.HallURLPattern, application.HallService.Router)
 	handler.Handle(utils.TicketURLPattern, application.TicketService.Router)
 	handler.Handle(utils.RecommendationsURLPattern, application.RecommendationService.RecommendationRouter)
+	handler.Handle(utils.ReplyURLPattern, application.ReplyService.ReplyRouter)
 	handler.HandleFunc(utils.CSRFURLPattern, application.CsrfMiddleware.GenerateCSRFToken)
 
 	handler.HandleFunc(utils.MediaURLPattern, func(w http.ResponseWriter, r *http.Request) {

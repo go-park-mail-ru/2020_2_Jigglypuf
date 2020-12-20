@@ -6,4 +6,5 @@ const (
 	ScheduleIDName     = "schedule_id"
 	URLPattern         = "/ticket/"
 	ScheduleURLPattern = "/ticket/schedule/"
+	MaxPlaceCollection = 6
 )
