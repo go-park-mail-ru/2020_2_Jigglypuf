@@ -42,7 +42,7 @@ func Start(connection *sql.DB, auth authService.AuthenticationServiceClient, hal
 		return nil, models.ErrFooArgsMismatch
 	}
 	rep := repository.NewTicketSQLRepository(connection)
-	uc := usecase.NewTicketUseCase(rep, auth, hallRep, scheduleRep, "cinemascope.space@mail.ru", "YA&2mrRxutU9", "smtp.mail.ru", 587)
+	uc := usecase.NewTicketUseCase(rep, auth, hallRep, scheduleRep, "space.cinemascope@mail.ru", "YA&2mrRxutU9", "smtp.mail.ru", 587)
 	handler := delivery.NewTicketDelivery(uc)
 	handle := configureAPI(handler)
 
