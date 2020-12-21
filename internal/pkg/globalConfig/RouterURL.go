@@ -1,4 +1,4 @@
-package utils
+package globalConfig
 
 const (
 	MovieURLPattern           = "/api/movie/"
@@ -14,4 +14,5 @@ const (
 	CSRFURLPattern            = "/api/csrf/"
 	MediaURLPattern           = "/api/media/"
 	DocsURLPattern            = "/api/docs/"
+	QRCodeTicketURLPattern	  = TicketURLPattern + "qr/"
 )

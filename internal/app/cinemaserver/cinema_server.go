@@ -6,8 +6,8 @@ import (
 	cinemaDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice/delivery"
 	cinemaRepository "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice/repository"
 	cinemaUseCase "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/cinemaservice/usecase"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/globalConfig"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/utils"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -20,8 +20,8 @@ type CinemaService struct {
 
 func configureCinemaRouter(handler *cinemaDelivery.CinemaHandler) *httprouter.Router {
 	cinemaAPIRouter := httprouter.New()
-	cinemaAPIRouter.GET(utils.CinemaURLPattern, handler.GetCinemaList)
-	cinemaAPIRouter.GET(utils.CinemaURLPattern+":id/", handler.GetCinema)
+	cinemaAPIRouter.GET(globalConfig.CinemaURLPattern, handler.GetCinemaList)
+	cinemaAPIRouter.GET(globalConfig.CinemaURLPattern+":id/", handler.GetCinema)
 
 	return cinemaAPIRouter
 }

@@ -8,4 +8,5 @@ type UseCase interface {
 	GetHallScheduleTickets(scheduleID string) (*[]models.TicketPlace, error)
 	GetSimpleTicket(userID uint64, ticketID string) (*models.Ticket, error)
 	GetUserTickets(userID uint64) (*[]models.Ticket, error)
+	GetTicketByTransaction(transaction string) (*models.TicketInfo, error)
 }

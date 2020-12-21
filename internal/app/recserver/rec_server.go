@@ -2,11 +2,11 @@ package recserver
 
 import (
 	"database/sql"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/globalConfig"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/recommendation/delivery"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/recommendation/repository"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/recommendation/usecase"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/utils"
 	"github.com/gorilla/mux"
 	"sync"
 	"time"
@@ -22,7 +22,7 @@ type RecommendationService struct {
 func configureRecommendationRouter(handler *delivery.RecommendationDelivery) *mux.Router {
 	handle := mux.NewRouter()
 
-	handle.HandleFunc(utils.RecommendationsURLPattern, handler.GetRecommendedMovieList)
+	handle.HandleFunc(globalConfig.RecommendationsURLPattern, handler.GetRecommendedMovieList)
 
 	return handle
 }

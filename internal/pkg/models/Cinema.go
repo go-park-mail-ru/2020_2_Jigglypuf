@@ -29,12 +29,22 @@ type Ticket struct {
 }
 
 type TicketInput struct {
-	Login      string        `validate:"required,email" json:"login"`
-	ScheduleID uint64        `json:"scheduleID"`
-	PlaceField []TicketPlace `json:"placeField"`
+	Login       string        `validate:"required,email" json:"login"`
+	ScheduleID  uint64        `json:"scheduleID"`
+	PlaceField  []TicketPlace `json:"placeField"`
+	Transaction []string      `json:"-"`
 }
 
 type TicketPlace struct {
 	Row   int `json:"row"`
 	Place int `json:"place"`
 }
+
+type TicketInfo struct {
+	UserLogin string
+	MovieName string
+	PremiereTime time.Time
+	Row int
+	Place int
+}
+

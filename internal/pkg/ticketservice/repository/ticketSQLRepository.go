@@ -87,12 +87,28 @@ func (t *SQLRepository) GetHallTickets(scheduleID uint64) (*[]models.TicketPlace
 	return &placeList, nil
 }
 
+func (t *SQLRepository) GetTicketByTransaction(transaction string) (*models.TicketInfo, error){
+	if t.DBConnection == nil{
+		return nil, models.ErrFooNoDBConnection
+	}
+	query := "SELECT User_login,m.moviename,s.premiere_time,row,place FROM ticket JOIN schedule s on s.id = ticket.schedule_id JOIN movie m on m.id = s.movie_id WHERE transaction = $1"
+	resp := new(models.TicketInfo)
+	ScanErr := t.DBConnection.QueryRow(query, transaction).Scan(&resp.UserLogin, &resp.MovieName,
+		&resp.PremiereTime, &resp.Row, &resp.Place)
+	if ScanErr != nil{
+		log.Println(ScanErr)
+		return nil, models.ErrFooInternalDBErr
+	}
+
+	return resp, nil
+}
+
 func (t *SQLRepository) CreateTicket(ticket *models.TicketInput) error {
 	if t.DBConnection == nil {
 		return models.ErrFooNoDBConnection
 	}
 	var ID uint64 = 0
-	insertQuery := "INSERT INTO ticket (User_login,schedule_id,row,place) VALUES %s"
+	insertQuery := "INSERT INTO ticket (User_login,schedule_id,row,place, transaction) VALUES %s"
 	query, args := bulkInsert(ticket, insertQuery)
 	query += " RETURNING ID"
 	ScanErr := t.DBConnection.QueryRow(query,
@@ -108,9 +124,9 @@ func bulkInsert(rows *models.TicketInput, query string) (string, *[]interface{})
 	ValueStrings := make([]interface{}, 0)
 	QueryStrings := make([]string, 0)
 	i := 0
-	for _, val := range rows.PlaceField {
-		QueryStrings = append(QueryStrings, fmt.Sprintf("($%d, $%d, $%d,$%d)", i*4+1, i*4+2, i*4+3, i*4+4))
-		ValueStrings = append(ValueStrings, rows.Login, rows.ScheduleID, val.Row, val.Place)
+	for index, val := range rows.PlaceField {
+		QueryStrings = append(QueryStrings, fmt.Sprintf("($%d, $%d, $%d,$%d,$%d)", i*5+1, i*5+2, i*5+3, i*5+4, i*5+5))
+		ValueStrings = append(ValueStrings, rows.Login, rows.ScheduleID, val.Row, val.Place, rows.Transaction[index])
 		i++
 	}
 	smtp := fmt.Sprintf(query, strings.Join(QueryStrings, ","))

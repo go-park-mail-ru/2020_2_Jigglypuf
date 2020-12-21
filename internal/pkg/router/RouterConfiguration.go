@@ -2,6 +2,7 @@ package router
 
 import (
 	"database/sql"
+	"fmt"
 	cinemaService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/cinemaserver"
 	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/cookieserver"
 	hallService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/hallserver"
@@ -12,6 +13,7 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/ticketservice"
 	authDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/delivery"
 	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/proto/codegen"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/globalConfig"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cors"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/csrf"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/monitoring"
@@ -19,7 +21,8 @@ import (
 	profileDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/delivery"
 	profileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session/middleware"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/utils"
+	ticketservice2 "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice"
+	"github.com/gorilla/mux"
 	"github.com/julienschmidt/httprouter"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -98,9 +101,9 @@ func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnectio
 func configureAuthRouter(authHandler *authDelivery.UserHandler) *httprouter.Router {
 	authAPIHandler := httprouter.New()
 
-	authAPIHandler.POST(utils.AuthURLPattern+"register/", authHandler.RegisterHandler)
-	authAPIHandler.POST(utils.AuthURLPattern+"login/", authHandler.AuthHandler)
-	authAPIHandler.POST(utils.AuthURLPattern+"logout/", authHandler.SignOutHandler)
+	authAPIHandler.POST(globalConfig.AuthURLPattern+"register/", authHandler.RegisterHandler)
+	authAPIHandler.POST(globalConfig.AuthURLPattern+"login/", authHandler.AuthHandler)
+	authAPIHandler.POST(globalConfig.AuthURLPattern+"logout/", authHandler.SignOutHandler)
 
 	return authAPIHandler
 }
@@ -108,31 +111,33 @@ func configureAuthRouter(authHandler *authDelivery.UserHandler) *httprouter.Rout
 func configureProfileRouter(handler *profileDelivery.ProfileHandler) *httprouter.Router {
 	router := httprouter.New()
 
-	router.GET(utils.ProfileURLPattern, handler.GetProfile)
-	router.PUT(utils.ProfileURLPattern, handler.UpdateProfile)
+	router.GET(globalConfig.ProfileURLPattern, handler.GetProfile)
+	router.PUT(globalConfig.ProfileURLPattern, handler.UpdateProfile)
 
 	return router
 }
 
 func ConfigureRouter(application *RoutingConfig) http.Handler {
-	handler := http.NewServeMux()
+	handler := mux.NewRouter()
 
-	handler.Handle(utils.MovieURLPattern, application.MovieService.MovieRouter)
-	handler.Handle(utils.CinemaURLPattern, application.CinemaService.CinemaRouter)
-	handler.Handle(utils.AuthURLPattern, configureAuthRouter(application.AuthServiceClient))
-	handler.Handle(utils.ProfileURLPattern, configureProfileRouter(application.ProfileServiceClient))
-	handler.Handle(utils.ScheduleURLPattern, application.ScheduleService.Router)
-	handler.Handle(utils.HallURLPattern, application.HallService.Router)
-	handler.Handle(utils.TicketURLPattern, application.TicketService.Router)
-	handler.Handle(utils.RecommendationsURLPattern, application.RecommendationService.RecommendationRouter)
-	handler.Handle(utils.ReplyURLPattern, application.ReplyService.ReplyRouter)
-	handler.HandleFunc(utils.CSRFURLPattern, application.CsrfMiddleware.GenerateCSRFToken)
+	handler.Handle(globalConfig.MovieURLPattern, application.MovieService.MovieRouter)
+	handler.Handle(globalConfig.CinemaURLPattern, application.CinemaService.CinemaRouter)
+	handler.Handle(globalConfig.AuthURLPattern, configureAuthRouter(application.AuthServiceClient))
+	handler.Handle(globalConfig.ProfileURLPattern, configureProfileRouter(application.ProfileServiceClient))
+	handler.Handle(globalConfig.ScheduleURLPattern, application.ScheduleService.Router)
+	handler.Handle(globalConfig.HallURLPattern, application.HallService.Router)
+	handler.Handle(globalConfig.TicketURLPattern, application.TicketService.Router)
+	handler.Handle(globalConfig.RecommendationsURLPattern, application.RecommendationService.RecommendationRouter)
+	handler.Handle(globalConfig.ReplyURLPattern, application.ReplyService.ReplyRouter)
+	handler.HandleFunc(globalConfig.QRCodeTicketURLPattern+fmt.Sprintf("{%s:[0-9A-Za-z]+}/", ticketservice2.TicketTransactionPathName),
+		application.TicketService.Handler.GetTicketByCode)
+	handler.HandleFunc(globalConfig.CSRFURLPattern, application.CsrfMiddleware.GenerateCSRFToken)
 
-	handler.HandleFunc(utils.MediaURLPattern, func(w http.ResponseWriter, r *http.Request) {
+	handler.HandleFunc(globalConfig.MediaURLPattern, func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, r.RequestURI, http.StatusMovedPermanently)
 	})
 
-	handler.HandleFunc(utils.DocsURLPattern, httpSwagger.WrapHandler)
+	handler.HandleFunc(globalConfig.DocsURLPattern, httpSwagger.WrapHandler)
 	handler.Handle("/metrics/", promhttp.Handler())
 
 	middlewareHandler := application.CsrfMiddleware.CSRFMiddleware(handler)
