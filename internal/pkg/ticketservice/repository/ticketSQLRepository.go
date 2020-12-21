@@ -23,7 +23,7 @@ func (t *SQLRepository) GetUserTickets(login string) (*[]models.Ticket, error) {
 		return nil, models.ErrFooNoDBConnection
 	}
 
-	SQLResult, SQLErr := t.DBConnection.Query("SELECT ID,User_login,schedule_id,transaction_date,row,place FROM ticket WHERE User_login = $1", login)
+	SQLResult, SQLErr := t.DBConnection.Query("SELECT ticket.ID,User_login,schedule_id, movie_id, cinema_id, premiere_time,transaction_date,row,place FROM ticket JOIN schedule s on s.id = ticket.schedule_id WHERE User_login = $1", login)
 	if SQLErr != nil || SQLResult == nil || SQLResult.Err() != nil {
 		log.Println(SQLErr)
 		return nil, models.ErrFooInternalDBErr
@@ -36,6 +36,7 @@ func (t *SQLRepository) GetUserTickets(login string) (*[]models.Ticket, error) {
 	ticketItem := new(models.Ticket)
 	for SQLResult.Next() {
 		ScanErr := SQLResult.Scan(&ticketItem.ID, &ticketItem.Login, &ticketItem.Schedule.ID,
+			&ticketItem.Schedule.MovieID,&ticketItem.Schedule.CinemaID, &ticketItem.Schedule.PremierTime,
 			&ticketItem.TransactionDate, &ticketItem.PlaceField.Row, &ticketItem.PlaceField.Place)
 		if ScanErr != nil {
 			log.Println(ScanErr)
