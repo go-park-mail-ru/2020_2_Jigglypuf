@@ -87,15 +87,15 @@ func (t *SQLRepository) GetHallTickets(scheduleID uint64) (*[]models.TicketPlace
 	return &placeList, nil
 }
 
-func (t *SQLRepository) GetTicketByTransaction(transaction string) (*models.TicketInfo, error){
-	if t.DBConnection == nil{
+func (t *SQLRepository) GetTicketByTransaction(transaction string) (*models.TicketInfo, error) {
+	if t.DBConnection == nil {
 		return nil, models.ErrFooNoDBConnection
 	}
 	query := "SELECT User_login,m.moviename,s.premiere_time,row,place FROM ticket JOIN schedule s on s.id = ticket.schedule_id JOIN movie m on m.id = s.movie_id WHERE transaction = $1"
 	resp := new(models.TicketInfo)
 	ScanErr := t.DBConnection.QueryRow(query, transaction).Scan(&resp.UserLogin, &resp.MovieName,
 		&resp.PremiereTime, &resp.Row, &resp.Place)
-	if ScanErr != nil{
+	if ScanErr != nil {
 		log.Println(ScanErr)
 		return nil, models.ErrFooInternalDBErr
 	}

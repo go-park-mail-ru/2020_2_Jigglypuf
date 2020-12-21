@@ -91,3 +91,18 @@ func (mr *MockRepositoryMockRecorder) GetHallTickets(scheduleID interface{}) *go
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHallTickets", reflect.TypeOf((*MockRepository)(nil).GetHallTickets), scheduleID)
 }
+
+// GetTicketByTransaction mocks base method
+func (m *MockRepository) GetTicketByTransaction(transaction string) (*models.TicketInfo, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTicketByTransaction", transaction)
+	ret0, _ := ret[0].(*models.TicketInfo)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTicketByTransaction indicates an expected call of GetTicketByTransaction
+func (mr *MockRepositoryMockRecorder) GetTicketByTransaction(transaction interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTicketByTransaction", reflect.TypeOf((*MockRepository)(nil).GetTicketByTransaction), transaction)
+}

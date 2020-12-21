@@ -2,7 +2,7 @@ package replyserver
 
 import (
 	"database/sql"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/globalConfig"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/globalconfig"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	profileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/replies"
@@ -22,8 +22,8 @@ type ReplyService struct {
 
 func configureReplyRouter(handler *delivery.ReplyDelivery) *mux.Router {
 	replyRouter := mux.NewRouter()
-	replyRouter.HandleFunc(globalConfig.ReplyURLPattern, handler.CreateReply).Methods(http.MethodPost)
-	replyRouter.HandleFunc(globalConfig.ReplyURLPattern, handler.GetMovieReplies).Methods(http.MethodGet)
+	replyRouter.HandleFunc(globalconfig.ReplyURLPattern, handler.CreateReply).Methods(http.MethodPost)
+	replyRouter.HandleFunc(globalconfig.ReplyURLPattern, handler.GetMovieReplies).Methods(http.MethodGet)
 
 	return replyRouter
 }

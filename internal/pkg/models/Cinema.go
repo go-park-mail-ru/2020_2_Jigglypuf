@@ -41,10 +41,9 @@ type TicketPlace struct {
 }
 
 type TicketInfo struct {
-	UserLogin string
-	MovieName string
+	UserLogin    string
+	MovieName    string
 	PremiereTime time.Time
-	Row int
-	Place int
+	Row          int
+	Place        int
 }
-

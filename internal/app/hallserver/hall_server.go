@@ -3,7 +3,7 @@ package hallserver
 import (
 	"database/sql"
 	"fmt"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/globalConfig"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/globalconfig"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice/delivery"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/hallservice/repository"
@@ -22,7 +22,7 @@ type HallService struct {
 func configureAPI(handler *delivery.HallDelivery) *mux.Router {
 	handle := mux.NewRouter()
 
-	handle.HandleFunc(globalConfig.HallURLPattern+fmt.Sprintf("{%s:[0-9]+}/", hallservice.HallIDPathName), handler.GetHallStructure)
+	handle.HandleFunc(globalconfig.HallURLPattern+fmt.Sprintf("{%s:[0-9]+}/", hallservice.HallIDPathName), handler.GetHallStructure)
 	return handle
 }
 

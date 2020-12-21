@@ -9,7 +9,7 @@ var (
 	ErrFooIncorrectSQLQuery   = errors.New("incorrect SQL Query")
 	ErrFooNoAuthorization     = errors.New("no authorization")
 	ErrFooPlaceAlreadyBusy    = errors.New("place already busy")
-	ErrFooPlaceDoesntExists    = errors.New("place doesnt exists")
+	ErrFooPlaceDoesntExists   = errors.New("place doesnt exists")
 	ErrFooNoLoginInfo         = errors.New("no login information")
 	ErrFooIncorrectInputInfo  = errors.New("incorrect info")
 	ErrFooArgsMismatch        = errors.New("args have nil")

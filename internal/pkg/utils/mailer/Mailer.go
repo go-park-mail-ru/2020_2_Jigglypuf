@@ -1,34 +1,33 @@
-package Mailer
+package mailer
 
 import (
 	"gopkg.in/gomail.v2"
 )
 
 type Mailer struct {
-	UserMail string
+	UserMail     string
 	UserMailPass string
-	Host string
-	Port int
+	Host         string
+	Port         int
 }
 
-func NewMailer(user, password, host string, port int) *Mailer{
+func NewMailer(user, password, host string, port int) *Mailer {
 	return &Mailer{
-		UserMail: user,
+		UserMail:     user,
 		UserMailPass: password,
-		Host: host,
-		Port: port,
+		Host:         host,
+		Port:         port,
 	}
 }
 
-
-func (t *Mailer) SendFiledMail(filename, to, subject, bodyType, body string) error{
+func (t *Mailer) SendFiledMail(filename, to, subject, bodyType, body string) error {
 	message := gomail.NewMessage()
 	message.SetHeader("To", to)
 	message.SetHeader("From", t.UserMail)
 	message.SetHeader("Subject", subject)
 	message.Embed(filename)
 	message.SetBody(bodyType, body)
-	d := gomail.NewDialer(t.Host, t.Port,t.UserMail, t.UserMailPass)
+	d := gomail.NewDialer(t.Host, t.Port, t.UserMail, t.UserMailPass)
 	err := d.DialAndSend(message)
 	return err
 }

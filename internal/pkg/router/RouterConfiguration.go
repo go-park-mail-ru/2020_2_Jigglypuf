@@ -13,7 +13,7 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/ticketservice"
 	authDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/delivery"
 	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/proto/codegen"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/globalConfig"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/globalconfig"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/cors"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/csrf"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/middleware/monitoring"
@@ -101,9 +101,9 @@ func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnectio
 func configureAuthRouter(authHandler *authDelivery.UserHandler) *httprouter.Router {
 	authAPIHandler := httprouter.New()
 
-	authAPIHandler.POST(globalConfig.AuthURLPattern+"register/", authHandler.RegisterHandler)
-	authAPIHandler.POST(globalConfig.AuthURLPattern+"login/", authHandler.AuthHandler)
-	authAPIHandler.POST(globalConfig.AuthURLPattern+"logout/", authHandler.SignOutHandler)
+	authAPIHandler.POST(globalconfig.AuthURLPattern+"register/", authHandler.RegisterHandler)
+	authAPIHandler.POST(globalconfig.AuthURLPattern+"login/", authHandler.AuthHandler)
+	authAPIHandler.POST(globalconfig.AuthURLPattern+"logout/", authHandler.SignOutHandler)
 
 	return authAPIHandler
 }
@@ -111,8 +111,8 @@ func configureAuthRouter(authHandler *authDelivery.UserHandler) *httprouter.Rout
 func configureProfileRouter(handler *profileDelivery.ProfileHandler) *httprouter.Router {
 	router := httprouter.New()
 
-	router.GET(globalConfig.ProfileURLPattern, handler.GetProfile)
-	router.PUT(globalConfig.ProfileURLPattern, handler.UpdateProfile)
+	router.GET(globalconfig.ProfileURLPattern, handler.GetProfile)
+	router.PUT(globalconfig.ProfileURLPattern, handler.UpdateProfile)
 
 	return router
 }
@@ -120,24 +120,24 @@ func configureProfileRouter(handler *profileDelivery.ProfileHandler) *httprouter
 func ConfigureRouter(application *RoutingConfig) http.Handler {
 	handler := mux.NewRouter()
 
-	handler.Handle(globalConfig.MovieURLPattern, application.MovieService.MovieRouter)
-	handler.Handle(globalConfig.CinemaURLPattern, application.CinemaService.CinemaRouter)
-	handler.Handle(globalConfig.AuthURLPattern, configureAuthRouter(application.AuthServiceClient))
-	handler.Handle(globalConfig.ProfileURLPattern, configureProfileRouter(application.ProfileServiceClient))
-	handler.Handle(globalConfig.ScheduleURLPattern, application.ScheduleService.Router)
-	handler.Handle(globalConfig.HallURLPattern, application.HallService.Router)
-	handler.Handle(globalConfig.TicketURLPattern, application.TicketService.Router)
-	handler.Handle(globalConfig.RecommendationsURLPattern, application.RecommendationService.RecommendationRouter)
-	handler.Handle(globalConfig.ReplyURLPattern, application.ReplyService.ReplyRouter)
-	handler.HandleFunc(globalConfig.QRCodeTicketURLPattern+fmt.Sprintf("{%s:[0-9A-Za-z]+}/", ticketservice2.TicketTransactionPathName),
+	handler.Handle(globalconfig.MovieURLPattern, application.MovieService.MovieRouter)
+	handler.Handle(globalconfig.CinemaURLPattern, application.CinemaService.CinemaRouter)
+	handler.Handle(globalconfig.AuthURLPattern, configureAuthRouter(application.AuthServiceClient))
+	handler.Handle(globalconfig.ProfileURLPattern, configureProfileRouter(application.ProfileServiceClient))
+	handler.Handle(globalconfig.ScheduleURLPattern, application.ScheduleService.Router)
+	handler.Handle(globalconfig.HallURLPattern, application.HallService.Router)
+	handler.Handle(globalconfig.TicketURLPattern, application.TicketService.Router)
+	handler.Handle(globalconfig.RecommendationsURLPattern, application.RecommendationService.RecommendationRouter)
+	handler.Handle(globalconfig.ReplyURLPattern, application.ReplyService.ReplyRouter)
+	handler.HandleFunc(globalconfig.QRCodeTicketURLPattern+fmt.Sprintf("{%s:[0-9A-Za-z]+}/", ticketservice2.TicketTransactionPathName),
 		application.TicketService.Handler.GetTicketByCode)
-	handler.HandleFunc(globalConfig.CSRFURLPattern, application.CsrfMiddleware.GenerateCSRFToken)
+	handler.HandleFunc(globalconfig.CSRFURLPattern, application.CsrfMiddleware.GenerateCSRFToken)
 
-	handler.HandleFunc(globalConfig.MediaURLPattern, func(w http.ResponseWriter, r *http.Request) {
+	handler.HandleFunc(globalconfig.MediaURLPattern, func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, r.RequestURI, http.StatusMovedPermanently)
 	})
 
-	handler.HandleFunc(globalConfig.DocsURLPattern, httpSwagger.WrapHandler)
+	handler.HandleFunc(globalconfig.DocsURLPattern, httpSwagger.WrapHandler)
 	handler.Handle("/metrics/", promhttp.Handler())
 
 	middlewareHandler := application.CsrfMiddleware.CSRFMiddleware(handler)
