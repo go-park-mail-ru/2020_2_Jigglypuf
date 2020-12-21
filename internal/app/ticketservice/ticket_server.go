@@ -31,6 +31,8 @@ func configureAPI(handler *delivery.TicketDelivery) *mux.Router {
 		handler.GetUsersSimpleTicket).Methods("GET")
 	handle.HandleFunc(globalconfig.TicketScheduleURLPattern+fmt.Sprintf("{%s:[0-9]+}/", ticketservice.ScheduleIDName),
 		handler.GetHallScheduleTickets).Methods("GET")
+	handle.HandleFunc(globalconfig.QRCodeTicketURLPattern+fmt.Sprintf("{%s:[0-9A-Za-z]+}/", ticketservice.TicketTransactionPathName),
+		handler.GetTicketByCode)
 
 	return handle
 }

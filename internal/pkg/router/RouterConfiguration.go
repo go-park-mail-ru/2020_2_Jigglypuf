@@ -2,7 +2,6 @@ package router
 
 import (
 	"database/sql"
-	"fmt"
 	cinemaService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/cinemaserver"
 	cookieService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/cookieserver"
 	hallService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/app/hallserver"
@@ -21,8 +20,6 @@ import (
 	profileDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/delivery"
 	profileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session/middleware"
-	ticketservice2 "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice"
-	"github.com/gorilla/mux"
 	"github.com/julienschmidt/httprouter"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -118,7 +115,7 @@ func configureProfileRouter(handler *profileDelivery.ProfileHandler) *httprouter
 }
 
 func ConfigureRouter(application *RoutingConfig) http.Handler {
-	handler := mux.NewRouter()
+	handler := http.NewServeMux()
 
 	handler.Handle(globalconfig.MovieURLPattern, application.MovieService.MovieRouter)
 	handler.Handle(globalconfig.CinemaURLPattern, application.CinemaService.CinemaRouter)
@@ -129,8 +126,6 @@ func ConfigureRouter(application *RoutingConfig) http.Handler {
 	handler.Handle(globalconfig.TicketURLPattern, application.TicketService.Router)
 	handler.Handle(globalconfig.RecommendationsURLPattern, application.RecommendationService.RecommendationRouter)
 	handler.Handle(globalconfig.ReplyURLPattern, application.ReplyService.ReplyRouter)
-	handler.HandleFunc(globalconfig.QRCodeTicketURLPattern+fmt.Sprintf("{%s:[0-9A-Za-z]+}/", ticketservice2.TicketTransactionPathName),
-		application.TicketService.Handler.GetTicketByCode)
 	handler.HandleFunc(globalconfig.CSRFURLPattern, application.CsrfMiddleware.GenerateCSRFToken)
 
 	handler.HandleFunc(globalconfig.MediaURLPattern, func(w http.ResponseWriter, r *http.Request) {
