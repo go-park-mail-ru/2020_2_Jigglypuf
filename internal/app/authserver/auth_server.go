@@ -23,7 +23,7 @@ func Start(profileService profileService.ProfileServiceClient, config *configura
 	}
 	serv := grpc.NewServer()
 	authService.RegisterAuthenticationServiceServer(serv, manager.NewAuthServiceManager(db, profileService, salt))
-	lis, err := net.Listen("tcp", config.Auth.Domain + ":" + strconv.Itoa(config.Auth.Port))
+	lis, err := net.Listen("tcp", config.Auth.Domain+":"+strconv.Itoa(config.Auth.Port))
 	if err != nil {
 		log.Fatalln("AUTH SERVICE: Cannot create net params")
 	}

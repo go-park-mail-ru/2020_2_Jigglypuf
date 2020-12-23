@@ -26,7 +26,7 @@ func (t *ReplyUseCase) CreateReply(input *models.ReplyInput, userID uint64) erro
 	utils.SanitizeInput(t.sanitizer, &input.Text)
 
 	prof, err := t.profile.GetProfileByID(context.Background(), &profile.GetProfileByUserIDRequest{UserID: userID})
-	if err != nil || prof == nil{
+	if err != nil || prof == nil {
 		return models.ErrFooNoAuthorization
 	}
 

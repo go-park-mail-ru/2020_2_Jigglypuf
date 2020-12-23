@@ -15,11 +15,11 @@ import (
 func main() {
 	configPath := utils.ParseConfigPath()
 	config, configErr := configurator.Run(configPath)
-	if configErr != nil{
+	if configErr != nil {
 		log.Fatalln("No configuration")
 	}
 	fmt.Printf("%v\n", config)
-	auth, err := grpc.Dial(config.Auth.Domain + ":" + strconv.Itoa(config.Auth.Port), grpc.WithInsecure())
+	auth, err := grpc.Dial(config.Auth.Domain+":"+strconv.Itoa(config.Auth.Port), grpc.WithInsecure())
 	if err != nil {
 		log.Fatalln("PROFILE SERVICE INIT: no connection with auth service")
 	}

@@ -37,7 +37,7 @@ func (t *SQLRepository) GetUserTickets(login string) (*[]models.Ticket, error) {
 	ticketItem := new(models.Ticket)
 	for SQLResult.Next() {
 		ScanErr := SQLResult.Scan(&ticketItem.ID, &ticketItem.Login, &ticketItem.Schedule.ID,
-			&ticketItem.Schedule.MovieID,&ticketItem.Schedule.CinemaID, &ticketItem.Schedule.PremierTime,
+			&ticketItem.Schedule.MovieID, &ticketItem.Schedule.CinemaID, &ticketItem.Schedule.PremierTime,
 			&ticketItem.QRPath,
 			&ticketItem.TransactionDate, &ticketItem.PlaceField.Row, &ticketItem.PlaceField.Place)
 		if ScanErr != nil {

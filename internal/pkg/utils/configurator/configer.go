@@ -16,15 +16,15 @@ type ServiceConfig struct {
 
 type MailConfig struct {
 	SMTPServerDomain string
-	SMTPServerPort int
-	Mail string
-	Password string
+	SMTPServerPort   int
+	Mail             string
+	Password         string
 }
 
 type TarantoolConfig struct {
-	Domain string
-	Port int
-	User string
+	Domain   string
+	Port     int
+	User     string
 	Password string
 }
 
@@ -34,8 +34,8 @@ type Config struct {
 	App            ServiceConfig
 	DatabaseDomain string
 	DatabasePort   int
-	Tarantool TarantoolConfig
-	Mail 		   MailConfig
+	Tarantool      TarantoolConfig
+	Mail           MailConfig
 }
 
 func Run(configPath string) (*Config, error) {
@@ -46,7 +46,7 @@ func Run(configPath string) (*Config, error) {
 	viper.SetConfigFile(configPath)
 	err := viper.ReadInConfig()
 	if err != nil {
-		log.Println("Unable to read config file: %s", err)
+		log.Printf("Unable to read config file: %s", err)
 		return nil, models.ErrFooIncorrectPath
 	}
 
@@ -77,7 +77,6 @@ func Run(configPath string) (*Config, error) {
 	config.Tarantool.Port = viper.GetInt("Tarantool.Port")
 	config.Tarantool.User = viper.GetString("Tarantool.User")
 	config.Tarantool.Password = viper.GetString("Tarantool.Password")
-
 
 	return config, nil
 }

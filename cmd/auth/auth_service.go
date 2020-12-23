@@ -15,15 +15,15 @@ import (
 func main() {
 	configPath := utils.ParseConfigPath()
 	config, configErr := configurator.Run(configPath)
-	if configErr != nil{
+	if configErr != nil {
 		log.Fatalln("No config setup")
 	}
 	fmt.Printf("%v\n", config)
-	profileService, err := grpc.Dial(config.Profile.Domain + ":" + strconv.Itoa(config.Profile.Port), grpc.WithInsecure())
+	profileService, err := grpc.Dial(config.Profile.Domain+":"+strconv.Itoa(config.Profile.Port), grpc.WithInsecure())
 	if err != nil {
 		log.Fatalln("AUTH SERVICE INIT: no connection with profile service")
 	}
 	profileClient := profile.NewProfileServiceClient(profileService)
 
-	authserver.Start(profileClient, config,"some_salt")
+	authserver.Start(profileClient, config, "some_salt")
 }

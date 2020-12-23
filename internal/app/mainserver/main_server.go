@@ -29,17 +29,16 @@ func startDBWork(config *configurator.Config) (*sql.DB, *tarantool.Connection, e
 	if config.App.DatabaseName == "" || config.App.DatabaseUser == "" || config.App.DatabasePassword == "" {
 		return nil, nil, models.ErrFooIncorrectPath
 	}
-	fmt.Printf("%v",config.App)
+	fmt.Printf("%v", config.App)
 	psqlInfo := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
 		config.App.DatabaseUser, config.App.DatabasePassword, config.DatabaseDomain, config.DatabasePort,
 		config.App.DatabaseName)
-
 
 	PostgreSQLConnection, DBErr := sql.Open("postgres", psqlInfo)
 	if DBErr != nil {
 		return nil, nil, errors.New("no postgresql connection")
 	}
-	TarantoolConnection, DBConnectionErr := tarantool.Connect(config.Tarantool.Domain+":" +strconv.Itoa(config.Tarantool.Port), tarantool.Opts{
+	TarantoolConnection, DBConnectionErr := tarantool.Connect(config.Tarantool.Domain+":"+strconv.Itoa(config.Tarantool.Port), tarantool.Opts{
 		User: config.Tarantool.User,
 		Pass: config.Tarantool.Password,
 	})

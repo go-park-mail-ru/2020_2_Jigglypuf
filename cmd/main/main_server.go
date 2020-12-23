@@ -13,7 +13,6 @@ import (
 	"strconv"
 )
 
-
 // Backend doc
 // @title CinemaScope Backend API
 // @version 0.5
@@ -23,17 +22,17 @@ import (
 func main() {
 	configPath := utils.ParseConfigPath()
 	config, configErr := configurator.Run(configPath)
-	if configErr != nil{
+	if configErr != nil {
 		log.Fatalln("Incorrect config path")
 	}
 
-	profileServiceConn, profileServiceErr := grpc.Dial(config.Profile.Domain + ":" + strconv.Itoa(config.Profile.Port),
+	profileServiceConn, profileServiceErr := grpc.Dial(config.Profile.Domain+":"+strconv.Itoa(config.Profile.Port),
 		grpc.WithInsecure())
 	if profileServiceErr != nil {
 		log.Fatalln("MAIN SERVICE INIT: no profile service conn")
 	}
 
-	authServiceConn, err := grpc.Dial(config.Auth.Domain + ":" + strconv.Itoa(config.Auth.Port), grpc.WithInsecure())
+	authServiceConn, err := grpc.Dial(config.Auth.Domain+":"+strconv.Itoa(config.Auth.Port), grpc.WithInsecure())
 	if err != nil {
 		log.Fatalln("MAIN SERVICE INIT: no authentication service conn")
 	}

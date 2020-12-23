@@ -46,8 +46,8 @@ type RoutingConfig struct {
 }
 
 func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnection *sql.DB,
-		authClient authService.AuthenticationServiceClient,
-		profileClient profileService.ProfileServiceClient, config *configurator.Config) (*RoutingConfig, error) {
+	authClient authService.AuthenticationServiceClient,
+	profileClient profileService.ProfileServiceClient, config *configurator.Config) (*RoutingConfig, error) {
 	mutex := &sync.RWMutex{}
 	NewCookieService, cookieErr := cookieService.Start(cookieDBConnection)
 	if cookieErr != nil {
