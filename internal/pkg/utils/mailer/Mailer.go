@@ -1,6 +1,7 @@
 package mailer
 
 import (
+	"fmt"
 	"gopkg.in/gomail.v2"
 )
 
@@ -29,5 +30,6 @@ func (t *Mailer) SendFiledMail(filename, to, subject, bodyType, body string) err
 	message.SetBody(bodyType, body)
 	d := gomail.NewDialer(t.Host, t.Port, t.UserMail, t.UserMailPass)
 	err := d.DialAndSend(message)
+	fmt.Println(err, "lelkek", t.Host)
 	return err
 }

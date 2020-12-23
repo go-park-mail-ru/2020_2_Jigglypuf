@@ -24,6 +24,7 @@ type Ticket struct {
 	ID              uint64
 	Login           string `validate:"required,email"`
 	Schedule        Schedule
+	QRPath			string
 	TransactionDate time.Time
 	PlaceField      TicketPlace
 }
