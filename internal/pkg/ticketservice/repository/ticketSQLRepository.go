@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/globalconfig"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	"log"
 	"strings"
@@ -43,6 +44,7 @@ func (t *SQLRepository) GetUserTickets(login string) (*[]models.Ticket, error) {
 			log.Println(ScanErr)
 			return nil, models.ErrFooInternalDBErr
 		}
+		ticketItem.QRPath = globalconfig.QRCodesPath + ticketItem.QRPath
 		ticketList = append(ticketList, *ticketItem)
 	}
 	return &ticketList, nil
