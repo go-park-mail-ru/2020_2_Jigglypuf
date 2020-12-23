@@ -4,14 +4,15 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/configs"
 	authService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/authentication/proto/codegen"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
 	profileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/router"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/utils/configurator"
 	"github.com/tarantool/go-tarantool"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -24,20 +25,23 @@ func configureServer(port string, funcHandler http.Handler) *http.Server {
 	}
 }
 
-func startDBWork() (*sql.DB, *tarantool.Connection, error) {
+func startDBWork(config *configurator.Config) (*sql.DB, *tarantool.Connection, error) {
+	if config.App.DatabaseName == "" || config.App.DatabaseUser == "" || config.App.DatabasePassword == "" {
+		return nil, nil, models.ErrFooIncorrectPath
+	}
+	fmt.Printf("%v",config.App)
 	psqlInfo := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
-		"main", "123", configs.Host, configs.Port, "interfacedb")
+		config.App.DatabaseUser, config.App.DatabasePassword, config.DatabaseDomain, config.DatabasePort,
+		config.App.DatabaseName)
 
-	fmt.Println(psqlInfo)
 
 	PostgreSQLConnection, DBErr := sql.Open("postgres", psqlInfo)
 	if DBErr != nil {
 		return nil, nil, errors.New("no postgresql connection")
 	}
-
-	TarantoolConnection, DBConnectionErr := tarantool.Connect(session.Host+session.Port, tarantool.Opts{
-		User: session.User,
-		Pass: session.Password,
+	TarantoolConnection, DBConnectionErr := tarantool.Connect(config.Tarantool.Domain+":" +strconv.Itoa(config.Tarantool.Port), tarantool.Opts{
+		User: config.Tarantool.User,
+		Pass: config.Tarantool.Password,
 	})
 	if DBConnectionErr != nil {
 		return nil, nil, errors.New("no tarantool connection")
@@ -46,19 +50,20 @@ func startDBWork() (*sql.DB, *tarantool.Connection, error) {
 	return PostgreSQLConnection, TarantoolConnection, nil
 }
 
-func Start(authenticationServiceClient authService.AuthenticationServiceClient, profileServiceClient profileService.ProfileServiceClient) {
-	postgresConn, tarantoolConn, DBErr := startDBWork()
+func Start(authenticationServiceClient authService.AuthenticationServiceClient, profileServiceClient profileService.ProfileServiceClient,
+	config *configurator.Config) {
+	postgresConn, tarantoolConn, DBErr := startDBWork(config)
 	if DBErr != nil {
 		log.Fatalln("MAIN SERVER INIT: NO DB CONN")
 	}
-	application, err := router.ConfigureHandlers(tarantoolConn, postgresConn, authenticationServiceClient, profileServiceClient)
+	application, err := router.ConfigureHandlers(tarantoolConn, postgresConn, authenticationServiceClient, profileServiceClient, config)
 	if err != nil {
 		log.Fatalln("MAIN SERVER INIT: NO GRPC CONN")
 	}
 
 	mainRouter := router.ConfigureRouter(application)
-	httpServer := configureServer("8080", mainRouter)
-	log.Println("Starting server at port 8080")
+	httpServer := configureServer(strconv.Itoa(config.App.Port), mainRouter)
+	log.Printf("Starting server at port %d\n", config.App.Port)
 	serverErr := httpServer.ListenAndServe()
 	if serverErr != nil {
 		log.Fatalln(err)

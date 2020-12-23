@@ -20,6 +20,7 @@ import (
 	profileDelivery "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/delivery"
 	profileService "github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/profile/proto/codegen"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session/middleware"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/utils/configurator"
 	"github.com/julienschmidt/httprouter"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -44,8 +45,10 @@ type RoutingConfig struct {
 	ReplyService          *replyserver.ReplyService
 }
 
-func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnection *sql.DB, authClient authService.AuthenticationServiceClient, profileClient profileService.ProfileServiceClient) (*RoutingConfig, error) {
-	mutex := sync.RWMutex{}
+func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnection *sql.DB,
+		authClient authService.AuthenticationServiceClient,
+		profileClient profileService.ProfileServiceClient, config *configurator.Config) (*RoutingConfig, error) {
+	mutex := &sync.RWMutex{}
 	NewCookieService, cookieErr := cookieService.Start(cookieDBConnection)
 	if cookieErr != nil {
 		log.Println("No Tarantool Cookie DB connection")
@@ -61,14 +64,14 @@ func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnectio
 		return nil, models.ErrFooInitFail
 	}
 
-	newTicketService, ticketErr := ticketservice.Start(mainDBConnection, authClient, newHallService.Repository, newScheduleService.Repository)
+	newTicketService, ticketErr := ticketservice.Start(mainDBConnection, authClient, newHallService.Repository, newScheduleService.Repository, &config.Mail)
 	newHashCSRFMiddleware, csrfErr := csrf.NewHashCSRFToken(models.RandStringRunes(7), time.Hour*24)
 	if cinemaErr != nil || movieErr != nil || ticketErr != nil || csrfErr != nil {
 		log.Println(models.ErrFooInitFail)
 		return nil, models.ErrFooInitFail
 	}
 
-	recommendationService, recErr := recserver.Start(mainDBConnection, &mutex, time.Minute*10)
+	recommendationService, recErr := recserver.Start(mainDBConnection, mutex, time.Minute*10)
 	if recErr != nil {
 		return nil, models.ErrFooInitFail
 	}

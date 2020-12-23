@@ -6,4 +6,5 @@ cmd/main_server
 swagger
 docker-compose-local.yml
 main_server
+config
 .idea

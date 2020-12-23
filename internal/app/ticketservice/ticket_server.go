@@ -12,6 +12,7 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice/delivery"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice/repository"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice/usecase"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/utils/configurator"
 	"github.com/gorilla/mux"
 )
 
@@ -37,12 +38,12 @@ func configureAPI(handler *delivery.TicketDelivery) *mux.Router {
 	return handle
 }
 
-func Start(connection *sql.DB, auth authService.AuthenticationServiceClient, hallRep hallservice.Repository, scheduleRep schedule.TimeTableRepository) (*TicketService, error) {
+func Start(connection *sql.DB, auth authService.AuthenticationServiceClient, hallRep hallservice.Repository, scheduleRep schedule.TimeTableRepository, config *configurator.MailConfig) (*TicketService, error) {
 	if connection == nil || auth == nil || hallRep == nil {
 		return nil, models.ErrFooArgsMismatch
 	}
 	rep := repository.NewTicketSQLRepository(connection)
-	uc := usecase.NewTicketUseCase(rep, auth, hallRep, scheduleRep, "space.cinemascope@mail.ru", "YA&2mrRxutU9", "smtp.mail.ru", 587)
+	uc := usecase.NewTicketUseCase(rep, auth, hallRep, scheduleRep, config.Mail, config.Password, config.SMTPServerDomain, config.SMTPServerPort)
 	handler := delivery.NewTicketDelivery(uc)
 	handle := configureAPI(handler)
 

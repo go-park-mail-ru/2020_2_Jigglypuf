@@ -17,4 +17,5 @@ var (
 	ErrFooInternalServerError = errors.New("internal server error")
 	ErrFooNoRatingInfo        = errors.New("nothing to show")
 	ErrFooUniqueFail          = errors.New("already exists")
+	ErrFooIncorrectPath		  = errors.New("incorrect path")
 )
