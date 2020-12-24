@@ -93,7 +93,7 @@ func (t *TicketUseCase) sendQrTicketMail(unique string, to string) error {
 	}
 	Subject := "Cinemascope ticket"
 	BodyType := "text/html"
-	Body := `<h1>QR CODE FOR TICKET</h1><img src="cid:image.png" alt="My image" />`
+	Body := `<h1>Ваш билет в кинотеатр</h1> <p> Просканируйте данный QR-код при входе в кинотеатр </p> `
 	return t.mailer.SendFiledMail(filename, to, Subject, BodyType, Body)
 }
 
