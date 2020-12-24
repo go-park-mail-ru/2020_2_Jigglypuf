@@ -1,14 +1,39 @@
 language: go
-
-go: "1.15"
+go: '1.15'
 
 notifications:
   email: false
 
+addons:
+  ssh_known_hosts:
+  - $SSH_HOST
+
 before_script:
-  - go mod tidy
-  - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.31.0
+- go mod tidy
+- curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh
+  | sh -s -- -b $(go env GOPATH)/bin v1.31.0
+
+
+deploy:
+- provider: script
+  skip_cleanup: true
+  script: bash build/deploy_prod.sh
+  on:
+    branch: main
+
+install: true
 
 script:
-  - go test ./...
-  - golangci-lint run -c .golangci-lint.yml
+- go test -v -race ./...
+- golangci-lint run -c .golangci-lint.yml
+
+
+env:
+  global:
+  - secure: lKSw9tqPNsMUukB9sVxDgPb7xVQHp83qgawdp5w9PWR+59jDvqANoiiMtDXyQnY1KWGwCSEDGEcor6jZBh9/NgllIesl7raEhaE6rYXjpEjc5GB+F9b4Ha/1BUTNeikzr4hNw4mLcWGpAq4hOV6I8qzKcXb750KVqvocVmJpDZniKobGugb9tsvq5d0xzQ4JVy0/gNZnwxPoi+mGRVJwmxENMPyvhPLQYOwO5964uTgu+1aI80r/ahos833yX+AfaDFSQVsqWhTX2THLiZO0JdbmKpohSJ17FcpTQkRRPoW8hjAvKZ2tgu4/PjxercHC/3h7+WvvaDhpDiZdWxMokg00N/UxlCw1/ysZAtHOJfhAnFuvsNeUGYF2ABipjK2kcwyR17RRqkLGqiNU7u8DIT90Ppw4Ly2jdQK7gCWayu2NZuzf8XKVov6uXDoZ7rqYIOFxV0z97KPI1Fh2r7mSgksmDql3BUA9HjAF2+nV5xEGgJrWaj3QmHqMUiPn9NI07I2YWlT70IwFjUqex1tjvRt+ohhnOf7rLeHaaMuPtV9P1N3nWZrUFQL6JdjaC6AWoJe/o75Tkh4J1XXDahTIYBPnbV5qAEgFxZP4aGCxGKQveiFl2Jtr0JII4/4iqacU6GGUvsYb9RouksriS6HxJ0qHwdVF4EbH2q2ME+hhDbE=
+  - secure: PVUDGHOjfNEssEFCrvd74dPTCMrS9gwAZB6bortDd1N5kluQSOiY8FMb62ePvM151pMEUoB+/Bo/6Ke0x9IBuz5IIdC2ve3K8GblNbQPxegXK+mZSwhS9kLVvsp2yrZjccbYGkDyQw6hKjyeVh+tOtq3SPx8dfij5IP8Kt27vvh5VIsz63gfZuUj67tyGHfexhMjn+qgn/Lyku327jOfafBLhQWXza87um04MBQIeDCxqesQFgndlhuIkeZVyReuEIiTk2G3PE6rV6gkLL/ViYyTzhf8orTjyTbwFQWC/0HoGiuFcj2t/zBdAyzYbHHkRVsTDSKAEeWwa5feUfGqWlmSnY2mLly6bBoDkGIDXsSgIfUMmkczWzon7g0FG6m6pfb44Jfafa4h6+2OvbDzy8WWUCIbH1kGgy1JvgtUPeOFMDNT6+0oT5glfFRT8bO/xwkgpw6rtbkbYi3ry/wx122MQirnkHVXS92vkpNIURyBmJtoXfsuk+mGSIBbnRFvKjmnjq+P42N3T1n5j2dEVwBhh+Xh/87deOKFhK07Si97ZntVTUKVCc6VWhryQGlpUKBl9u/gHVuJ2lQIZJSiHU8THTW6kS1al4yy+PIEQb/BDTw6aDumC1gWkwTGJzkxT6C14NSl48q5KsjTtY5dDCtKmFoY+r9wrCu5m5br37A=
+
+
+before_install:
+- openssl aes-256-cbc -K $encrypted_bdb17d0e9074_key -iv $encrypted_bdb17d0e9074_iv
+  -in id_key.enc -out ./id_key -d

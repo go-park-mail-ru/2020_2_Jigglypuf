@@ -7,4 +7,5 @@ swagger
 docker-compose-local.yml
 main_server
 config
+id_key
 .idea
