@@ -5,6 +5,11 @@ type ReplyInput struct {
 	Text    string
 }
 
+type ReplyUpdateInput struct {
+	ReplyID int
+	NewText string
+}
+
 type ReplyModel struct {
 	MovieID     uint64
 	UserName    string
