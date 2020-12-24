@@ -86,7 +86,7 @@ func (t *TicketUseCase) sendQrTicketMail(unique string, to string) error {
 		fmt.Println("QR FIL", err)
 		return err
 	}
-	err = qrcode.WriteFile(globalconfig.MainURL+unique+"/", qrcode.Medium, 256, filename)
+	err = qrcode.WriteFile(globalconfig.QRURL+unique+"/", qrcode.Medium, 256, filename)
 	if err != nil {
 		fmt.Println("QRE", err)
 		return err
