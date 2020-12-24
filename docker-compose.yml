@@ -10,6 +10,7 @@ services:
   - /home/ubuntu/media:/media
   - /home/ubuntu/static:/static
   - /home/ubuntu/etc/letsencrypt:/etc/letsencrypt
+  - /home/ubuntu/codes:/codes
   depends_on:
    - app
  tarantool:
