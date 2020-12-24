@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
+ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
 chmod 600 ./id_key
+ls
 ssh -i ./id_key $SSH_USER@$SSH_HOST << EOF
 if [ -f ~/.bash_exports ]; then
     . ~/.bash_exports
