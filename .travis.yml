@@ -14,7 +14,7 @@ deploy:
   skip_cleanup: true
   script: bash build/deploy_prod.sh
   on:
-    branch: main
+    branch: develop
 install: true
 script:
 - go test -v -race ./...
