@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
-	"log"
 )
 
 type SQLRepository struct {
@@ -21,7 +20,7 @@ func (t *SQLRepository) CheckAvailability(hallID uint64, place *models.TicketPla
 		return false, models.ErrFooInternalDBErr
 	}
 
-	SQLResult := t.DBConnection.QueryRow("select Place_amount from cinema_hall, jsonb_array_elements(hall_params->'levels') WITH ORDINALITY arr(item_object, position) where arr.item_object->>'place' = $1 AND arr.item_object->>'row' = $2 AND ID = $3",
+	SQLResult := t.DBConnection.QueryRow("select Place_amount from cinema_hall, jsonb_array_elements(hall_params->'levels') WITH ORDINALITY arr(item_object, position) where arr.item_object->>'place' in $1 AND arr.item_object->>'row' in $2 AND ID = $3",
 		place.Place, place.Row, hallID)
 	if SQLResult == nil || SQLResult.Err() != nil {
 		return false, models.ErrFooPlaceAlreadyBusy
@@ -52,6 +51,5 @@ func (t *SQLRepository) GetHallStructure(hallID uint64) (*models.CinemaHall, err
 		return nil, models.ErrFooCastErr
 	}
 
-	log.Println("rep:", hallItem.PlaceConfig, placeConfig)
 	return &hallItem, nil
 }

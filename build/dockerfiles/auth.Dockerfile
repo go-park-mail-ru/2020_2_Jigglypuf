@@ -11,6 +11,7 @@ RUN CGO_ENABLED=0 go build -o auth_service cmd/auth/auth_service.go
 
 FROM alpine
 WORKDIR /app
-COPY --from=builder /app/auth/auth_service /app/
+COPY --from=builder /app/auth_service /app/
+COPY --from=builder /app/config/configuration.json /app/
 RUN chmod +x /app/auth_service
 ENTRYPOINT /app/auth_service

@@ -148,6 +148,29 @@ func (t *TicketDelivery) GetUsersSimpleTicket(w http.ResponseWriter, r *http.Req
 	_, _ = w.Write(outputBuf)
 }
 
+func (t *TicketDelivery) GetTicketByCode(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		models.BadMethodHTTPResponse(&w)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	transaction, ok := mux.Vars(r)[ticketservice.TicketTransactionPathName]
+	if !ok {
+		models.BadBodyHTTPResponse(&w, models.ErrFooIncorrectInputInfo)
+		return
+	}
+
+	ticket, err := t.useCase.GetTicketByTransaction(transaction)
+	if err != nil {
+		models.BadBodyHTTPResponse(&w, err)
+		return
+	}
+
+	outputBuf, _ := json.Marshal(ticket)
+	w.Write(outputBuf)
+}
+
 // Ticket godoc
 // @Summary Get schedule hall ticket list
 // @Description Get schedule hall ticket list by id

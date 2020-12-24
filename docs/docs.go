@@ -572,6 +572,96 @@ var doc = `{
                 }
             }
         },
+        "/api/reply/": {
+            "get": {
+                "description": "Get movie reply list",
+                "summary": "GetMovieReplies",
+                "operationId": "movie-reply-list-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "movie_id",
+                        "name": "movie_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ReplyModel"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "405": {
+                        "description": "Method Not Allowed",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create reply to movie",
+                "summary": "CreateReply",
+                "operationId": "create-reply-id",
+                "parameters": [
+                    {
+                        "description": "Login information",
+                        "name": "Reply_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ReplyInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {},
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "405": {
+                        "description": "Method Not Allowed",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/schedule/": {
             "get": {
                 "description": "Returns movie schedule by getting movie id, cinema id and day(date) in format schedule.TimeStandard",
@@ -1115,6 +1205,37 @@ var doc = `{
                 }
             }
         },
+        "models.ReplyInput": {
+            "type": "object",
+            "properties": {
+                "movieID": {
+                    "type": "integer"
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ReplyModel": {
+            "type": "object",
+            "properties": {
+                "movieID": {
+                    "type": "integer"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "userName": {
+                    "type": "string"
+                },
+                "userRating": {
+                    "type": "object"
+                },
+                "userSurname": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Schedule": {
             "type": "object",
             "properties": {
@@ -1164,6 +1285,9 @@ var doc = `{
                 "placeField": {
                     "$ref": "#/definitions/models.TicketPlace"
                 },
+                "qrpath": {
+                    "type": "string"
+                },
                 "schedule": {
                     "$ref": "#/definitions/models.Schedule"
                 },
@@ -1182,7 +1306,10 @@ var doc = `{
                     "type": "string"
                 },
                 "placeField": {
-                    "$ref": "#/definitions/models.TicketPlace"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.TicketPlace"
+                    }
                 },
                 "scheduleID": {
                     "type": "integer"

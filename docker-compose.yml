@@ -10,6 +10,9 @@ services:
   - /home/ubuntu/media:/media
   - /home/ubuntu/static:/static
   - /home/ubuntu/etc/letsencrypt:/etc/letsencrypt
+  - /home/ubuntu/codes:/codes
+  depends_on:
+   - app
  tarantool:
   image: felixgreen/teamproject_tarantool_image
   ports:
@@ -22,7 +25,7 @@ services:
   - 5432:5432
   restart: always
   env_file:
-   - ./init/database.env
+   - config/database.env
   volumes:
    - ./init/:/docker-entrypoint-initdb.d/
    - /home/ubuntu/etc/postgresql:/etc/postgresql
@@ -30,13 +33,15 @@ services:
    - /home/ubuntu/var/lib/postgresql:/var/lib/postgresql
    - /home/ubuntu/var/lib/postgresql/data:/var/lib/postgresql/data/:rw
  app:
-  image: felixgreen/dev_service_image
+  image: felixgreen/cinema_interfaceservice_image
   restart: always
   ports:
    - 8080:8080
   volumes:
    - /home/ubuntu/media:/media
-   - ./:/app
+   - /home/ubuntu/codes/:/codes
+  depends_on:
+   - auth
  auth:
   image: felixgreen/cinema-auth-service
   restart: always
@@ -44,6 +49,8 @@ services:
    - 8082:8082
   volumes:
    - /home/ubuntu/media:/media
+  depends_on:
+   - profile
  profile:
   image: felixgreen/cinema-profile-service
   restart: always
@@ -51,15 +58,18 @@ services:
    - 8081:8081
   volumes:
    - /home/ubuntu/media:/media
- prometheus:
-  image: prom/prometheus
-  restart: on-failure
-  ports:
-  - 9090:9090
-  volumes:
-   - ./prometheus.yml:/etc/prometheus/prometheus.yml
- grafana:
-  image: grafana/grafana
-  restart: on-failure
-  ports:
-  - 3000:3000
+  depends_on:
+   - postgresql
+   - tarantool
+# prometheus:
+#  image: prom/prometheus
+#  restart: on-failure
+#  ports:
+#  - 9090:9090
+#  volumes:
+#   - ./prometheus.yml:/etc/prometheus/prometheus.yml
+# grafana:
+#  image: grafana/grafana
+#  restart: on-failure
+#  ports:
+#  - 3000:3000
