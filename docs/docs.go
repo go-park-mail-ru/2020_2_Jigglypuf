@@ -1285,6 +1285,9 @@ var doc = `{
                 "placeField": {
                     "$ref": "#/definitions/models.TicketPlace"
                 },
+                "qrpath": {
+                    "type": "string"
+                },
                 "schedule": {
                     "$ref": "#/definitions/models.Schedule"
                 },

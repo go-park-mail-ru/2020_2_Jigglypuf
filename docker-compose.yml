@@ -24,7 +24,7 @@ services:
   - 5432:5432
   restart: always
   env_file:
-   - ./init/database.env
+   - config/database.env
   volumes:
    - ./init/:/docker-entrypoint-initdb.d/
    - /home/ubuntu/etc/postgresql:/etc/postgresql
@@ -38,6 +38,7 @@ services:
    - 8080:8080
   volumes:
    - /home/ubuntu/media:/media
+   - /home/ubuntu/codes/:/codes
   depends_on:
    - auth
  auth:

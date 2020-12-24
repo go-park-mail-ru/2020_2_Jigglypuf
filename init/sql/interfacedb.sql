@@ -111,6 +111,7 @@ CREATE TABLE if not exists ticket
     transaction_date timestamp default now(),
     row integer not null,
     place integer not null,
+    transaction varchar(128) not null unique,
     unique(schedule_id,row,place)
 );
 

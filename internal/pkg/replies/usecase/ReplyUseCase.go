@@ -26,7 +26,7 @@ func (t *ReplyUseCase) CreateReply(input *models.ReplyInput, userID uint64) erro
 	utils.SanitizeInput(t.sanitizer, &input.Text)
 
 	prof, err := t.profile.GetProfileByID(context.Background(), &profile.GetProfileByUserIDRequest{UserID: userID})
-	if err != nil {
+	if err != nil || prof == nil {
 		return models.ErrFooNoAuthorization
 	}
 
@@ -34,7 +34,7 @@ func (t *ReplyUseCase) CreateReply(input *models.ReplyInput, userID uint64) erro
 		Name:            prof.Name,
 		Surname:         prof.Surname,
 		AvatarPath:      prof.AvatarPath,
-		UserCredentials: &models.User{ID: prof.UserCredentials.UserID},
+		UserCredentials: &models.User{ID: userID},
 	}
 
 	return t.repository.CreateReply(input, &castedProfile)

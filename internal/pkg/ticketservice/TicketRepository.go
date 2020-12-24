@@ -10,4 +10,5 @@ type Repository interface {
 	GetSimpleTicket(ticketID uint64, Login string) (*models.Ticket, error)
 	GetUserTickets(Login string) (*[]models.Ticket, error)
 	GetHallTickets(scheduleID uint64) (*[]models.TicketPlace, error)
+	GetTicketByTransaction(transaction string) (*models.TicketInfo, error)
 }

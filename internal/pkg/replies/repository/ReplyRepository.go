@@ -26,7 +26,7 @@ func (t *ReplyRepository) CreateReply(input *models.ReplyInput, user *models.Pro
 
 func (t *ReplyRepository) GetMovieReplies(movieID, limit, offset int) (*[]models.ReplyModel, error) {
 	query := "SELECT v1.MovieID, v1.UserName, v1.UserSurname, v1.replyText, v2.movie_rating FROM movie_reply v1 " +
-		"LEFT JOIN rating_history v2 on(v1.UserID = v2.user_id) " +
+		"LEFT JOIN rating_history v2 on(v1.UserID = v2.user_id and v1.movieid = v2.movie_id) " +
 		"WHERE v1.MovieID = $1 LIMIT $2 OFFSET $3"
 	rows, dbErr := t.dbConnection.Query(query, movieID, limit, offset)
 	if dbErr != nil {
