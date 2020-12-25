@@ -15,4 +15,5 @@ const (
 	MediaURLPattern           = "/api/media/"
 	DocsURLPattern            = "/api/docs/"
 	QRCodeTicketURLPattern    = TicketURLPattern + "qr/"
+	WebSocketTicketURLPattern = TicketURLPattern + "ws/"
 )
