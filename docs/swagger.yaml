@@ -184,16 +184,34 @@ definitions:
     type: object
   models.ReplyModel:
     properties:
+      id:
+        type: integer
       movieID:
         type: integer
       text:
         type: string
-      userName:
-        type: string
+      user:
+        $ref: '#/definitions/models.ReplyUser'
       userRating:
         type: object
-      userSurname:
+    type: object
+  models.ReplyUpdateInput:
+    properties:
+      newText:
         type: string
+      replyID:
+        type: integer
+    type: object
+  models.ReplyUser:
+    properties:
+      avatarPath:
+        type: string
+      name:
+        type: string
+      surname:
+        type: string
+      userID:
+        type: integer
     type: object
   models.Schedule:
     properties:
@@ -695,6 +713,26 @@ paths:
           schema:
             $ref: '#/definitions/models.ServerResponse'
       summary: CreateReply
+    put:
+      description: Update Reply
+      parameters:
+      - description: Reply Update information
+        in: body
+        name: Reply_info
+        required: true
+        schema:
+          $ref: '#/definitions/models.ReplyUpdateInput'
+      responses:
+        "200": {}
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+        "405":
+          description: Method Not Allowed
+          schema:
+            $ref: '#/definitions/models.ServerResponse'
+      summary: UpdateReply
   /api/schedule/:
     get:
       description: Returns movie schedule by getting movie id, cinema id and day(date) in format schedule.TimeStandard

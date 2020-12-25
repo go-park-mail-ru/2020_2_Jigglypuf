@@ -10,10 +10,17 @@ type ReplyUpdateInput struct {
 	NewText string
 }
 
+type ReplyUser struct {
+	UserID uint64
+	Name string
+	Surname string
+	AvatarPath string
+}
+
 type ReplyModel struct {
+	ID			uint64
 	MovieID     uint64
-	UserName    string
-	UserSurname string
+	User		ReplyUser
 	UserRating  interface{}
 	Text        string
 }
