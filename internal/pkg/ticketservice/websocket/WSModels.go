@@ -29,6 +29,7 @@ type Message struct {
 	Type int `json:"-"`
 	ScheduleID uint64
 	PlaceConfig WSTicketPlace
+	Client *Client `json:"-"`
 }
 
 type WSTicketPlace struct {
