@@ -50,9 +50,9 @@ func (t *ReplyUseCase) GetMovieReplies(movieID, limit, offset int) (*[]models.Re
 }
 
 
-func (t *ReplyUseCase) UpdateReply(input *models.ReplyUpdateInput) error{
+func (t *ReplyUseCase) UpdateReply(input *models.ReplyUpdateInput, userID uint64) error{
 	if input.NewText == ""{
 		return models.ErrFooIncorrectInputInfo
 	}
-	return t.repository.UpdateReply(input)
+	return t.repository.UpdateReply(input, userID)
 }

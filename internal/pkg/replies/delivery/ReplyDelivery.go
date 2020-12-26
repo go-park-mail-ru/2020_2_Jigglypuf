@@ -116,6 +116,12 @@ func (t *ReplyDelivery) UpdateReply(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
+	isAuth := r.Context().Value(cookieService.ContextIsAuthName)
+	userID := r.Context().Value(cookieService.ContextUserIDName)
+	if isAuth == nil || !isAuth.(bool) {
+		models.UnauthorizedHTTPResponse(&w)
+		return
+	}
 	input := new(models.ReplyUpdateInput)
 	defer func(){
 		_ = r.Body.Close()
@@ -126,7 +132,7 @@ func (t *ReplyDelivery) UpdateReply(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	err := t.useCase.UpdateReply(input)
+	err := t.useCase.UpdateReply(input, userID.(uint64))
 	if err != nil{
 		models.BadBodyHTTPResponse(&w, err)
 		return

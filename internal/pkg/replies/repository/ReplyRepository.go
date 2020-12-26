@@ -46,9 +46,9 @@ func (t *ReplyRepository) GetMovieReplies(movieID, limit, offset int) (*[]models
 	return &resultArr, nil
 }
 
-func (t *ReplyRepository) UpdateReply(input *models.ReplyUpdateInput) error{
-	query := "UPDATE movie_reply SET replyText = $1 WHERE ID = $2"
-	_, sqlErr := t.dbConnection.Exec(query, input.NewText, input.ReplyID)
+func (t *ReplyRepository) UpdateReply(input *models.ReplyUpdateInput, userID uint64) error{
+	query := "UPDATE movie_reply SET replyText = $1 WHERE ID = $2 AND userid = $3"
+	_, sqlErr := t.dbConnection.Exec(query, input.NewText, input.ReplyID, userID)
 	if sqlErr != nil{
 		return models.ErrFooIncorrectInputInfo
 	}

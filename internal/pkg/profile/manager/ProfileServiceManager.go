@@ -63,6 +63,7 @@ func (t *ProfileServiceManager) GetProfileByID(ctx context.Context, in *ProfileS
 		Name:    profile.Name,
 		Surname: profile.Surname,
 		UserCredentials: &ProfileService.UserProfile{
+			UserID: user.User.ID,
 			Login: user.User.Login,
 		},
 		AvatarPath: profile.AvatarPath,
