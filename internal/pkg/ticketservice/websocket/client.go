@@ -27,6 +27,7 @@ func (t *Client) Read(){
 			Type: msType,
 			ScheduleID: t.ScheduleID,
 			PlaceConfig: *input,
+			Client: t,
 		}
 		t.Pool.BroadCast <- msg
 		log.Println("Received msg from ws", msg.PlaceConfig)
