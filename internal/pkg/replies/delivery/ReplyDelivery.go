@@ -100,3 +100,35 @@ func (t *ReplyDelivery) GetMovieReplies(w http.ResponseWriter, r *http.Request) 
 	outputBuf, _ := json.Marshal(resp)
 	w.Write(outputBuf)
 }
+
+
+// Reply godoc
+// @Summary UpdateReply
+// @Description Update Reply
+// @Param Reply_info body models.ReplyUpdateInput true "Reply Update information"
+// @Success 200
+// @Failure 400 {object} models.ServerResponse
+// @Failure 405 {object} models.ServerResponse
+// @Router /api/reply/ [put]
+func (t *ReplyDelivery) UpdateReply(w http.ResponseWriter, r *http.Request){
+	if r.Method != http.MethodPut{
+		models.BadMethodHTTPResponse(&w)
+		return
+	}
+
+	input := new(models.ReplyUpdateInput)
+	defer func(){
+		_ = r.Body.Close()
+	}()
+	decodeErr := json.NewDecoder(r.Body).Decode(&input)
+	if decodeErr != nil{
+		models.BadBodyHTTPResponse(&w, models.ErrFooIncorrectInputInfo)
+		return
+	}
+
+	err := t.useCase.UpdateReply(input)
+	if err != nil{
+		models.BadBodyHTTPResponse(&w, err)
+		return
+	}
+}

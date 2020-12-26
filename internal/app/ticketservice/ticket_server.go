@@ -12,6 +12,7 @@ import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice/delivery"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice/repository"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice/usecase"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice/websocket"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/utils/configurator"
 	"github.com/gorilla/mux"
 )
@@ -20,10 +21,11 @@ type TicketService struct {
 	Repository ticketservice.Repository
 	UseCase    ticketservice.UseCase
 	Handler    *delivery.TicketDelivery
+	WebSocketHandler *websocket.TicketWebSocketDelivery
 	Router     *mux.Router
 }
 
-func configureAPI(handler *delivery.TicketDelivery) *mux.Router {
+func configureAPI(handler *delivery.TicketDelivery, wsHandler *websocket.TicketWebSocketDelivery) *mux.Router {
 	handle := mux.NewRouter()
 
 	handle.HandleFunc(globalconfig.TicketURLPattern+"buy/", handler.BuyTicket).Methods("POST")
@@ -34,6 +36,8 @@ func configureAPI(handler *delivery.TicketDelivery) *mux.Router {
 		handler.GetHallScheduleTickets).Methods("GET")
 	handle.HandleFunc(globalconfig.QRCodeTicketURLPattern+fmt.Sprintf("{%s:[0-9A-Za-z]+}/", ticketservice.TicketTransactionPathName),
 		handler.GetTicketByCode)
+	handle.HandleFunc(globalconfig.WebSocketTicketURLPattern +fmt.Sprintf("{%s:[0-9]+}/", ticketservice.ScheduleIDName),
+		wsHandler.ServeWS)
 
 	return handle
 }
@@ -42,15 +46,18 @@ func Start(connection *sql.DB, auth authService.AuthenticationServiceClient, hal
 	if connection == nil || auth == nil || hallRep == nil {
 		return nil, models.ErrFooArgsMismatch
 	}
+	wsHandler := websocket.NewTicketWebSocketDelivery()
 	rep := repository.NewTicketSQLRepository(connection)
-	uc := usecase.NewTicketUseCase(rep, auth, hallRep, scheduleRep, config.Mail, config.Password, config.SMTPServerDomain, config.SMTPServerPort)
+	uc := usecase.NewTicketUseCase(rep, auth, hallRep, scheduleRep, config.Mail,
+		config.Password, config.SMTPServerDomain, config.SMTPServerPort, wsHandler.ServeBuys)
 	handler := delivery.NewTicketDelivery(uc)
-	handle := configureAPI(handler)
+	handle := configureAPI(handler, wsHandler)
 
 	return &TicketService{
 		rep,
 		uc,
 		handler,
+		wsHandler,
 		handle,
 	}, nil
 }

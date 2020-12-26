@@ -624,6 +624,36 @@ var doc = `{
                     }
                 }
             },
+            "put": {
+                "description": "Update Reply",
+                "summary": "UpdateReply",
+                "parameters": [
+                    {
+                        "description": "Reply Update information",
+                        "name": "Reply_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ReplyUpdateInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {},
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    },
+                    "405": {
+                        "description": "Method Not Allowed",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServerResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Create reply to movie",
                 "summary": "CreateReply",
@@ -1219,20 +1249,48 @@ var doc = `{
         "models.ReplyModel": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "movieID": {
                     "type": "integer"
                 },
                 "text": {
                     "type": "string"
                 },
-                "userName": {
-                    "type": "string"
+                "user": {
+                    "$ref": "#/definitions/models.ReplyUser"
                 },
                 "userRating": {
                     "type": "object"
-                },
-                "userSurname": {
+                }
+            }
+        },
+        "models.ReplyUpdateInput": {
+            "type": "object",
+            "properties": {
+                "newText": {
                     "type": "string"
+                },
+                "replyID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.ReplyUser": {
+            "type": "object",
+            "properties": {
+                "avatarPath": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "surname": {
+                    "type": "string"
+                },
+                "userID": {
+                    "type": "integer"
                 }
             }
         },

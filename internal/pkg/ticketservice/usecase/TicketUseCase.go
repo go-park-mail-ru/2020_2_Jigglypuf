@@ -26,10 +26,12 @@ type TicketUseCase struct {
 	AuthServiceClient  authService.AuthenticationServiceClient
 	hallRepository     hallservice.Repository
 	scheduleRepository schedule.TimeTableRepository
+	buyFinishCallback  func(uint642 uint64, place []models.TicketPlace)
 	mailer             *mailer.Mailer
 }
 
-func NewTicketUseCase(repository ticketservice.Repository, authRepository authService.AuthenticationServiceClient, hallRepository hallservice.Repository, scheduleRepository schedule.TimeTableRepository, email, password, host string, port int) *TicketUseCase {
+func NewTicketUseCase(repository ticketservice.Repository, authRepository authService.AuthenticationServiceClient, hallRepository hallservice.Repository,
+	scheduleRepository schedule.TimeTableRepository, email, password, host string, port int, callback func(uint642 uint64, place []models.TicketPlace)) *TicketUseCase {
 	if _, err := os.Stat(globalconfig.QRCodesPath); os.IsNotExist(err) {
 		err := os.MkdirAll(globalconfig.QRCodesPath, os.ModePerm)
 		if err != nil {
@@ -44,6 +46,7 @@ func NewTicketUseCase(repository ticketservice.Repository, authRepository authSe
 		AuthServiceClient:  authRepository,
 		hallRepository:     hallRepository,
 		scheduleRepository: scheduleRepository,
+		buyFinishCallback: callback,
 		mailer:             mailer.NewMailer(email, password, host, port),
 	}
 }
@@ -93,7 +96,7 @@ func (t *TicketUseCase) sendQrTicketMail(unique string, to string) error {
 	}
 	Subject := "Cinemascope ticket"
 	BodyType := "text/html"
-	Body := `<h1>QR CODE FOR TICKET</h1><img src="cid:image.png" alt="My image" />`
+	Body := `<h1>Ваш билет в кинотеатр</h1> <p> Просканируйте данный QR-код при входе в кинотеатр </p> `
 	return t.mailer.SendFiledMail(filename, to, Subject, BodyType, Body)
 }
 
@@ -174,5 +177,6 @@ func (t *TicketUseCase) BuyTicket(ticket *models.TicketInput, userID interface{}
 	}
 
 	t.sendMails(ticket)
+	t.buyFinishCallback(ticket.ScheduleID, ticket.PlaceField)
 	return nil
 }
