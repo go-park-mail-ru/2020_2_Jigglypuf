@@ -28,27 +28,9 @@ func (t *Pool) Start() {
 			break
 		case client := <-t.Unregister:
 			delete(t.Clients[client.ScheduleID], client)
-			i := 0
-			for i < len(t.History[client.ScheduleID]){
-				val := t.History[client.ScheduleID][i]
-				if val.PlaceConfig.Type == InProcess && val.Client.Conn == client.Conn{
-					fmt.Println("iansdinasooinasoidasd")
-					if len(t.History[client.ScheduleID]) > i{
-						t.History[client.ScheduleID] = append(t.History[client.ScheduleID][:i],
-							t.History[client.ScheduleID][(i+1):]...)
-					}else{
-						t.History[client.ScheduleID] = t.History[client.ScheduleID][:i]
-					}
-					i --
-				}
-				i ++
-			}
-			fmt.Println("history", t.History[client.ScheduleID])
-			t.Send(client.ScheduleID)
 			break
 		case msg := <-t.BroadCast:
-			t.ConfigureHistory(&msg)
-			fmt.Println("im before sending")
+			t.History[msg.ScheduleID] = append(t.History[msg.ScheduleID], msg)
 			t.Send(msg.ScheduleID)
 			break
 		}
@@ -59,6 +41,7 @@ func (t *Pool) Send(scheduleID uint64){
 	if t.History[scheduleID] == nil{
 		t.History[scheduleID] = make([]Message, 0)
 	}
+	fmt.Printf("%v\n", t.Clients)
 	for client, _ := range t.Clients[scheduleID] {
 		if err := client.Conn.WriteJSON(t.History[scheduleID]); err != nil {
 			log.Println(err)

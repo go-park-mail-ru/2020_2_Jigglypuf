@@ -1,7 +1,6 @@
 package websocket
 
 import (
-	"encoding/json"
 	"log"
 )
 
@@ -17,19 +16,6 @@ func (t *Client) Read(){
 			log.Println(err)
 			return
 		}
-		input := new(WSTicketPlace)
-		err = json.Unmarshal(Body, input)
-		if err != nil || input.Type == Busy{
-			log.Println(err)
-			return
-		}
-		msg := Message{
-			Type: msType,
-			ScheduleID: t.ScheduleID,
-			PlaceConfig: *input,
-			Client: t,
-		}
-		t.Pool.BroadCast <- msg
-		log.Println("Received msg from ws", msg.PlaceConfig)
+		log.Println("Received msg from ws", Body, msType)
 	}
 }

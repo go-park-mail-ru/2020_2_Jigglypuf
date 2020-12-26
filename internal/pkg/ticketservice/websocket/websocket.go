@@ -2,7 +2,6 @@ package websocket
 
 import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
-	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -21,7 +20,16 @@ func NewTicketWebSocketDelivery() *TicketWebSocketDelivery {
 		upgrade: websocket.Upgrader{
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
-			CheckOrigin:     func(r *http.Request) bool { return true },
+			CheckOrigin:     func(r *http.Request) bool {
+				origin := r.Header.Get("Origin")
+				origins := map[string]bool{
+					"http://localhost:3001":true,
+					"https://cinemascope.space":true,
+					"http://cinemascope.space":true,
+				}
+				_, ok := origins[origin]
+				return ok
+			},
 		},
 		pool: NewPool(),
 	}
@@ -40,12 +48,6 @@ func (t *TicketWebSocketDelivery) Upgrade(w http.ResponseWriter, r *http.Request
 }
 
 func (t *TicketWebSocketDelivery) ServeWS(w http.ResponseWriter, r *http.Request) {
-	isAuth := r.Context().Value(session.ContextIsAuthName)
-	userID := r.Context().Value(session.ContextUserIDName)
-	if isAuth == nil || userID == nil || !isAuth.(bool) {
-		models.UnauthorizedHTTPResponse(&w)
-		return
-	}
 	input, ok := mux.Vars(r)[ticketservice.ScheduleIDName]
 	parsedScheduleID, err := strconv.Atoi(input)
 	if !ok || err != nil {
