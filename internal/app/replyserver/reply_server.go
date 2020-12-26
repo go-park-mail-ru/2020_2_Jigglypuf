@@ -24,6 +24,7 @@ func configureReplyRouter(handler *delivery.ReplyDelivery) *mux.Router {
 	replyRouter := mux.NewRouter()
 	replyRouter.HandleFunc(globalconfig.ReplyURLPattern, handler.CreateReply).Methods(http.MethodPost)
 	replyRouter.HandleFunc(globalconfig.ReplyURLPattern, handler.GetMovieReplies).Methods(http.MethodGet)
+	replyRouter.HandleFunc(globalconfig.ReplyURLPattern, handler.UpdateReply).Methods(http.MethodPut)
 
 	return replyRouter
 }
