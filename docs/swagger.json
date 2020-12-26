@@ -1376,6 +1376,9 @@
                 "login"
             ],
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "login": {
                     "type": "string"
                 }

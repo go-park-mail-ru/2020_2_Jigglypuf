@@ -1391,6 +1391,9 @@ var doc = `{
                 "login"
             ],
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "login": {
                     "type": "string"
                 }

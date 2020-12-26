@@ -274,6 +274,8 @@ definitions:
     type: object
   models.User:
     properties:
+      id:
+        type: integer
       login:
         type: string
     required:
