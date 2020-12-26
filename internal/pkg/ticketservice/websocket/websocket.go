@@ -2,6 +2,7 @@ package websocket
 
 import (
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/models"
+	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/session"
 	"github.com/go-park-mail-ru/2020_2_Jigglypuf/internal/pkg/ticketservice"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -39,12 +40,12 @@ func (t *TicketWebSocketDelivery) Upgrade(w http.ResponseWriter, r *http.Request
 }
 
 func (t *TicketWebSocketDelivery) ServeWS(w http.ResponseWriter, r *http.Request) {
-	//isAuth := r.Context().Value(session.ContextIsAuthName)
-	//userID := r.Context().Value(session.ContextUserIDName)
-	//if isAuth == nil || userID == nil || !isAuth.(bool) {
-	//	models.UnauthorizedHTTPResponse(&w)
-	//	return
-	//}
+	isAuth := r.Context().Value(session.ContextIsAuthName)
+	userID := r.Context().Value(session.ContextUserIDName)
+	if isAuth == nil || userID == nil || !isAuth.(bool) {
+		models.UnauthorizedHTTPResponse(&w)
+		return
+	}
 	input, ok := mux.Vars(r)[ticketservice.ScheduleIDName]
 	parsedScheduleID, err := strconv.Atoi(input)
 	if !ok || err != nil {
