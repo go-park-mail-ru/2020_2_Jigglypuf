@@ -39,9 +39,6 @@ CREATE TABLE if not exists movie_reply
     ID serial not null primary key,
     MovieID integer not null references movie(ID),
     UserID integer not null,
-    UserName varchar(64) not null,
-    UserAvatar varchar(128) not null,
-    UserSurname varchar(64) not null,
     replyText text not null,
     UNIQUE(UserID, MovieID)
 );

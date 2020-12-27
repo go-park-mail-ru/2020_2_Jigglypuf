@@ -148,3 +148,18 @@ func (mr *MockMovieRepositoryMockRecorder) GetMoviesInCinema(limit, page, date, 
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMoviesInCinema", reflect.TypeOf((*MockMovieRepository)(nil).GetMoviesInCinema), limit, page, date, allTime)
 }
+
+// GetAllMovies mocks base method
+func (m *MockMovieRepository) GetAllMovies() ([]models.MovieList, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllMovies")
+	ret0, _ := ret[0].([]models.MovieList)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllMovies indicates an expected call of GetAllMovies
+func (mr *MockMovieRepositoryMockRecorder) GetAllMovies() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllMovies", reflect.TypeOf((*MockMovieRepository)(nil).GetAllMovies))
+}

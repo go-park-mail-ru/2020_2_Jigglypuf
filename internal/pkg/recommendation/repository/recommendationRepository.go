@@ -47,7 +47,7 @@ func (t *RecommendationSystemRepository) GetMovieRatingsDataset() (*[]models.Rec
 	return &resultModelList, nil
 }
 
-func (t *RecommendationSystemRepository) GetRecommendedMovieList(movieIDSet *mapset.Set) (*[]models.Movie, error) {
+func (t *RecommendationSystemRepository) GetRecommendedMovieList(movieIDSet *mapset.Set) (*[]models.MovieList, error) {
 	SQL := "SELECT v1.ID, v1.MovieName, v1.Description, JSONB_AGG(jsonb_build_object('ID',v3.id,'Name',v3.genre_name)), v1.Duration, v1.Producer, v1.Country,v1.Release_Year, v1.Age_group, v1.Rating, " +
 		"v1.Rating_count,JSONB_AGG(jsonb_build_object('ID',v5.ID,'Name', v5.Name, 'Surname', v5.Surname, 'Patronymic', v5.Patronymic, 'Description', v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar FROM movie v1 " +
 		"join movie_genre v2 on v1.id = v2.movie_id " +
@@ -61,8 +61,8 @@ func (t *RecommendationSystemRepository) GetRecommendedMovieList(movieIDSet *map
 		log.Println(err)
 		return nil, models.ErrFooInternalDBErr
 	}
-	resultMovieList := make([]models.Movie, 0)
-	movieModel := new(models.Movie)
+	resultMovieList := make([]models.MovieList, 0)
+	movieModel := new(models.MovieList)
 	for rows.Next() {
 		ScanErr := rows.Scan(&movieModel.ID, &movieModel.Name, &movieModel.Description,
 			&movieModel.GenreList, &movieModel.Duration,
@@ -86,7 +86,33 @@ func (t *RecommendationSystemRepository) GetRecommendedMovieList(movieIDSet *map
 	return &resultMovieList, nil
 }
 
-func (t *RecommendationSystemRepository) GetPopularMovies() (*[]models.Movie, error) {
+func (t *RecommendationSystemRepository) GetLastUserRating(userID uint64) ([]models.RatingModel, error){
+	query := "select id,user_id,movie_id, movie_rating from rating_history WHERE user_id = $1 ORDER BY ID DESC;"
+	rows, err := t.DBConn.Query(query, userID)
+	if err != nil || rows == nil || rows.Err() != nil{
+		log.Println(err)
+		return nil, models.ErrFooIncorrectInputInfo
+	}
+	result := make([]models.RatingModel, 0)
+	for rows.Next(){
+		rating := new(models.RatingModel)
+		ScanErr := rows.Scan(&rating.ID, &rating.UserID, &rating.MovieID, &rating.MovieRating)
+		if ScanErr != nil{
+			log.Println(ScanErr)
+			return nil, models.ErrFooInternalDBErr
+		}
+		result = append(result, *rating)
+	}
+	defer func() {
+		if rows != nil {
+			rows.Close()
+		}
+	}()
+
+	return result, nil
+}
+
+func (t *RecommendationSystemRepository) GetPopularMovies() (*[]models.MovieList, error) {
 	SQL := "SELECT v1.ID, v1.MovieName, v1.Description, JSONB_AGG(jsonb_build_object('ID',v3.id,'Name',v3.genre_name)), v1.Duration, v1.Producer, v1.Country,v1.Release_Year, v1.Age_group, v1.Rating, " +
 		"v1.Rating_count,JSONB_AGG(jsonb_build_object('ID',v5.ID,'Name', v5.Name, 'Surname', v5.Surname, 'Patronymic', v5.Patronymic, 'Description', v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar FROM movie v1 " +
 		"join movie_genre v2 on v1.id = v2.movie_id " +
@@ -101,9 +127,9 @@ func (t *RecommendationSystemRepository) GetPopularMovies() (*[]models.Movie, er
 		log.Println(err)
 		return nil, models.ErrFooInternalDBErr
 	}
-	resultMovieList := make([]models.Movie, 0)
+	resultMovieList := make([]models.MovieList, 0)
 	for rows.Next() {
-		movieModel := new(models.Movie)
+		movieModel := new(models.MovieList)
 		ScanErr := rows.Scan(&movieModel.ID, &movieModel.Name, &movieModel.Description,
 			&movieModel.GenreList, &movieModel.Duration,
 			&movieModel.Producer, &movieModel.Country, &movieModel.ReleaseYear,

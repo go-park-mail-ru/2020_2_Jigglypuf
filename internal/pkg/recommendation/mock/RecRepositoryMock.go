@@ -67,7 +67,7 @@ func (mr *MockRepositoryMockRecorder) GetRecommendedMovieList(set interface{}) *
 // GetPopularMovies mocks base method
 func (m *MockRepository) GetPopularMovies() (*[]models.Movie, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetPopularMovies")
+	ret := m.ctrl.Call(m, "getPopularMovies")
 	ret0, _ := ret[0].(*[]models.Movie)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -76,5 +76,5 @@ func (m *MockRepository) GetPopularMovies() (*[]models.Movie, error) {
 // GetPopularMovies indicates an expected call of GetPopularMovies
 func (mr *MockRepositoryMockRecorder) GetPopularMovies() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPopularMovies", reflect.TypeOf((*MockRepository)(nil).GetPopularMovies))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "getPopularMovies", reflect.TypeOf((*MockRepository)(nil).GetPopularMovies))
 }

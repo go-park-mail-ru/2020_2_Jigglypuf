@@ -220,7 +220,7 @@ func (t *RecommendationSystemUseCase) MakeMovieRecommendations(userID uint64) (s
 	return MovieSet, nil
 }
 
-func (t *RecommendationSystemUseCase) GetRecommendedMovieList(userID uint64) (*[]models.Movie, error) {
+func (t *RecommendationSystemUseCase) GetRecommendedMovieList(userID uint64) (*[]models.MovieList, error) {
 	MovieIDSet, recommendationErr := t.MakeMovieRecommendations(userID)
 	if recommendationErr != nil {
 		return t.GetPopularMovies()
@@ -234,6 +234,6 @@ func (t *RecommendationSystemUseCase) GetRecommendedMovieList(userID uint64) (*[
 	return MovieList, nil
 }
 
-func (t *RecommendationSystemUseCase) GetPopularMovies() (*[]models.Movie, error) {
+func (t *RecommendationSystemUseCase) GetPopularMovies() (*[]models.MovieList, error) {
 	return t.RecommendationRepository.GetPopularMovies()
 }

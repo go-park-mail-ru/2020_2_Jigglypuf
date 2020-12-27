@@ -25,15 +25,7 @@ func (t *ReplyUseCase) CreateReply(input *models.ReplyInput, userID uint64) erro
 	}
 	utils.SanitizeInput(t.sanitizer, &input.Text)
 
-	prof, err := t.profile.GetProfileByID(context.Background(), &profile.GetProfileByUserIDRequest{UserID: userID})
-	if err != nil || prof == nil {
-		return models.ErrFooNoAuthorization
-	}
-
 	castedProfile := models.Profile{
-		Name:            prof.Name,
-		Surname:         prof.Surname,
-		AvatarPath:      prof.AvatarPath,
 		UserCredentials: &models.User{ID: userID},
 	}
 
@@ -46,7 +38,20 @@ func (t *ReplyUseCase) GetMovieReplies(movieID, limit, offset int) (*[]models.Re
 		return nil, models.IncorrectGetParameters{}
 	}
 
-	return t.repository.GetMovieReplies(movieID, limit, offset)
+	resp, err := t.repository.GetMovieReplies(movieID, limit, offset)
+	if err != nil{
+		return nil, err
+	}
+	for i := 0; i < limit; i++ {
+		prof, err := t.profile.GetProfileByID(context.Background(), &profile.GetProfileByUserIDRequest{UserID: resp[i].User.UserID})
+		if err != nil{
+			continue
+		}
+		resp[i].User.AvatarPath = prof.AvatarPath
+		resp[i].User.Name = prof.Name
+		resp[i].User.Surname = prof.Surname
+	}
+	return &resp, nil
 }
 
 

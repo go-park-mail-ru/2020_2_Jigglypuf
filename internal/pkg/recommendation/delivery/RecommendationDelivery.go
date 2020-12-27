@@ -23,7 +23,7 @@ func NewRecommendationDelivery(useCase recommendation.UseCase) *RecommendationDe
 // @Summary recommendations
 // @Description get user recommendations
 // @ID get-user-recommendations
-// @Success 200 {array} models.Movie
+// @Success 200 {array} models.Recommendation
 // @Failure 405 {object} models.ServerResponse
 // @Failure 500 {object} models.ServerResponse
 // @Router /api/recommendations/ [get]
@@ -50,7 +50,7 @@ func (t *RecommendationDelivery) GetRecommendedMovieList(w http.ResponseWriter, 
 		return
 	}
 
-	movieList, movieErr := t.recommendationUseCase.GetRecommendedMovieList(userID)
+	movieList, movieErr := t.recommendationUseCase.MakeRecommendation(userID, 9)
 	if movieErr != nil {
 		models.InternalErrorHTTPResponse(&w)
 		return

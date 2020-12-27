@@ -27,7 +27,6 @@ import (
 	"github.com/tarantool/go-tarantool"
 	"log"
 	"net/http"
-	"sync"
 	"time"
 )
 
@@ -48,7 +47,6 @@ type RoutingConfig struct {
 func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnection *sql.DB,
 	authClient authService.AuthenticationServiceClient,
 	profileClient profileService.ProfileServiceClient, config *configurator.Config) (*RoutingConfig, error) {
-	mutex := &sync.RWMutex{}
 	NewCookieService, cookieErr := cookieService.Start(cookieDBConnection)
 	if cookieErr != nil {
 		log.Println("No Tarantool Cookie DB connection")
@@ -71,7 +69,7 @@ func ConfigureHandlers(cookieDBConnection *tarantool.Connection, mainDBConnectio
 		return nil, models.ErrFooInitFail
 	}
 
-	recommendationService, recErr := recserver.Start(mainDBConnection, mutex, time.Minute*10)
+	recommendationService, recErr := recserver.Start(mainDBConnection, newMovieService.MovieRepository)
 	if recErr != nil {
 		return nil, models.ErrFooInitFail
 	}

@@ -8,6 +8,7 @@ import (
 
 type Repository interface {
 	GetMovieRatingsDataset() (*[]models.RecommendationDataFrame, error)
-	GetRecommendedMovieList(set *set.Set) (*[]models.Movie, error)
-	GetPopularMovies() (*[]models.Movie, error)
+	GetRecommendedMovieList(set *set.Set) (*[]models.MovieList, error)
+	GetPopularMovies() (*[]models.MovieList, error)
+	GetLastUserRating(userID uint64) ([]models.RatingModel, error)
 }

@@ -553,7 +553,7 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Movie"
+                                "$ref": "#/definitions/models.Recommendation"
                             }
                         }
                     },
@@ -1212,6 +1212,20 @@ var doc = `{
                 },
                 "rating": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.Recommendation": {
+            "type": "object",
+            "properties": {
+                "movie": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.MovieList"
+                    }
+                },
+                "ratingMovieName": {
+                    "type": "string"
                 }
             }
         },

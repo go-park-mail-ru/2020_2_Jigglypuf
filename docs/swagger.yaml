@@ -162,6 +162,15 @@ definitions:
       rating:
         type: integer
     type: object
+  models.Recommendation:
+    properties:
+      movie:
+        items:
+          $ref: '#/definitions/models.MovieList'
+        type: array
+      ratingMovieName:
+        type: string
+    type: object
   models.RegistrationInput:
     properties:
       login:
@@ -643,7 +652,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.Movie'
+              $ref: '#/definitions/models.Recommendation'
             type: array
         "405":
           description: Method Not Allowed
