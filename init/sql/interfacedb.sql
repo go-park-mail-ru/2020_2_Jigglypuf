@@ -113,11 +113,13 @@ CREATE TABLE if not exists ticket
     unique(schedule_id,row,place)
 );
 
-INSERT INTO cinema (CinemaName, Address, Hall_count)
-VALUES  ('CinemaScope1','Москва, Первая улица, д.1',1),
-        ('CinemaScope2','Москва, Первая улица, д.2',2),
-        ('CinemaScope3','Москва, Первая улица, д.3',3),
-        ('CinemaScope4','Москва, Первая улица, д.4',4);
+INSERT INTO cinema (CinemaName, Address, Hall_count, pathtoavatar)
+VALUES  ('Пять Звёзд','Москва, Большой Овчинниковский пер., 16',1, '/media/pyat_zvezd.jpg'),
+        ('Формула Кино','Москва, Хорошевское ш., 27',2, '/media/formula_kino.jpg'),
+        ('Кронверк Синема','Москва, Семеновская пл., 1',3, '/media/kronverk_cinema.jpg'),
+        ('Центрфильм','Москва, Щёлковское ш., 100',4, '/media/cinemaDefault.jpg'),
+        ('Пионер','Митьковский пр-д, 10', 3, '/media/Pioner_cinema.jpeg'),
+        ('Москино Звезда','ул. Земляной Вал, 18/22 , стр.2', 3, '/media/Moskino_zvezda.jpg');
 
 
 INSERT into genre(Genre_Name)
@@ -229,7 +231,11 @@ VALUES (1,2,2,now() + interval '1 hour', 400),
        (11,4,2,now() + interval '11 hours',322),
        (11,1,2,now() + interval '6 hours',228),
        (11,2,2,now() + interval '5 hours',228),
-       (11,3,2,now() + interval '5 hours',228);
+       (11,3,2,now() + interval '5 hours',228),
+       (11,5,2,now() + interval '1 day',1337),
+       (6,5,2,now() + interval '2 days',337),
+       (4,6,1,now() + interval '1 day 5 hours',358),
+       (8,6,2,now() + interval '1 day 7 hours',767);
 
 
 
