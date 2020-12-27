@@ -45,8 +45,8 @@ func (t *MovieSQLRepository) GetMovie(id uint64) (*models.Movie, error) {
 	if t.DBConnection == nil {
 		return nil, models.ErrFooNoDBConnection
 	}
-	resultSQL := t.DBConnection.QueryRow("SELECT DISTINCT v1.ID, v1.MovieName, v1.Description, JSONB_AGG(jsonb_build_object('ID',v3.id,'Name',v3.genre_name)), v1.Duration, v1.Producer, v1.Country,v1.Release_Year, v1.Age_group, v1.Rating, "+
-		"v1.Rating_count,JSONB_AGG(jsonb_build_object('ID',v5.ID,'Name', v5.Name, 'Surname', v5.Surname, 'Patronymic', v5.Patronymic, 'Description', v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar FROM movie v1 "+
+	resultSQL := t.DBConnection.QueryRow("SELECT DISTINCT v1.ID, v1.MovieName, v1.Description, JSONB_AGG(DISTINCT jsonb_build_object('ID',v3.id,'Name',v3.genre_name)), v1.Duration, v1.Producer, v1.Country,v1.Release_Year, v1.Age_group, v1.Rating, "+
+		"v1.Rating_count,JSONB_AGG(DISTINCT jsonb_build_object('ID',v5.ID,'Name', v5.Name, 'Surname', v5.Surname, 'Patronymic', v5.Patronymic, 'Description', v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar FROM movie v1 "+
 		"join movie_genre v2 on v1.id = v2.movie_id "+
 		"join genre v3 on (v3.id = v2.genre_id) "+
 		"join movie_actors v4 on (v4.movie_id = v1.id) "+
@@ -75,8 +75,8 @@ func (t *MovieSQLRepository) GetMovieList(limit, page int) (*[]models.MovieList,
 		return nil, models.ErrFooNoDBConnection
 	}
 
-	resultSQL, DBErr := t.DBConnection.Query("SELECT v1.ID, v1.MovieName, v1.Description, JSONB_AGG(jsonb_build_object('ID',v3.id,'Name',v3.genre_name)), v1.Duration, v1.Producer, v1.Country,v1.Release_Year, v1.Age_group, v1.Rating, "+
-		"v1.Rating_count,JSONB_AGG(jsonb_build_object('ID',v5.ID,'Name', v5.Name, 'Surname', v5.Surname, 'Patronymic', v5.Patronymic, 'Description', v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar FROM movie v1 "+
+	resultSQL, DBErr := t.DBConnection.Query("SELECT v1.ID, v1.MovieName, v1.Description, JSONB_AGG(DISTINCT jsonb_build_object('ID',v3.id,'Name',v3.genre_name)), v1.Duration, v1.Producer, v1.Country,v1.Release_Year, v1.Age_group, v1.Rating, "+
+		"v1.Rating_count,JSONB_AGG(DISTINCT jsonb_build_object('ID',v5.ID,'Name', v5.Name, 'Surname', v5.Surname, 'Patronymic', v5.Patronymic, 'Description', v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar FROM movie v1 "+
 		"join movie_genre v2 on v1.id = v2.movie_id "+
 		"join genre v3 on (v3.id = v2.genre_id) "+
 		"join movie_actors v4 on (v4.movie_id = v1.id) "+
@@ -117,8 +117,8 @@ func (t *MovieSQLRepository) GetAllMovies() ([]models.MovieList, error) {
 		return nil, models.ErrFooNoDBConnection
 	}
 
-	resultSQL, DBErr := t.DBConnection.Query("SELECT v1.ID, v1.MovieName, v1.Description, JSONB_AGG(jsonb_build_object('ID',v3.id,'Name',v3.genre_name)), v1.Duration, v1.Producer, v1.Country,v1.Release_Year, v1.Age_group, v1.Rating, "+
-		"v1.Rating_count,JSONB_AGG(jsonb_build_object('ID',v5.ID,'Name', v5.Name, 'Surname', v5.Surname, 'Patronymic', v5.Patronymic, 'Description', v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar FROM movie v1 "+
+	resultSQL, DBErr := t.DBConnection.Query("SELECT v1.ID, v1.MovieName, v1.Description, JSONB_AGG(DISTINCT jsonb_build_object('ID',v3.id,'Name',v3.genre_name)), v1.Duration, v1.Producer, v1.Country,v1.Release_Year, v1.Age_group, v1.Rating, "+
+		"v1.Rating_count,JSONB_AGG(DISTINCT jsonb_build_object('ID',v5.ID,'Name', v5.Name, 'Surname', v5.Surname, 'Patronymic', v5.Patronymic, 'Description', v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar FROM movie v1 "+
 		"join movie_genre v2 on v1.id = v2.movie_id "+
 		"join genre v3 on (v3.id = v2.genre_id) "+
 		"join movie_actors v4 on (v4.movie_id = v1.id) "+
@@ -217,8 +217,8 @@ func (t *MovieSQLRepository) GetMoviesInCinema(limit, page int, date string, all
 	if t.DBConnection == nil {
 		return nil, models.ErrFooNoDBConnection
 	}
-	query := "SELECT DISTINCT v1.ID, v1.MovieName, v1.Description, JSONB_AGG(jsonb_build_object('ID',v3.id,'Name',v3.genre_name)), v1.Duration, v1.Producer, v1.Country,v1.Release_Year, v1.Age_group, v1.Rating, " +
-		"v1.Rating_count,JSONB_AGG(jsonb_build_object('ID',v5.ID,'Name', v5.Name, 'Surname', v5.Surname, 'Patronymic', v5.Patronymic, 'Description', v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar FROM movie v1 " +
+	query := "SELECT DISTINCT v1.ID, v1.MovieName, v1.Description, JSONB_AGG(DISTINCT jsonb_build_object('ID',v3.id,'Name',v3.genre_name)), v1.Duration, v1.Producer, v1.Country,v1.Release_Year, v1.Age_group, v1.Rating, " +
+		"v1.Rating_count,JSONB_AGG(DISTINCT jsonb_build_object('ID',v5.ID,'Name', v5.Name, 'Surname', v5.Surname, 'Patronymic', v5.Patronymic, 'Description', v5.Description)), v1.PathToAvatar, v1.pathToSliderAvatar FROM movie v1 " +
 		"join movie_genre v2 on v1.id = v2.movie_id " +
 		"join genre v3 on (v3.id = v2.genre_id) " +
 		"join movie_actors v4 on (v4.movie_id = v1.id) " +
