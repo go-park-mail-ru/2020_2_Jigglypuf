@@ -42,7 +42,7 @@ func (t *ReplyUseCase) GetMovieReplies(movieID, limit, offset int) (*[]models.Re
 	if err != nil{
 		return nil, err
 	}
-	for i := 0; i < limit; i++ {
+	for i := 0; i < len(resp); i++ {
 		prof, err := t.profile.GetProfileByID(context.Background(), &profile.GetProfileByUserIDRequest{UserID: resp[i].User.UserID})
 		if err != nil{
 			continue
